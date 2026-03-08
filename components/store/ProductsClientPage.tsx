@@ -35,7 +35,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
   const [sortOption, setSortOption] = useState<SortOption>('featured');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileFiltersOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Compute price bounds from all products
@@ -196,13 +196,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
                 </svg>
               </button>
             )}
-            {/* Keyboard shortcut hint */}
-            {!searchQuery && !isSearchFocused && (
-              <div className="hidden sm:flex items-center mr-4 gap-1">
-                <kbd className="px-2 py-0.5 text-xs font-mono text-brand-text-muted/50 bg-gray-100 border border-gray-200 rounded">Ctrl</kbd>
-                <kbd className="px-2 py-0.5 text-xs font-mono text-brand-text-muted/50 bg-gray-100 border border-gray-200 rounded">K</kbd>
-              </div>
-            )}
+
           </div>
 
           {/* Search Suggestions Dropdown */}
@@ -422,9 +416,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
-                <Link key={product.id} href={`/products/${product.slug}`} className="block h-full">
-                  <ProductCard product={product} />
-                </Link>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (

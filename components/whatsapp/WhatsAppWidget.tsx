@@ -75,7 +75,7 @@ export default function WhatsAppWidget() {
     setIsTyping(true);
     
     setTimeout(() => {
-      let response = "I'm not exactly sure about that. Would you like to speak with our tech experts directly? Call us at +91 9640272323!";
+      let response = "I'm not exactly sure about that. Would you like to speak with our tech experts directly? Call us at +91 8309178589!";
       let responseLinks: { label: string; url: string }[] = [];
       
       const lowerText = userText.toLowerCase().trim();
@@ -111,7 +111,7 @@ export default function WhatsAppWidget() {
       }
       // Contact
       else if (lowerText.includes('contact') || lowerText.includes('call') || lowerText.includes('number')) {
-        response = "You can reach us at +91 9640272323. We are available 10 AM to 8 PM.";
+        response = "You can reach us at +91 8309178589. We are available 10 AM to 8 PM.";
         responseLinks = [{ label: 'Visit Contact Page', url: '/contact' }];
       }
       // General Laptop Advice

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import { storeInfo } from '@/data/store-info';
 
 const exploreLinks = [
@@ -74,7 +75,7 @@ export default function Footer() {
             <h4 className="font-heading text-xs tracking-[0.25em] text-[var(--color-brand-primary)] mb-6 uppercase">
               Explore
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-3 list-none p-0 m-0">
               {exploreLinks.map((link) => (
                 <li key={link.href}>
                   <Link
@@ -95,7 +96,7 @@ export default function Footer() {
             <h4 className="font-heading text-xs tracking-[0.25em] text-[var(--color-brand-primary)] mb-6 uppercase">
               Services
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-3 list-none p-0 m-0">
               {serviceLinks.map((service) => (
                 <li key={service.label}>
                   <Link
@@ -116,17 +117,33 @@ export default function Footer() {
             <h4 className="font-heading text-xs tracking-[0.25em] text-[var(--color-brand-primary)] mb-6 uppercase">
               Contact
             </h4>
-            <ul className="space-y-4 text-sm text-white/50">
-              <li className="leading-relaxed border-b border-white/10 pb-4">
-                {storeInfo.address}
+            <ul className="space-y-4 text-sm text-white/60 list-none p-0 m-0">
+              <li className="flex items-start gap-3 border-b border-white/10 pb-5">
+                <MapPin className="w-5 h-5 text-[var(--color-brand-primary)] shrink-0 mt-0.5" />
+                <span className="leading-relaxed font-body">{storeInfo.address}</span>
               </li>
-              <li>
+              {/* Highlighted Email Section */}
+              <li className="pt-2">
+                <a
+                  href={`mailto:${storeInfo.email}`}
+                  className="flex items-center gap-3 text-white hover:text-[var(--color-brand-primary)] transition-colors duration-300 group font-bold no-underline"
+                >
+                  <div className="relative flex items-center justify-center p-1">
+                    {/* Animated Pulsing Ring */}
+                    <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping" />
+                    <Mail className="w-5 h-5 text-red-500 relative z-10" />
+                  </div>
+                  <span className="text-white text-base font-body tracking-wide border-b border-transparent group-hover:border-[var(--color-brand-primary)] transition-colors">{storeInfo.email}</span>
+                </a>
+              </li>
+              <li className="pt-2">
                 <a
                   href={`tel:+91${storeInfo.phone}`}
                   id="footer-phone-link"
-                  className="hover:text-white transition-colors duration-200"
+                  className="flex items-center gap-3 text-white/80 hover:text-white transition-colors duration-200 group no-underline font-body"
                 >
-                  📞 +91 {storeInfo.phone}
+                  <Phone className="w-4 h-4 text-white/50 group-hover:text-[var(--color-brand-primary)] transition-colors" />
+                  +91 {storeInfo.phone}
                 </a>
               </li>
               <li>
@@ -135,16 +152,16 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   id="footer-contact-whatsapp"
-                  className="text-[var(--color-brand-primary)] hover:underline font-semibold"
+                  className="flex items-center gap-3 text-[var(--color-brand-primary)] hover:text-white transition-colors duration-200 font-semibold font-body no-underline"
                 >
                   WhatsApp: +{storeInfo.whatsapp}
                 </a>
               </li>
-              <li>
+              <li className="pt-4 text-center sm:text-left">
                 <Link
                   href="/contact"
                   id="footer-contact-page-link"
-                  className="inline-block mt-2 text-xs tracking-widest font-heading border border-white/20 px-4 py-2 hover:border-[var(--color-brand-primary)] hover:text-white transition-all duration-200"
+                  className="inline-block text-xs tracking-widest font-heading text-white border border-[var(--color-brand-primary)]/50 px-6 py-3 hover:bg-[var(--color-brand-primary)] hover:border-transparent hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(241,90,36,0.15)] hover:shadow-[0_0_30px_rgba(241,90,36,0.4)] no-underline"
                 >
                   SEND A MESSAGE →
                 </Link>

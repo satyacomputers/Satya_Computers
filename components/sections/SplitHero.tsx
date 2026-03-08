@@ -5,7 +5,7 @@ import Link from 'next/link';
 import BrutalButton from '@/components/ui/BrutalButton';
 
 const SpinningBadge = () => (
-  <div className="absolute -bottom-10 -right-12 z-50 w-36 h-36 md:w-52 md:h-52 rounded-full border-2 border-black/10 bg-white/95 backdrop-blur-2xl flex items-center justify-center p-2 shadow-[0_30px_60px_rgba(0,0,0,0.25)] group/badge hover:scale-105 transition-transform duration-700">
+  <div className="absolute -bottom-14 -right-16 z-50 w-36 h-36 md:w-52 md:h-52 rounded-full border-2 border-black/10 bg-white/95 backdrop-blur-2xl flex items-center justify-center p-2 shadow-[0_30px_60px_rgba(0,0,0,0.25)] group/badge hover:scale-105 transition-transform duration-700">
     <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible animate-[spin_20s_linear_infinite] group-hover/badge:[animation-duration:10s]">
        <path id="circlePath" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="transparent"/>
        <text className="font-heading text-[10.5px] tracking-[0.25em] font-bold fill-black/80 uppercase">
@@ -45,7 +45,7 @@ const HUDLabel = ({ text, top, left, delay }: { text: string; top: string; left:
 };
 
 export default function SplitHero() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const watermarkRef = useRef<HTMLDivElement>(null);
@@ -81,23 +81,23 @@ export default function SplitHero() {
     <section className="relative w-full min-h-[90vh] flex flex-col lg:flex-row overflow-hidden border-b-2 border-black/10 bg-[#FAF9F6]">
       
       {/* ─── LEFT ─── */}
-      <div className="w-full lg:w-[42%] h-full flex flex-col justify-center items-start px-6 py-16 md:p-16 lg:px-24 relative z-20">
-        <div className="inline-block border-2 border-black bg-white px-5 py-2 mb-10 transform -rotate-2 shadow-[4px_4px_0_var(--color-brand-primary)] hover:shadow-[6px_6px_0_black] hover:rotate-1 transition-all duration-300">
+      <div className="w-full lg:w-[48%] h-full flex flex-col justify-center items-start px-6 py-16 md:p-16 lg:px-20 relative z-20">
+        <div className="inline-block border-2 border-black bg-white px-5 py-2 mb-10 transform -rotate-2 shadow-[4px_4px_0_var(--color-brand-primary)] hover:shadow-[6px_6px_0_black] hover:rotate-1 transition-all duration-300 hidden md:block">
           <span className="font-heading text-[11px] tracking-[0.3em] text-black uppercase font-bold">
-             // ENGINE CORE ONLINE
+             {`// ENGINE CORE ONLINE`}
           </span>
         </div>
         
-        <h1 className="font-heading text-6xl md:text-8xl xl:text-[8.5rem] tracking-tighter text-brand-text leading-[0.8] mb-10 relative z-10">
+        <h1 className="font-heading text-[4.5rem] leading-[0.85] md:text-[6.5rem] lg:text-[7rem] xl:text-[8rem] tracking-normal text-brand-text mb-10 relative z-10 w-full break-words">
           BOLD.<br/>
           PREMIUM.<br/>
-          <span className="text-[var(--color-brand-primary)] relative italic">
+          <span className="text-[var(--color-brand-primary)] relative block mt-2 text-[3.8rem] leading-[0.85] md:text-[5.5rem] lg:text-[6rem] xl:text-[6.8rem]">
             UNCOMPROMISING.
-            <span className="absolute -bottom-2 -right-8 w-6 h-1 bg-black animate-pulse opacity-20" />
+            <span className="absolute -bottom-2 -right-4 w-4 h-1 bg-black animate-pulse opacity-20 hidden md:block" />
           </span>
         </h1>
 
-        <p className="font-body font-medium text-lg md:text-xl text-brand-text/60 max-w-sm mb-14 border-l-4 border-[var(--color-brand-primary)] pl-8 leading-relaxed">
+        <p className="font-body font-semibold text-lg md:text-xl text-brand-text/70 max-w-[400px] mb-12 border-l-[3px] border-[var(--color-brand-primary)] pl-6 leading-relaxed">
           Elite-tier calculating machinery for creators and engineers. Brutal performance, refined aesthetics.
         </p>
 
@@ -105,7 +105,7 @@ export default function SplitHero() {
           <Link href="/products">
             <BrutalButton className="!h-16 !px-12 text-2xl">ACCESS SYSTEM</BrutalButton>
           </Link>
-          <div className="flex -space-x-4 isolate group">
+          <div className="flex -space-x-4 isolate group hidden sm:flex">
             {[
               "1500648767791-00dcc994a43e",
               "1534528741775-53994a69daeb",
@@ -131,7 +131,7 @@ export default function SplitHero() {
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="w-full lg:w-[58%] min-h-[75vh] lg:min-h-full bg-[#030303] relative flex items-center justify-center overflow-hidden cursor-none"
+        className="w-full lg:w-[52%] min-h-[50vh] md:min-h-[75vh] lg:min-h-full bg-[#030303] relative flex items-center justify-center overflow-hidden cursor-none"
       >
         {/* ─ Digital Environment ─ */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -286,9 +286,17 @@ export default function SplitHero() {
                       LIVE&nbsp;STOCK
                     </span>
                   </div>
-                  <div className="text-right">
-                    <p className="font-heading text-[8px] text-black/30 tracking-[0.3em] mb-1 uppercase font-bold">MKT VALUE</p>
-                    <p className="font-body text-3xl font-black text-black leading-none tracking-tighter">₹1,70,000</p>
+                  <div className="text-right h-12 overflow-hidden">
+                    <div className="group-hover/main:-translate-y-full transition-transform duration-500 ease-in-out">
+                      <div className="h-12 flex flex-col justify-end">
+                        <p className="font-heading text-[8px] text-black/30 tracking-[0.3em] mb-1 uppercase font-bold">MKT VALUE</p>
+                        <p className="font-body text-3xl font-black text-black leading-none tracking-tighter">₹1,70,000</p>
+                      </div>
+                      <div className="h-12 flex flex-col justify-end">
+                        <p className="font-heading text-[8px] text-[var(--color-brand-primary)] tracking-[0.3em] mb-1 uppercase font-bold">OUR PRICE</p>
+                        <p className="font-body text-3xl font-black text-[var(--color-brand-primary)] leading-none tracking-tighter">₹27,200</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

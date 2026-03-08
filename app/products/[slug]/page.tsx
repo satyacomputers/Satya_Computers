@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getProductBySlug, getRecommendedProducts, enrichProduct } from '@/data/products';
 import GrainOverlay from '@/components/ui/GrainOverlay';
+import ProductImageGallery from '@/components/store/ProductImageGallery';
 import AddToCartButton from '@/components/store/AddToCartButton';
 import TrustBadges from '@/components/store/TrustBadges';
 
@@ -34,35 +35,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <div className="flex flex-col lg:flex-row gap-14 mb-20">
 
           {/* Image Gallery */}
-          <div className="w-full lg:w-1/2 space-y-4">
-            {/* Main image */}
-            <div className="relative aspect-[4/3] w-full bg-[#F7F7F5] border border-black/6 overflow-hidden group">
-              {product.badge && (
-                <span className="absolute top-5 left-5 z-10 bg-[var(--color-brand-primary)] text-white px-3 py-1 font-heading text-sm tracking-widest">
-                  {product.badge}
-                </span>
-              )}
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                className="object-contain p-6 scale-95 group-hover:scale-100 transition-transform duration-500"
-                priority
-              />
-            </div>
-            {/* Thumbnail strip */}
-            {product.images.length > 1 && (
-              <div className="flex gap-3">
-                {product.images.slice(0, 4).map((img, i) => (
-                  <div
-                    key={i}
-                    className="relative w-20 h-20 border border-black/10 bg-[#F7F7F5] overflow-hidden flex-shrink-0 hover:border-[var(--color-brand-primary)] transition-colors cursor-pointer"
-                  >
-                    <Image src={img} alt={`${product.name} view ${i + 1}`} fill className="object-contain p-2" />
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="w-full lg:w-1/2">
+            <ProductImageGallery 
+              images={product.images} 
+              name={product.name} 
+              badge={product.badge} 
+            />
           </div>
 
           {/* Product Details */}

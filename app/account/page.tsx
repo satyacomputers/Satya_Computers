@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import BrutalButton from '@/components/ui/BrutalButton';
 
@@ -9,7 +8,6 @@ export default function AccountPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });

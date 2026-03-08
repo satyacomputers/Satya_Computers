@@ -5,6 +5,7 @@ import { ShoppingCart, User, Menu, X } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -18,9 +19,11 @@ export default function GoldNavBar() {
   const { itemCount } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    setMounted(true);
     const savedUser = localStorage.getItem('satya_user');
     if (savedUser) setUser(savedUser);
   }, []);
@@ -42,7 +45,7 @@ export default function GoldNavBar() {
 
   return (
     <>
-      <nav className="w-full bg-white border-b border-black/5 relative z-50">
+      <nav className="w-full bg-transparent relative z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
@@ -100,63 +103,67 @@ export default function GoldNavBar() {
         </div>
       </nav>
 
-      {/* Mobile Drawer Backdrop */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden"
-          onClick={() => setMobileOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
       {/* Mobile Drawer */}
-      <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${
-          mobileOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        {/* Drawer Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-black/10">
-          <span className="font-heading text-xl tracking-widest text-brand-text">
-            SATYA<span className="text-[var(--color-brand-primary)]">MENU</span>
-          </span>
-          <button
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close Menu"
-            className="text-brand-text/50 hover:text-black transition-colors"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        {/* Drawer Links */}
-        <nav className="flex flex-col px-6 py-8 gap-1 flex-1">
-          {NAV_LINKS.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
+      <AnimatePresence>
+        {mounted && mobileOpen && (
+          <div className="md:hidden fixed inset-0 z-[1000]">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className={`font-heading text-2xl py-3 border-b border-black/5 tracking-widest transition-colors ${
-                pathname === item.href
-                  ? 'text-[var(--color-brand-primary)]'
-                  : 'text-brand-text hover:text-[var(--color-brand-primary)]'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            />
 
-        {/* Drawer Footer */}
-        <div className="px-6 py-6 border-t border-black/10 flex gap-6">
-          <Link href="/account" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm text-brand-text/60 hover:text-[var(--color-brand-primary)] transition-colors" aria-label="Account">
-            <User size={20} /> Account
-          </Link>
-          <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm text-brand-text/60 hover:text-[var(--color-brand-primary)] transition-colors" aria-label="Cart">
-            <ShoppingCart size={20} /> Cart {itemCount > 0 && <span className="bg-[var(--color-brand-primary)] text-white text-xs rounded-full px-1.5 py-0.5">{itemCount}</span>}
-          </Link>
-        </div>
-      </div>
+            {/* Sidebar */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-full w-[280px] bg-white shadow-2xl flex flex-col z-[1001]"
+            >
+              <div className="p-6 border-b border-black/10 flex items-center justify-between">
+                <span className="font-heading text-xl tracking-widest text-brand-text">
+                  SATYA<span className="text-[var(--color-brand-primary)]">MENU</span>
+                </span>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="w-10 h-10 flex items-center justify-center border-2 border-black/10 rounded-full text-black bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                  aria-label="Close menu"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <nav className="flex-1 px-6 py-8 flex flex-col gap-2 overflow-y-auto">
+                {NAV_LINKS.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`font-heading text-2xl py-3 border-b border-black/5 tracking-widest ${
+                      pathname === item.href ? 'text-[var(--color-brand-primary)]' : 'text-brand-text'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="p-6 border-t border-black/10 flex gap-4 mt-auto bg-gray-50/50">
+                <Link href="/account" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm text-brand-text/60 hover:text-brand-text transition-colors">
+                  <User size={18} /> Account
+                </Link>
+                <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 font-body text-sm text-brand-text/60 hover:text-brand-text transition-colors">
+                  <ShoppingCart size={18} /> Cart ({itemCount})
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

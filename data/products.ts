@@ -86,7 +86,7 @@ export const products: Product[] = [
     price: 8064,
     originalPrice: 50400,
     badge: 'HOT',
-    image: 'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     description: 'Premium lightweight laptop with Retina display and seamless integration with the Apple ecosystem.',
     specs: {
       processor: 'Intel Core i5',
@@ -120,7 +120,7 @@ export const products: Product[] = [
     price: 3360,
     originalPrice: 21000,
     badge: 'SALE',
-    image: 'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
     description: 'Ultra-thin and elegant design offering impressive performance for enterprise users on the go.',
     specs: {
       processor: 'Intel Core i5',
@@ -169,7 +169,7 @@ export const products: Product[] = [
     price: 8500,
     originalPrice: 42000,
     badge: 'HOT',
-    image: 'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
     description: 'Flexible 2-in-1 design combining productivity and tablet capabilities seamlessly.',
     specs: {
       processor: 'Intel Core i7',
@@ -186,7 +186,7 @@ export const products: Product[] = [
     price: 15999,
     originalPrice: 99999,
     badge: 'NEW',
-    image: 'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     description: 'The latest Surface Laptop powered by Snapdragon X Elite, offering incredible performance and battery life.',
     specs: {
       processor: 'Snapdragon X Elite',
@@ -322,7 +322,7 @@ export const products: Product[] = [
     price: 11200,
     originalPrice: 70000,
     badge: 'SALE',
-    image: 'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     description: 'Vibrant OLED display and Intel Core Ultra performance in a thin and light chassis.',
     specs: {
       processor: 'Intel Core Ultra 5',
@@ -339,7 +339,7 @@ export const products: Product[] = [
     price: 27200,
     originalPrice: 170000,
     badge: 'HOT',
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
+    image: '/products/dell-xps-14-9440.png',
     description: 'Exquisite design meets powerful performance with an optional NVIDIA RTX GPU.',
     specs: {
       processor: 'Intel Core Ultra 7',
@@ -389,7 +389,7 @@ export const products: Product[] = [
     brand: 'Framework',
     price: 24000,
     originalPrice: 150000,
-    image: 'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     description: 'Fully modular and upgradeable 16-inch laptop for enthusiasts and professionals.',
     specs: {
       processor: 'AMD Ryzen 7 7840HS',
@@ -423,7 +423,7 @@ export const products: Product[] = [
     price: 14400,
     originalPrice: 90000,
     badge: 'NEW',
-    image: 'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
     description: 'HP’s latest business-focused ultrabook with exceptional battery life.',
     specs: {
       processor: 'AMD Ryzen AI 7',
@@ -473,7 +473,7 @@ export const products: Product[] = [
     brand: 'Dell',
     price: 13600,
     originalPrice: 85000,
-    image: 'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
     description: 'Reliable 16-inch laptop for students and home users with a modern display.',
     specs: {
       processor: 'Intel Core Ultra 5',
@@ -490,7 +490,7 @@ export const products: Product[] = [
     price: 20800,
     originalPrice: 130000,
     badge: 'NEW',
-    image: 'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     description: 'Ultra-thin elite business laptop with enhanced 5G connectivity and AI features.',
     specs: {
       processor: 'Intel Core Ultra 7',
@@ -626,7 +626,7 @@ export const products: Product[] = [
     price: 4800,
     originalPrice: 30000,
     badge: 'SALE',
-    image: 'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     description: 'Budget-friendly 15-inch laptop for everyday basics and office productivity.',
     specs: {
       processor: 'Intel Core i3-N305',
@@ -692,17 +692,17 @@ export const products: Product[] = [
 // ─── Real product images (Unsplash editorial/press-style, not AI-generated) ───
 const realImages: Record<string, string[]> = {
   'razer-blade-15-2023': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
   ],
   'acer-predator-helios-300': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'dell-latitude-5480': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],
@@ -714,7 +714,7 @@ const realImages: Record<string, string[]> = {
   'macbook-pro-a2141-2019': [
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
   ],
   'hp-elitebook-840-g3': [
     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
@@ -722,17 +722,17 @@ const realImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'dell-precision-3541': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
   ],
   'lenovo-thinkpad-t470': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'lenovo-yoga-x380': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],
@@ -744,7 +744,7 @@ const realImages: Record<string, string[]> = {
   'hp-spectre-x360-14': [
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
   ],
   'lenovo-thinkpad-x1-carbon-g12': [
     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
@@ -752,17 +752,17 @@ const realImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'asus-zenbook-s-14': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
   ],
   'macbook-pro-14-m4': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'asus-rog-zephyrus-g14-2024': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],
@@ -774,7 +774,7 @@ const realImages: Record<string, string[]> = {
   'hp-pavilion-aero-13-2024': [
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
   ],
   'acer-swift-go-14-2024': [
     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
@@ -782,17 +782,17 @@ const realImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'dell-xps-14-9440': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    '/products/dell-xps-14-9440.png',
+    '/products/dell-xps-14-9440-alt.png',
+    'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
   ],
   'msi-raider-18-hx': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'asus-tuf-gaming-a14-2025': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],
@@ -804,7 +804,7 @@ const realImages: Record<string, string[]> = {
   'samsung-galaxy-chromebook-plus': [
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
   ],
   'hp-omnibook-5-2025': [
     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
@@ -812,17 +812,17 @@ const realImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'acer-nitro-v-16': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
   ],
   'lenovo-yoga-pro-9i-2024': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'dell-inspiron-16-7640': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],
@@ -834,7 +834,7 @@ const realImages: Record<string, string[]> = {
   'lenovo-legion-7i-g9': [
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
   ],
   'msi-cyborg-14-a13v': [
     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
@@ -842,17 +842,17 @@ const realImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'acer-predator-helios-neo-16': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
   ],
   'lenovo-loq-15-2025': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'microsoft-surface-pro-11': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],
@@ -864,7 +864,7 @@ const realImages: Record<string, string[]> = {
   'dell-xps-13-9345': [
     'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1531297172864-559d3b102283?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
   ],
   'acer-aspire-go-15': [
     'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
@@ -872,17 +872,17 @@ const realImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'macbook-air-m2': [
-    'https://images.unsplash.com/photo-1423666223297-f5dc83f60b41?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1587612711718-d9a2cd47970d?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800',
   ],
   'hp-victus-15-2024': [
     'https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1591405825700-61ccfb984501?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800',
   ],
   'lenovo-thinkpad-p1-g7': [
-    'https://images.unsplash.com/photo-1593642702821-c8da6a599e03?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800',
   ],

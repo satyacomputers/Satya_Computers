@@ -65,7 +65,7 @@ function OrderStatusContent() {
                 <p><strong className="text-brand-text">Awaiting Pickup:</strong> Our team is preparing your package for dispatch.</p>
                 <p><strong className="text-brand-text">Estimate:</strong> Delivery usually takes 2-4 hours within Hyderabad.</p>
                 <div className="bg-[#F9FAFB] p-4 border-l-4 border-black mt-6 italic text-xs">
-                  "Thank you for choosing Satya Computers. We prioritize high-speed delivery for all our workstations."
+                  &quot;Thank you for choosing Satya Computers. We prioritize high-speed delivery for all our workstations.&quot;
                 </div>
               </div>
             </div>
@@ -77,7 +77,7 @@ function OrderStatusContent() {
               </div>
               <div className="flex flex-col gap-3">
                 <a 
-                  href="https://wa.me/919640272323" 
+                  href="https://wa.me/918309178589" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="bg-black text-white text-center py-4 font-heading text-sm tracking-widest hover:bg-[var(--color-brand-primary)] transition-all"
