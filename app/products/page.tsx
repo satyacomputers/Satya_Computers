@@ -18,6 +18,7 @@ export default async function ProductsPage() {
       name: row.name,
       slug: row.id, // Use ID as slug for DB products
       brand: row.brand,
+      category: row.category,
       price: row.price,
       originalPrice: row.price * 1.2, // Mock original price
       image: row.image || '/products/dell_laptop_premium.png',

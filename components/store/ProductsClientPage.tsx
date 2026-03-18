@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from '@/components/store/ProductCard';
 import type { Product } from '@/data/products';
 
@@ -29,6 +30,7 @@ interface ProductsClientPageProps {
 }
 
 export default function ProductsClientPage({ products }: ProductsClientPageProps) {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -39,9 +41,22 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
   const [mobileFiltersOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Initialize from search params
+  useEffect(() => {
+    const cat = searchParams.get('category');
+    if (cat) setSelectedCategory(cat);
+    
+    const brand = searchParams.get('brand');
+    if (brand) setSelectedBrand(brand);
+
+    const q = searchParams.get('q');
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
+
   // Compute price bounds from all products
   const priceBounds = useMemo(() => {
     const prices = products.map(p => p.price);
+    if (prices.length === 0) return { min: 0, max: 1000000 };
     return { min: Math.min(...prices), max: Math.max(...prices) };
   }, [products]);
 
@@ -99,7 +114,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
       result = result.filter(p =>
         p.name.toLowerCase().includes(q) ||
         p.brand.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
         p.specs.processor.toLowerCase().includes(q) ||
         p.specs.ram.toLowerCase().includes(q) ||
         p.specs.storage.toLowerCase().includes(q) ||
@@ -146,7 +161,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
     }
 
     return result;
-  }, [products, searchQuery, selectedBrand, selectedBadge, sortOption, priceRange, priceBounds]);
+  }, [products, searchQuery, selectedBrand, selectedCategory, selectedBadge, sortOption, priceRange, priceBounds]);
 
   // Search suggestions (shown when focused & typing)
   const searchSuggestions = useMemo(() => {

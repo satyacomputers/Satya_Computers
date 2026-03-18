@@ -58,6 +58,7 @@ export default function InteractiveFAQ() {
                Have questions about buying refurbished? We value radical transparency on warranty, battery life, and shipping. 
              </p>
              <button 
+               suppressHydrationWarning
                onClick={() => window.open('https://wa.me/918309178589', '_blank')}
                className="btn-primary text-xs tracking-widest px-8 py-4"
              >
@@ -81,6 +82,7 @@ export default function InteractiveFAQ() {
                     className={`bg-white border-2 transition-colors duration-300 ${isOpen ? 'border-[var(--color-brand-primary)]' : 'border-black/5 hover:border-black/20'}`}
                  >
                     <button 
+                       suppressHydrationWarning
                        className="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none group"
                        onClick={() => setOpenId(isOpen ? null : faq.id)}
                     >

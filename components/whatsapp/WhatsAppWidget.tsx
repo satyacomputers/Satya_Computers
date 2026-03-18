@@ -56,10 +56,21 @@ const SITE_SECTIONS = [
 
 export default function WhatsAppWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([getInitialMessage()]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setHasMounted(true);
+    setMessages([{
+      id: 'init',
+      role: 'bot',
+      text: 'Hi! I am the Satya Computers assistant. How can I help you find the perfect laptop or workstation today?',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }]);
+  }, []);
   const products = getAllProducts();
 
   const resetChat = () => {

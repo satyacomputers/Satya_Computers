@@ -19,20 +19,20 @@ async function main() {
     // 2. High-Fidelity Products Portfolio
     console.log('Rebuilding Product Portfolio...');
     const products = [
-      ['p1', 'MacBook Pro 16 M3 Max', 'Apple', 'M3 Max 16-Core', '64GB Unified', '2TB SSD', '16.2" Liquid Retina XDR', 349900.0, 'In Stock', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800', 'The ultimate workstation for creative professionals.', 1],
-      ['p2', 'Dell XPS 15 9530', 'Dell', 'Intel i9-13900H', '32GB DDR5', '1TB NVMe', '15.6" OLED 3.5K Touch', 225000.0, 'In Stock', '/uploads/dell-xps-14-9440.png', 'Stunning design meet performance powerhouse.', 1],
-      ['p3', 'Razer Blade 14 (2024)', 'Razer', 'AMD Ryzen 9 8945HS', '32GB DDR5', '1TB Gen4 SSD', '14" QHD+ 240Hz', 285000.0, 'Low Stock', 'https://images.unsplash.com/photo-1593642532400-2682810df593?q=80&w=800', 'The most powerful 14-inch gaming laptop period.', 1],
-      ['p4', 'ThinkPad X1 Carbon Gen 12', 'Lenovo', 'Intel Ultra 7 155H', '32GB LPDDR5x', '1TB SSD', '14" 2.8K OLED', 195000.0, 'In Stock', 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=800', 'The legendary business ultrabook, refined for the AI era.', 0],
-      ['p5', 'ASUS ROG Zephyrus G16', 'ASUS', 'Intel Ultra 9 185H', '32GB LPDDR5x', '1TB SSD', '16" 2.5K OLED 240Hz', 245000.0, 'In Stock', 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=800', 'Sleek, powerful, and portable gaming excellence.', 1],
-      ['p6', 'Crucial 16GB DDR5 5600MHz', 'Crucial', 'SO-DIMM', '16GB', '5600MHz', 'N/A', 5500.0, 'In Stock', '/products/crucial-ram.png', 'High-performance memory for modern hardware.', 0],
-      ['p7', 'Samsung 990 Pro 2TB', 'Samsung', 'Pascal Controller', '2GB LPDDR4', '2TB NVMe', 'N/A', 18500.0, 'In Stock', '/products/samsung-990-pro.png', 'Blistering Gen4 speeds for intense workloads.', 0],
-      ['p8', 'Dell 90W Type-C Adapter', 'Dell', 'GaN Tech', 'N/A', 'N/A', 'N/A', 4500.0, 'In Stock', 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?q=80&w=800', 'Original fast charging for Latitude and XPS series.', 0]
+      ['p1', 'MacBook Pro 16 M3 Max', 'Apple', 'apple', 'M3 Max 16-Core', '64GB Unified', '2TB SSD', '16.2" Liquid Retina XDR', 349900.0, 'In Stock', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800', 'The ultimate workstation for creative professionals.', 1],
+      ['p2', 'Dell XPS 15 9530', 'Dell', 'ultrabooks', 'Intel i9-13900H', '32GB DDR5', '1TB NVMe', '15.6" OLED 3.5K Touch', 225000.0, 'In Stock', 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=800', 'Stunning design meet performance powerhouse.', 1],
+      ['p3', 'Razer Blade 14 (2024)', 'Razer', 'gaming', 'AMD Ryzen 9 8945HS', '32GB DDR5', '1TB Gen4 SSD', '14" QHD+ 240Hz', 285000.0, 'Low Stock', 'https://images.unsplash.com/photo-1525547718571-039c476729a7?q=80&w=800', 'The most powerful 14-inch gaming laptop period.', 1],
+      ['p4', 'ThinkPad X1 Carbon Gen 12', 'Lenovo', 'ultrabooks', 'Intel Ultra 7 155H', '32GB LPDDR5x', '1TB SSD', '14" 2.8K OLED', 195000.0, 'In Stock', 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?q=80&w=1000', 'The legendary business ultrabook, refined for the AI era.', 1],
+      ['p5', 'ASUS ROG Zephyrus G16', 'ASUS', 'gaming', 'Intel Ultra 9 185H', '32GB LPDDR5x', '1TB SSD', '16" 2.5K OLED 240Hz', 245000.0, 'In Stock', 'https://images.unsplash.com/photo-1624701928517-44c8ac49d93c?q=80&w=800', 'Sleek, powerful, and portable gaming excellence.', 1],
+      ['p6', 'HP ZBook Studio G10', 'HP', 'workstations', 'Intel i9-13900H', '64GB DDR5', '2TB NVMe', '16" 4K DreamColor', 315000.0, 'In Stock', 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=800', 'Mobile workstation for professional visual effects.', 1],
+      ['p7', 'Microsoft Surface Laptop Studio 2', 'Microsoft', 'convertibles', 'Intel i7-13700H', '32GB RAM', '1TB SSD', '14.4" PixelSense Flow', 265000.0, 'In Stock', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=800', 'Versatile boundary-pushing 2-in-1 design.', 1],
+      ['p8', 'Lenovo Yoga 9i Gen 8', 'Lenovo', 'convertibles', 'Intel i7-1360P', '16GB LPDDR5', '512GB SSD', '14" 2.8K OLED', 165000.0, 'In Stock', 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=800', 'The ultimate 2-in-1 entertainment experience.', 0]
     ];
 
     for (const p of products) {
       await client.execute({
-        sql: `INSERT INTO "Product" (id, name, brand, processor, ram, storage, display, price, stockStatus, image, description, isFeatured, createdAt, updatedAt)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+        sql: `INSERT INTO "Product" (id, name, brand, category, processor, ram, storage, display, price, stockStatus, image, description, isFeatured, createdAt, updatedAt)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
         args: p
       });
     }

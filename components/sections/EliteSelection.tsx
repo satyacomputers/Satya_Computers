@@ -81,6 +81,7 @@ export default function EliteSelection({ products = [] }: EliteSelectionProps) {
         <div className="relative group/main">
           {/* Navigation Arrows */}
           <button 
+            suppressHydrationWarning
             onClick={() => scrollGallery('left')}
             aria-label="Previous Stock"
             className="absolute -left-4 md:-left-12 top-1/2 -translate-y-1/2 z-40 w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center text-black shadow-2xl hover:bg-black hover:text-white transition-all scale-100 md:scale-0 md:group-hover/main:scale-100 active:scale-95 border-none cursor-pointer"
@@ -91,6 +92,7 @@ export default function EliteSelection({ products = [] }: EliteSelectionProps) {
           </button>
 
           <button 
+            suppressHydrationWarning
             onClick={() => scrollGallery('right')}
             aria-label="Next Stock"
             className="absolute -right-4 md:-right-12 top-1/2 -translate-y-1/2 z-40 w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center text-black shadow-2xl hover:bg-black hover:text-white transition-all scale-100 md:scale-0 md:group-hover/main:scale-100 active:scale-95 border-none cursor-pointer"

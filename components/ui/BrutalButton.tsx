@@ -8,6 +8,7 @@ interface BrutalButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 export default function BrutalButton({ children, className = '', ...props }: BrutalButtonProps) {
   return (
     <button
+      suppressHydrationWarning
       className={`btn-brutal ${className}`}
       {...props}
     >

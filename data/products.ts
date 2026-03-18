@@ -738,8 +738,25 @@ export const products: Product[] = [
       storage: '4-Cell',
       screen: 'N/A'
     }
+  },
+  {
+    id: 'coolermaster-liquid-metal',
+    name: 'Cooler Master Liquid Metal Thermal Grease',
+    slug: 'coolermaster-liquid-metal',
+    brand: 'Cooler Master',
+    category: 'parts',
+    price: 1800,
+    originalPrice: 2500,
+    badge: 'NEW',
+    image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&q=80&w=800',
+    description: 'Ultra-high performance thermal composite for professional workstations. Certified for intense computational workloads.',
+    specs: {
+      processor: 'Liquid Metal',
+      ram: '5g',
+      storage: '82W/m-K',
+      screen: 'N/A'
+    }
   }
-
 ];
 
 // ─── Real product images (Unsplash editorial/press-style, not AI-generated) ───

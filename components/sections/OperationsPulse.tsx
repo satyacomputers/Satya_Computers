@@ -22,7 +22,8 @@ export default function OperationsPulse({ stats }: OperationsPulseProps) {
   return (
     <section className="py-24 bg-[#050B14] relative overflow-hidden">
       {/* Circuit board background effect */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('/grid.svg')] bg-repeat" />
+      {/* Technical Background Matrix */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none tech-grid-bg" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
@@ -103,17 +104,22 @@ export default function OperationsPulse({ stats }: OperationsPulseProps) {
               </div>
               
               <div className="relative w-full lg:w-1/2 h-48 flex items-end gap-1">
-                 {Array.from({ length: 40 }).map((_, i) => (
-                   <motion.div 
-                     key={i}
-                     initial={{ height: 0 }}
-                     whileInView={{ height: `${20 + Math.random() * 80}%` }}
-                     transition={{ repeat: Infinity, repeatType: 'reverse', duration: 1 + Math.random(), delay: i * 0.05 }}
-                     className="flex-1 bg-blue-500/20 group-hover:bg-[#F97316]/20 transition-colors"
-                   >
-                      <div className="w-full h-1 bg-blue-500 group-hover:bg-[#F97316] shadow-[0_0_10px_currentcolor]" />
-                   </motion.div>
-                 ))}
+                  {Array.from({ length: 40 }).map((_, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ height: 0 }}
+                      whileInView={{ height: `${20 + (i % 7) * 10}%` }}
+                      transition={{ 
+                        repeat: Infinity, 
+                        repeatType: 'reverse', 
+                        duration: 1 + (i % 3) * 0.5, 
+                        delay: i * 0.05 
+                      }}
+                      className="flex-1 bg-blue-500/20 group-hover:bg-[#F97316]/20 transition-colors"
+                    >
+                       <div className="w-full h-1 bg-blue-500 group-hover:bg-[#F97316] shadow-[0_0_10px_currentcolor]" />
+                    </motion.div>
+                  ))}
               </div>
               
               <div className="absolute top-0 right-0 p-12 pointer-events-none opacity-20">

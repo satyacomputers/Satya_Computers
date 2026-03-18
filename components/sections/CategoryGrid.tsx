@@ -70,10 +70,10 @@ export default function CategoryGrid({ counts = {} }: CategoryGridProps) {
           </h2>
           <p className="font-body text-gray-500 text-sm font-medium">Explore hardware stratified by specialized performance nodes. Professional certified inventory only.</p>
         </div>
-        <div className="flex items-center gap-3 border-2 border-black px-6 py-3 bg-white hover:bg-black hover:text-white transition-all cursor-pointer group">
+        <Link href="/products" className="flex items-center gap-3 border-2 border-black px-6 py-3 bg-white hover:bg-black hover:text-white transition-all cursor-pointer group">
           <span className="font-heading text-xs tracking-widest uppercase font-black">All Modules</span>
           <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:auto-rows-[240px]">
@@ -89,7 +89,7 @@ export default function CategoryGrid({ counts = {} }: CategoryGridProps) {
               transition={{ delay: idx * 0.1, duration: 0.5 }}
               className={`group relative overflow-hidden bg-black ${cat.flex}`}
             >
-              <Link href={`/products`} className="absolute inset-0 z-20">
+              <Link href={`/products?category=${cat.id}`} className="absolute inset-0 z-20">
                 <span className="sr-only">View {cat.title}</span>
               </Link>
               
