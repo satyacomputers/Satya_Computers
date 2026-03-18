@@ -5,14 +5,7 @@ import GrainOverlay from '@/components/ui/GrainOverlay';
 import BrutalButton from '@/components/ui/BrutalButton';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { CheckSquare, Zap, Users, Award, Shield, Cpu, RotateCcw, Truck } from 'lucide-react';
-
-const stats = [
-  { icon: Award, label: 'Years of Trust', value: '10+' },
-  { icon: Users, label: 'Happy Clients', value: '25k+' },
-  { icon: Zap, label: 'Systems Deployed', value: '15k+' },
-  { icon: CheckSquare, label: 'Success Rate', value: '99.8%' },
-];
+import { Shield, Cpu, RotateCcw, Truck } from 'lucide-react';
 
 const values = [
   {
@@ -65,27 +58,6 @@ export default function AboutPage() {
         </motion.div>
       </section>
 
-      {/* Stats Row */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="group"
-            >
-              <div className="border-l-2 border-black/10 group-hover:border-[var(--color-brand-primary)] pl-6 transition-colors duration-300">
-                <div className="font-heading text-5xl text-[#1A1A1A] mb-1">{stat.value}</div>
-                <div className="font-heading text-xs tracking-[0.2em] text-black/40 uppercase font-bold">{stat.label}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       {/* Story & Philosophy */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
         <motion.div
@@ -96,16 +68,6 @@ export default function AboutPage() {
         >
           <div className="relative aspect-[4/5] bg-[#F1F1F1] overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent z-10 opacity-30 group-hover:opacity-10 transition-opacity duration-700" />
-            <div className="absolute inset-0 hero-dot-grid opacity-10" />
-            <div className="absolute inset-0 flex items-center justify-center p-12">
-               <motion.div 
-                 animate={{ rotate: 360 }}
-                 transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                 className="w-full h-full border-[1px] border-black/5 rounded-full flex items-center justify-center"
-               >
-                 <div className="w-1/2 h-1/2 border-[1px] border-black/5 rounded-full" />
-               </motion.div>
-            </div>
             <div className="absolute bottom-8 left-8 z-20">
               <h3 className="font-heading text-4xl text-[#1A1A1A] uppercase tracking-tighter mix-blend-difference">Our DNA</h3>
             </div>
