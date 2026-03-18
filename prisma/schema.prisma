@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 model Product {
@@ -64,8 +63,8 @@ model Offer {
 model Announcement {
   id        String   @id @default(cuid())
   title     String
-  type      String   // Flash, Promo, Update
-  status    String   @default("Live") // Live, Scheduled, Expired
+  type      String
+  status    String   @default("Live")
   date      String
   createdAt DateTime @default(now())
 }
@@ -74,7 +73,7 @@ model Admin {
   id        String   @id @default(cuid())
   username  String   @unique
   password  String
-  role      String   @default("admin") // admin, management, editor, etc.
+  role      String   @default("admin")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -113,13 +112,13 @@ model Client {
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
   image       String?
-  slug        String    @unique
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ContactMessage {
@@ -128,6 +127,6 @@ model ContactMessage {
   email     String
   subject   String?
   message   String
-  status    String   @default("New") // New, Read, Replied, Archived
+  status    String   @default("New")
   createdAt DateTime @default(now())
 }
