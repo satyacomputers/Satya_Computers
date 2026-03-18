@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Menu, X, LogOut, ChevronRight } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, ChevronRight, Home, Box, Globe, Info, Phone } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -143,64 +143,86 @@ export default function GoldNavBar() {
                 className="absolute inset-0 bg-black/95 backdrop-blur-lg"
               />
 
-              {/* Sidebar Shell: Ensures Opaque background */}
+              {/* Sidebar Shell: Optimized for 'Helium' Layout */}
               <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-                className="relative ml-auto h-full w-full sm:w-[400px] bg-white flex flex-col shadow-[-10px_0_50px_rgba(0,0,0,0.5)] border-l border-black/5"
+                className="relative ml-auto h-full w-full sm:w-[400px] bg-white flex flex-col shadow-[-10px_0_50px_rgba(0,0,0,0.5)]"
               >
-                <div className="p-8 border-b border-black/5 flex items-center justify-between bg-white z-10">
-                  <span className="font-heading text-2xl tracking-[0.2em] text-black italic">
-                    SATYA<span className="text-[var(--color-brand-primary)]">MENU</span>
+                {/* Header Bar */}
+                <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between bg-white sticky top-0 z-20">
+                  <button onClick={() => setMobileOpen(false)} className="p-2 -ml-2 text-black/40 hover:text-black">
+                     <span className="font-heading text-xs tracking-widest font-bold uppercase">← Back</span>
+                  </button>
+                  <span className="font-heading text-lg tracking-[0.2em] text-black italic">
+                    SATYA
                   </span>
                   <button
                     onClick={() => setMobileOpen(false)}
-                    className="w-12 h-12 flex items-center justify-center border-2 border-[var(--color-brand-primary)]/20 rounded-full text-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] hover:text-white transition-all cursor-pointer"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-50 text-black rounded-full border border-black/5 hover:bg-gray-100"
                     aria-label="Close menu"
                   >
-                    <X size={24} />
+                    <X size={20} />
                   </button>
                 </div>
 
-                <div className="flex-1 bg-white px-8 py-12 flex flex-col gap-6 overflow-y-auto">
-                  {NAV_LINKS.map((item) => (
+                {/* Primary Nav Links */}
+                <div className="flex-1 bg-white px-6 py-8 flex flex-col gap-1 overflow-y-auto">
+                  {[
+                    { label: 'Home', href: '/', icon: Home },
+                    { label: 'Products', href: '/products', icon: Box },
+                    { label: 'Solutions', href: '/solutions', icon: Globe },
+                    { label: 'About', href: '/about', icon: Info },
+                    { label: 'Contact', href: '/contact', icon: Phone },
+                  ].map((item) => (
                     <Link
                       key={item.label}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
                       className="group"
                     >
-                      <div className="flex items-baseline justify-between py-2 border-b border-black/5">
-                        <span className={`font-heading text-5xl uppercase tracking-tighter transition-all ${
-                          pathname === item.href ? 'text-[var(--color-brand-primary)]' : 'text-black group-hover:text-[var(--color-brand-primary)]'
+                      <div className="flex items-center gap-5 py-4 px-4 hover:bg-gray-50 rounded-xl transition-all border-b border-black/[0.03]">
+                        <div className={`p-2.5 rounded-xl border border-black/5 transition-all ${
+                          pathname === item.href ? 'bg-[var(--color-brand-primary)] text-white shadow-lg shadow-[var(--color-brand-primary)]/20' : 'bg-gray-50 text-black/40 group-hover:bg-black group-hover:text-white'
                         }`}>
-                          {item.label}
-                        </span>
-                        <ChevronRight size={20} className="text-black/10 group-hover:text-[var(--color-brand-primary)] transition-colors" />
+                           <item.icon size={20} />
+                        </div>
+                        <div className="flex-1 flex items-center justify-between">
+                          <span className={`font-heading text-xl uppercase tracking-widest transition-all ${
+                            pathname === item.href ? 'text-black font-black' : 'text-black/60 group-hover:text-black'
+                          }`}>
+                            {item.label}
+                          </span>
+                          <ChevronRight size={16} className="text-black/10 group-hover:text-black transition-all" />
+                        </div>
                       </div>
                     </Link>
                   ))}
                 </div>
 
-                <div className="p-10 border-t border-black/5 flex flex-col gap-8 bg-gray-50/80 mt-auto">
-                  <div className="grid grid-cols-2 gap-4">
-                     <Link href="/account" onClick={() => setMobileOpen(false)} className="flex flex-col gap-2 p-4 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all group">
-                       <User size={18} className="text-black/40 group-hover:text-[var(--color-brand-primary)]" />
-                       <span className="font-heading text-[10px] tracking-widest text-black/60 uppercase font-black">Account</span>
+                {/* Account & Meta Links Footer */}
+                <div className="p-8 border-t border-black/5 bg-gray-50/50 flex flex-col gap-8">
+                  <div className="grid grid-cols-2 gap-3">
+                     <Link href="/account" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 p-4 bg-white border border-black/5 rounded-xl hover:border-black transition-all group shadow-sm">
+                       <User size={18} className="text-black/30 group-hover:text-black" />
+                       <span className="font-heading text-[11px] tracking-widest text-black/50 group-hover:text-black uppercase font-bold">Account</span>
                      </Link>
-                     <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex flex-col gap-2 p-4 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all group">
-                       <ShoppingCart size={18} className="text-black/40 group-hover:text-[var(--color-brand-primary)]" />
-                       <span className="font-heading text-[10px] tracking-widest text-black/60 uppercase font-black">Cart ({itemCount})</span>
+                     <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 p-4 bg-white border border-black/5 rounded-xl hover:border-black transition-all group shadow-sm">
+                       <ShoppingCart size={18} className="text-black/30 group-hover:text-black" />
+                       <span className="font-heading text-[11px] tracking-widest text-black/50 group-hover:text-black uppercase font-bold">Cart ({itemCount})</span>
                      </Link>
                   </div>
                   
-                  <div className="flex flex-col gap-1 items-center">
+                  <div className="flex flex-col gap-2 items-center text-center">
                     <div className="text-[9px] font-heading tracking-[0.4em] font-black text-black/20 uppercase">
-                      HYDERABAD EST. 2014
+                      SATYA COMPUTERS HYDERABAD
                     </div>
-                    <div className="h-0.5 w-12 bg-[var(--color-brand-primary)]/10" />
+                    <div className="text-[8px] font-heading tracking-widest text-black/10 uppercase mb-2">
+                       © 2026 PREMIUM BUSINESS COMPUTING
+                    </div>
+                    <div className="h-0.5 w-12 bg-black/5" />
                   </div>
                 </div>
               </motion.div>

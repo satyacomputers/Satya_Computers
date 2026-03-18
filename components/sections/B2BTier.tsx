@@ -95,7 +95,7 @@ export default function B2BTier() {
                       <div className="h-px bg-black/10" />
                       <div className="flex justify-between items-end">
                          <span className="font-heading text-xs uppercase tracking-widest font-black">FINAL QUOTE</span>
-                         <span className="font-body text-3xl md:text-4xl font-black text-black leading-none">₹{totalPrice.toLocaleString('en-IN')}</span>
+                         <span className="font-body text-xl md:text-4xl font-black text-black leading-none">₹{totalPrice.toLocaleString('en-IN')}</span>
                       </div>
                    </div>
 

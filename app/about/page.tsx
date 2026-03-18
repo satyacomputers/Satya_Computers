@@ -48,7 +48,7 @@ export default function AboutPage() {
           className="relative z-10"
         >
           <span className="font-body text-xs tracking-[0.4em] text-[var(--color-brand-primary)] uppercase mb-4 block font-bold">The Ameerpet Legacy</span>
-          <h1 className="font-heading text-7xl md:text-9xl text-[#1A1A1A] leading-[0.85] mb-8 uppercase">
+          <h1 className="font-heading text-5xl md:text-9xl text-[#1A1A1A] leading-[0.85] mb-8 uppercase">
             REDEFINING <br />
             <span className="text-[var(--color-brand-primary)]">PERFORMANCE.</span>
           </h1>
@@ -76,7 +76,7 @@ export default function AboutPage() {
 
         <div className="space-y-10">
           <div>
-            <h2 className="font-heading text-4xl text-[#1A1A1A] mb-6 uppercase">Quality is Non-Negotiable.</h2>
+            <h2 className="font-heading text-2xl md:text-4xl text-[#1A1A1A] mb-6 uppercase">Quality is Non-Negotiable.</h2>
             <p className="font-body text-black/70 leading-relaxed text-lg italic border-l-4 border-[var(--color-brand-primary)] pl-6 mb-8">
               "We founded Satya Computers in Hyderabad to solve a simple problem: Premium hardware was too expensive, and affordable hardware wasn't premium enough. We fixed that."
             </p>
