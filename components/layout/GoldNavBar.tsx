@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { signOut, useSession } from 'next-auth/react';
+import Portal from '@/components/ui/Portal';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -128,83 +129,85 @@ export default function GoldNavBar() {
       </nav>
 
 
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {mounted && mobileOpen && (
-          <div className="fixed inset-0 z-[99999] md:hidden flex overflow-hidden">
-            {/* Backdrop: Solid black with subtle blur to mask the page completely */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileOpen(false)}
-              className="absolute inset-0 bg-black/95 backdrop-blur-lg"
-            />
+      {/* Mobile Drawer using Portal */}
+      <Portal>
+        <AnimatePresence>
+          {mounted && mobileOpen && (
+            <div className="fixed inset-0 z-[99999] md:hidden flex overflow-hidden">
+              {/* Backdrop: Solid black with subtle blur to mask the page completely */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMobileOpen(false)}
+                className="absolute inset-0 bg-black/95 backdrop-blur-lg"
+              />
 
-            {/* Sidebar Shell: Ensures Opaque background */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-              className="relative ml-auto h-full w-full sm:w-[400px] bg-white flex flex-col shadow-[-10px_0_50px_rgba(0,0,0,0.5)] border-l border-black/5"
-            >
-              <div className="p-8 border-b border-black/5 flex items-center justify-between bg-white z-10">
-                <span className="font-heading text-2xl tracking-[0.2em] text-black italic">
-                  SATYA<span className="text-[var(--color-brand-primary)]">MENU</span>
-                </span>
-                <button
-                  onClick={() => setMobileOpen(false)}
-                  className="w-12 h-12 flex items-center justify-center border-2 border-[var(--color-brand-primary)]/20 rounded-full text-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] hover:text-white transition-all cursor-pointer"
-                  aria-label="Close menu"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              <div className="flex-1 bg-white px-8 py-12 flex flex-col gap-6 overflow-y-auto">
-                {NAV_LINKS.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
+              {/* Sidebar Shell: Ensures Opaque background */}
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                className="relative ml-auto h-full w-full sm:w-[400px] bg-white flex flex-col shadow-[-10px_0_50px_rgba(0,0,0,0.5)] border-l border-black/5"
+              >
+                <div className="p-8 border-b border-black/5 flex items-center justify-between bg-white z-10">
+                  <span className="font-heading text-2xl tracking-[0.2em] text-black italic">
+                    SATYA<span className="text-[var(--color-brand-primary)]">MENU</span>
+                  </span>
+                  <button
                     onClick={() => setMobileOpen(false)}
-                    className="group"
+                    className="w-12 h-12 flex items-center justify-center border-2 border-[var(--color-brand-primary)]/20 rounded-full text-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary)] hover:text-white transition-all cursor-pointer"
+                    aria-label="Close menu"
                   >
-                    <div className="flex items-baseline justify-between py-2 border-b border-black/5">
-                      <span className={`font-heading text-5xl uppercase tracking-tighter transition-all ${
-                        pathname === item.href ? 'text-[var(--color-brand-primary)]' : 'text-black group-hover:text-[var(--color-brand-primary)]'
-                      }`}>
-                        {item.label}
-                      </span>
-                      <ChevronRight size={20} className="text-black/10 group-hover:text-[var(--color-brand-primary)] transition-colors" />
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    <X size={24} />
+                  </button>
+                </div>
 
-              <div className="p-10 border-t border-black/5 flex flex-col gap-8 bg-gray-50/80 mt-auto">
-                <div className="grid grid-cols-2 gap-4">
-                   <Link href="/account" onClick={() => setMobileOpen(false)} className="flex flex-col gap-2 p-4 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all group">
-                     <User size={18} className="text-black/40 group-hover:text-[var(--color-brand-primary)]" />
-                     <span className="font-heading text-[10px] tracking-widest text-black/60 uppercase font-black">Account</span>
-                   </Link>
-                   <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex flex-col gap-2 p-4 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all group">
-                     <ShoppingCart size={18} className="text-black/40 group-hover:text-[var(--color-brand-primary)]" />
-                     <span className="font-heading text-[10px] tracking-widest text-black/60 uppercase font-black">Cart ({itemCount})</span>
-                   </Link>
+                <div className="flex-1 bg-white px-8 py-12 flex flex-col gap-6 overflow-y-auto">
+                  {NAV_LINKS.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="group"
+                    >
+                      <div className="flex items-baseline justify-between py-2 border-b border-black/5">
+                        <span className={`font-heading text-5xl uppercase tracking-tighter transition-all ${
+                          pathname === item.href ? 'text-[var(--color-brand-primary)]' : 'text-black group-hover:text-[var(--color-brand-primary)]'
+                        }`}>
+                          {item.label}
+                        </span>
+                        <ChevronRight size={20} className="text-black/10 group-hover:text-[var(--color-brand-primary)] transition-colors" />
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                
-                <div className="flex flex-col gap-1 items-center">
-                  <div className="text-[9px] font-heading tracking-[0.4em] font-black text-black/20 uppercase">
-                    HYDERABAD EST. 2014
+
+                <div className="p-10 border-t border-black/5 flex flex-col gap-8 bg-gray-50/80 mt-auto">
+                  <div className="grid grid-cols-2 gap-4">
+                     <Link href="/account" onClick={() => setMobileOpen(false)} className="flex flex-col gap-2 p-4 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all group">
+                       <User size={18} className="text-black/40 group-hover:text-[var(--color-brand-primary)]" />
+                       <span className="font-heading text-[10px] tracking-widest text-black/60 uppercase font-black">Account</span>
+                     </Link>
+                     <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex flex-col gap-2 p-4 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all group">
+                       <ShoppingCart size={18} className="text-black/40 group-hover:text-[var(--color-brand-primary)]" />
+                       <span className="font-heading text-[10px] tracking-widest text-black/60 uppercase font-black">Cart ({itemCount})</span>
+                     </Link>
                   </div>
-                  <div className="h-0.5 w-12 bg-[var(--color-brand-primary)]/10" />
+                  
+                  <div className="flex flex-col gap-1 items-center">
+                    <div className="text-[9px] font-heading tracking-[0.4em] font-black text-black/20 uppercase">
+                      HYDERABAD EST. 2014
+                    </div>
+                    <div className="h-0.5 w-12 bg-[var(--color-brand-primary)]/10" />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </Portal>
     </>
   );
 }
