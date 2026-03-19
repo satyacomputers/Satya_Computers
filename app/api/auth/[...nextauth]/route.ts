@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import prisma, { libsql as client } from "@/lib/prisma";
 
-export const authOptions = {
+const authOptions = {
   debug: process.env.NODE_ENV === 'development',
   providers: [
     CredentialsProvider({
