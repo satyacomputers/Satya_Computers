@@ -3,7 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import prisma, { libsql as client } from "@/lib/prisma";
 
-const handler = NextAuth({
+export const authOptions = {
+  debug: process.env.NODE_ENV === 'development',
   providers: [
     CredentialsProvider({
       name: "Admin Login",
@@ -11,13 +12,11 @@ const handler = NextAuth({
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials: any) {
         if (!credentials?.username || !credentials?.password) {
-          console.log("Auth: Missing credentials");
           return null;
         }
 
-        // 1. Try to find admin in Database via Direct SQL
         try {
           const result = await client.execute({
             sql: 'SELECT id, username, password, role FROM "Admin" WHERE username = ?',
@@ -26,8 +25,6 @@ const handler = NextAuth({
 
           if (result.rows && result.rows.length > 0) {
             const dbAdmin = result.rows[0];
-            console.log("Auth: Found admin in DB via SQL");
-            
             const isValid = await compare(credentials.password, dbAdmin.password as string);
             if (isValid) {
               return { 
@@ -42,12 +39,9 @@ const handler = NextAuth({
           console.error("Auth DB Error:", dbError);
         }
 
-        // 2. Fallback to .env for legacy support
-        const adminUser = process.env.ADMIN_USERNAME;
-        const adminHash = process.env.ADMIN_PASSWORD_HASH;
-
-        if (credentials.username === adminUser) {
-          const isValid = await compare(credentials.password, adminHash || "");
+        // Fallback to .env
+        if (credentials.username === process.env.ADMIN_USERNAME) {
+          const isValid = await compare(credentials.password, process.env.ADMIN_PASSWORD_HASH || "");
           if (isValid) {
             return { 
               id: "1", 
@@ -66,29 +60,27 @@ const handler = NextAuth({
     signIn: "/admin/login",
   },
   session: {
-    strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours as per plan
+    strategy: "jwt" as const,
+    maxAge: 24 * 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
-        // @ts-ignore
         token.role = user.role;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
-        // @ts-ignore
         session.user.id = token.id;
-        // @ts-ignore
         session.user.role = token.role;
       }
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

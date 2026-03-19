@@ -1,34 +1,33 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-require("dotenv").config();
+const dotenv = require("dotenv");
+const path = require("path");
 
-async function test() {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    console.error("GEMINI_API_KEY is missing in .env");
-    return;
-  }
+// Load .env from project root
+dotenv.config({ path: "d:/Satya_Computers/.env" });
 
-  console.log("Using API Key:", apiKey.substring(0, 10) + "...");
-
-  try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    
-    console.log("Attempting to generate content...");
-    const result = await model.generateContent("Hello, are you there?");
-    const response = await result.response;
-    const text = response.text();
-    console.log("Success! Response:", text);
-  } catch (error) {
-    console.error("Gemini API Test Failed:");
-    console.error("Message:", error.message);
-    if (error.response) {
-      console.error("Status:", error.status);
-      console.error("Details:", JSON.stringify(error.errorDetails, null, 2));
-    } else {
-      console.error("Full Error:", error);
+async function testGemini() {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        console.error("No GEMINI_API_KEY found in .env");
+        process.exit(1);
     }
-  }
+    console.log("Testing with API Key: " + apiKey.substring(0, 8) + "...");
+
+    const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro", "gemini-2.0-flash"];
+
+    for (const modelName of modelsToTry) {
+        console.log(`\n--- Trying model: ${modelName} ---`);
+        try {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: modelName });
+            const result = await model.generateContent("Hello?");
+            const response = await result.response;
+            console.log(`SUCCESS with ${modelName}! Bot says: ` + response.text());
+            return; // Exit if success
+        } catch (error) {
+            console.error(`ERROR with ${modelName}: Status ${error.status}`);
+        }
+    }
 }
 
-test();
+testGemini();

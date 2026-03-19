@@ -1,0 +1,285 @@
+
+--- GEMINI ERROR (2026-03-19T04:40:03.344Z) ---
+Status: 404
+Message: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent: [404 Not Found] models/gemini-1.5-flash-8b is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent: [404 Not Found] models/gemini-1.5-flash-8b is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async ChatSession.sendMessage (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:1231:9)
+    at async POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:113:24)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:42:37.343Z) ---
+Status: 404
+Message: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent: [404 Not Found] models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent: [404 Not Found] models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async ChatSession.sendMessage (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:1231:9)
+    at async POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:124:36)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:43:19.687Z) ---
+Status: undefined
+Message: [GoogleGenerativeAI Error]: First content should be with role 'user', got model
+Stack: Error: [GoogleGenerativeAI Error]: First content should be with role 'user', got model
+    at validateChatHistory (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:1073:19)
+    at new ChatSession (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:1170:13)
+    at GenerativeModel.startChat (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:1422:16)
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:121:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:47:58.780Z) ---
+Status: 404
+Message: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent: [404 Not Found] models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent: [404 Not Found] models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:455:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async makeRequest (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:424:9)
+    at async generateContent (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:888:22)
+    at async ChatSession.sendMessage (webpack-internal:///(rsc)/./node_modules/@google/generative-ai/dist/index.mjs:1231:9)
+    at async POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:127:36)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:48:34.399Z) ---
+Status: 400
+Message: Invalid JSON payload received. Unknown name "systemInstruction": Cannot find field.
+Stack: Error: Invalid JSON payload received. Unknown name "systemInstruction": Cannot find field.
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:48:44.155Z) ---
+Status: 400
+Message: Invalid JSON payload received. Unknown name "systemInstruction": Cannot find field.
+Stack: Error: Invalid JSON payload received. Unknown name "systemInstruction": Cannot find field.
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:49:14.245Z) ---
+Status: 400
+Message: API key expired. Please renew the API key.
+Stack: Error: API key expired. Please renew the API key.
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:51:01.258Z) ---
+Status: 404
+Message: models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Stack: Error: models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:51:43.986Z) ---
+Status: 404
+Message: models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Stack: Error: models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------
+
+--- GEMINI ERROR (2026-03-19T04:55:48.812Z) ---
+Status: 404
+Message: models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Stack: Error: models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async AppRouteRouteModule.do (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:38696)
+    at async AppRouteRouteModule.handle (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:5:45978)
+    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)
+    at async AppRouteRouteModule.handleResponse (D:\Satya_Computers\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js:1:195179)
+    at async handleResponse (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)
+    at async handler (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=D%3A%5CSatya_Computers%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=D%3A%5CSatya_Computers&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1422:9)
+    at async DevServer.renderPageComponent (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1474:24)
+    at async DevServer.renderToResponseImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1514:32)
+    at async DevServer.pipeImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:1025:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\Satya_Computers\node_modules\next\dist\server\next-server.js:393:17)
+    at async DevServer.handleRequestImpl (D:\Satya_Computers\node_modules\next\dist\server\base-server.js:916:17)
+    at async D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:400:20
+    at async Span.traceAsyncFn (D:\Satya_Computers\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\Satya_Computers\node_modules\next\dist\server\dev\next-dev-server.js:396:24)
+    at async invokeRender (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:437:24)
+    at async requestHandlerImpl (D:\Satya_Computers\node_modules\next\dist\server\lib\router-server.js:485:13)
+    at async Server.requestListener (D:\Satya_Computers\node_modules\next\dist\server\lib\start-server.js:226:13)
+-----------------------------------------------

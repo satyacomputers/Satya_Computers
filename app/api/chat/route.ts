@@ -1,7 +1,6 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, Content } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-// Initialize inside the handler to ensure fresh environment access in dev
 const SYSTEM_PROMPT = `
 You are an intelligent customer support assistant for Satya Computers, a trusted bulk laptop reseller based in Hyderabad, India.
 
@@ -75,78 +74,107 @@ A: Yes, GST invoices are provided for all orders.
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    const lastMessage = messages[messages.length - 1].content;
+    
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ text: "No messages provided." }, { status: 400 });
+    }
 
     if (!process.env.GEMINI_API_KEY) {
+      console.error("DEBUG: GEMINI_API_KEY is TOTALLY MISSING from process.env");
       throw new Error("GEMINI_API_KEY is missing. Check your .env file.");
+    } else {
+      console.log(`DEBUG: Using Gemini API Key starting with: ${process.env.GEMINI_API_KEY.substring(0, 8)}...`);
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // gemini-2.0-flash-lite has higher free-tier rate limits
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+    const API_KEY = process.env.GEMINI_API_KEY;
+    
+    // Convert history to REST API format
+    const contents = messages.map((m: any) => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content }]
+    }));
 
-    // Construct the context with the system prompt and conversation history
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: SYSTEM_PROMPT + "\n\nUnderstood. I will act as the Satya Computers Support Assistant." }],
+    // REST API call to v1beta (Required for systemInstruction)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: contents,
+        systemInstruction: {
+          parts: [{ text: SYSTEM_PROMPT }]
         },
-        {
-          role: "model",
-          parts: [{ text: "Perfect. I am ready to assist customers with information about Satya Computers." }],
-        },
-      ],
+        generationConfig: {
+          maxOutputTokens: 1000,
+          temperature: 0.7
+        }
+      })
     });
 
-    const result = await chat.sendMessage(lastMessage);
-    const response = await result.response;
-    const text = response.text();
-
-    return NextResponse.json({ text });
-  } catch (error) {
-    console.error("Gemini API Error Detail:", error);
-
-    // Default friendly message
-    let friendlyMsg = "I'm having a little trouble connecting right now. Please try again in a moment, or contact us via WhatsApp for immediate help!";
-
-    if (error instanceof Error) {
-      const msg = error.message.toLowerCase();
-
-      if (
-        msg.includes("quota") ||
-        msg.includes("too many requests") ||
-        msg.includes("429") ||
-        msg.includes("resource_exhausted")
-      ) {
-        friendlyMsg =
-          "I'm a bit busy right now and couldn't process your request. Please wait a moment and try again. 🙏\n\nFor urgent queries, reach us via WhatsApp or the Contact page!";
-      } else if (
-        msg.includes("api key") ||
-        msg.includes("api_key") ||
-        msg.includes("invalid key") ||
-        msg.includes("401") ||
-        msg.includes("403")
-      ) {
-        friendlyMsg =
-          "I'm currently unable to connect to my AI backend. Please contact us directly via WhatsApp or the Contact page and our team will assist you!";
-      } else if (msg.includes("not found") || msg.includes("404")) {
-        friendlyMsg =
-          "My AI system is temporarily unavailable. Please try again later or contact us via WhatsApp for immediate assistance!";
-      } else if (
-        msg.includes("network") ||
-        msg.includes("fetch") ||
-        msg.includes("timeout")
-      ) {
-        friendlyMsg =
-          "I'm having trouble with the network connection. Please check your internet connection and try again.";
-      } else if (!process.env.GEMINI_API_KEY) {
-        friendlyMsg =
-          "I'm currently offline. Please contact us via WhatsApp or the Contact page for assistance!";
-      }
+    if (!response.ok) {
+        const errorDetail = await response.json();
+        const err = new Error(errorDetail?.error?.message || "API Error");
+        // @ts-ignore
+        err.status = response.status;
+        throw err;
     }
 
-    // Always return 200 with a friendly message — never expose raw errors to users
+    const data = await response.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+        throw new Error("Empty response from AI engine.");
+    }
+
+    return NextResponse.json({ text });
+  } catch (error: any) {
+    // CRITICAL: Log the full error to a file for persistent diagnostics
+    const errorData = `
+--- GEMINI ERROR (${new Date().toISOString()}) ---
+Status: ${error?.status}
+Message: ${error?.message}
+Stack: ${error?.stack}
+-----------------------------------------------
+`;
+    try {
+      require('fs').appendFileSync('gemini_error.txt', errorData);
+    } catch (e) {}
+
+    console.error("--- GEMINI ERROR DETECTED ---");
+    console.error("Status:", error?.status);
+    console.error("Message:", error?.message);
+
+    let friendlyMsg = "I'm having a little trouble connecting right now. Please try again in a moment.";
+
+    const msg = error?.message?.toLowerCase() || "";
+    const status = error?.status;
+
+    if (
+      msg.includes("quota") ||
+      msg.includes("too many requests") ||
+      msg.includes("429") ||
+      msg.includes("resource_exhausted") ||
+      status === 429
+    ) {
+      friendlyMsg =
+        "Service is slightly overloaded. Please wait a few seconds and try again. 🙏";
+    } else if (
+      msg.includes("api key") ||
+      msg.includes("invalid key") ||
+      status === 401 ||
+      status === 403
+    ) {
+      friendlyMsg =
+        "AI authentication issues. Please check the GEMINI_API_KEY in .env.";
+    } else if (msg.includes("not found") || status === 404) {
+      friendlyMsg =
+        "Model not found. Try a different model like gemini-1.5-flash.";
+    } else if (status === 400) {
+      friendlyMsg =
+        "I couldn't process this request (400 Bad Request). This might be due to safety filters or malformed input.";
+    }
+
     return NextResponse.json({ text: friendlyMsg }, { status: 200 });
   }
 }

@@ -5,13 +5,23 @@ import { createClient } from '@libsql/client';
 const url = process.env.DATABASE_URL;
 const authToken = process.env.DATABASE_AUTH_TOKEN;
 
-const libsql = createClient({
-  url: url!,
+// Create singleton instances to prevent multiple connections in dev
+const globalForPrisma = global as unknown as { 
+  prisma: PrismaClient | undefined,
+  libsql: any | undefined
+};
+
+export const libsql = globalForPrisma.libsql || createClient({
+  url: url || "", // Fallback to empty string, though we expect it from .env
   authToken: authToken,
 });
 
 const adapter = new PrismaLibSql(libsql as any);
-const prisma = new PrismaClient({ adapter });
+export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
 
-export { libsql };
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+  globalForPrisma.libsql = libsql;
+}
+
 export default prisma;

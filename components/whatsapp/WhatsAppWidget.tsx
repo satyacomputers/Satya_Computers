@@ -112,13 +112,22 @@ export default function WhatsAppWidget() {
                   </div>
                 </div>
               </div>
-              <button 
-                onClick={() => setOpen(false)}
-                className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors"
-                aria-label="Close chat"
-              >
-                <X size={20} />
-              </button>
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={() => resetChat()}
+                  className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors"
+                  title="Refresh Conversation"
+                >
+                  <RotateCcw size={18} />
+                </button>
+                <button 
+                  onClick={() => setOpen(false)}
+                  className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors"
+                  aria-label="Close chat"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Messages */}
