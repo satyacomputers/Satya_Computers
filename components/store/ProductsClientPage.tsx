@@ -352,7 +352,6 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
         <aside className={`w-full md:w-72 flex-shrink-0 ${mobileFiltersOpen ? 'block mb-8' : 'hidden md:block'}`}>
           <div 
             className="sticky-configurator bg-white border-2 border-black p-6 shadow-[8px_8px_0_rgba(0,0,0,0.05)] space-y-10 group/sidebar transition-shadow hover:shadow-[12px_12px_0_rgba(0,0,0,0.08)] overflow-y-auto custom-scrollbar z-30"
-            style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             
             <div className="flex items-center justify-between border-b pb-4">

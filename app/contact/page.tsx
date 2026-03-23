@@ -78,9 +78,10 @@ export default function ContactPage() {
               </div>
               <div className="h-[2px] w-8 bg-[var(--color-brand-accent)] mb-4 group-hover:w-full transition-all duration-500 ease-out" />
               <a
-                href="https://www.google.com/maps/dir/17.481728,78.3941632/Satya+computers+%5Blaptop+service+center%5D,+135%2FA+shop+No;+1+Mithra+hills,+Nizampet+Rd,+Hyder+Nagar,+Hyderabad,+Telangana+500085/@17.4934742,78.3760015,15z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x3bcb93e1bf18eaf9:0xf52308426cc0932f!2m2!1d78.3780054!2d17.5063019?entry=ttu&g_ep=EgoyMDI2MDMxNS4wIKXMDSoASAFQAw%3D%3D"
+                href="https://www.google.com/maps/place/Satya+Computers/@17.4381008,78.4449618,17z/data=!4m14!1m7!3m6!1s0x4f64ae8bda9f24bd:0xa4712061712e6176!2sSatya+Computers!8m2!3d17.4381008!4d78.4449618!16s%2Fg%2F11y2bprzd0!3m5!1s0x4f64ae8bda9f24bd:0xa4712061712e6176!8m2!3d17.4381008!4d78.4449618!16s%2Fg%2F11y2bprzd0?entry=ttu&g_ep=EgoyMDI2MDMxOC4xIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
+                title="Get directions to Satya Computers on Google Maps"
                 id="contact-maps-link"
                 className="block no-underline"
               >

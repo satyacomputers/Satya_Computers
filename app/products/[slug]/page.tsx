@@ -33,7 +33,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           brand: row.brand,
           price: row.price,
           originalPrice: row.price * 1.2,
-          image: row.image || '/products/dell_laptop_premium.png',
+          image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http'))) 
+            ? row.image 
+            : (row.image ? `/uploads/${row.image}` : '/products/dell_laptop_premium.png'),
           description: row.description || 'Professional workstation optimized for enterprise performance.',
           badge: row.isFeatured ? 'HOT' : undefined,
           specs: {

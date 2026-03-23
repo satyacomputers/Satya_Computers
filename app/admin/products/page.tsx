@@ -169,7 +169,7 @@ export default function ProductManager() {
                           <div className="w-20 h-20 rounded-[2rem] bg-white border border-gray-100 flex items-center justify-center text-gray-400 overflow-hidden relative shadow-xl shadow-orange-950/5 p-1">
                             {product.image ? (
                               <img 
-                                src={product.image.startsWith('/') ? product.image : `/uploads/${product.image}`} 
+                                src={product.image.startsWith('/') || product.image.startsWith('http') ? product.image : `/uploads/${product.image}`} 
                                 alt={product.name} 
                                 className="w-full h-full object-cover rounded-[1.8rem] group-hover:scale-110 transition-transform duration-700" 
                               />

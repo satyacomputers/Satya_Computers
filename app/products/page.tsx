@@ -21,7 +21,9 @@ export default async function ProductsPage() {
       category: row.category,
       price: row.price,
       originalPrice: row.price * 1.2, // Mock original price
-      image: row.image || '/products/dell_laptop_premium.png',
+      image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http'))) 
+        ? row.image 
+        : (row.image ? `/uploads/${row.image}` : '/products/dell_laptop_premium.png'),
       description: row.description || 'Professional workstation optimized for enterprise performance.',
       badge: row.isFeatured ? 'NEW' : undefined,
       specs: {
@@ -35,8 +37,15 @@ export default async function ProductsPage() {
     console.error('Failed to fetch DB products:', error);
   }
 
-  // 3. Merge products (avoid duplicates)
-  const allProducts = [...dbProducts, ...staticProducts];
+  // 3. Merge products (avoid duplicates by ID)
+  const productMap = new Map<string, Product>();
+  dbProducts.forEach((p: Product) => productMap.set(p.id, p));
+  staticProducts.forEach((p: Product) => {
+    if (!productMap.has(p.id)) {
+      productMap.set(p.id, p);
+    }
+  });
+  const allProducts = Array.from(productMap.values());
 
   return (
     <main className="min-h-screen bg-white relative">

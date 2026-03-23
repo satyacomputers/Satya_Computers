@@ -268,3 +268,9 @@ input[type="range"]::-moz-range-thumb {
 .perspective-1000 {
   perspective: 1000px;
 }
+
+.sticky-configurator {
+  position: sticky;
+  top: 120px;
+  max-height: calc(100vh - 200px);
+}

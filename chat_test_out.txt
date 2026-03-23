@@ -1,0 +1,55 @@
+
+QUERY: "Show me Dell laptops"
+STATUS: 200
+PRODUCTS(6): BASIC MODEL (Dell/Lenovo) [1], DELL & LENOVO & HP [2], DELL LATITUDE 3400 [4], DELL LATITUDE 7480 [5], DELL LATITUDE 7490 [6], DELL LATITUDE 7400 [7]
+TEXT: Here are the Dell laptops we have in stock:
+
+• **BASIC MODEL (Dell/Lenovo)** (Dell) — i5, 8GB RAM, 256GB SSD — ₹6,999
+• **DELL & LENOVO & HP** (Dell) — i5 3rd, 8GB RAM, 256GB SSD — ₹7,999
+• **DELL LATITUDE 3400** (Dell) — i5 8th, 8GB RAM, 256GB SSD — ₹17,000
+• **DELL LATITUDE 7480** (Dell) — i5 7th,
+---
+
+QUERY: "What laptops are available?"
+STATUS: 200
+PRODUCTS(6): BASIC MODEL (Dell/Lenovo) [1], DELL & LENOVO & HP [2], LENOVO THINKPAD [3], LENOVO THINKPAD T570 [14], DELL LATITUDE 3400 [4], DELL LATITUDE 7480 [5]
+TEXT: Here are the laptops we have in stock:
+
+• **BASIC MODEL (Dell/Lenovo)** (Dell) — i5, 8GB RAM, 256GB SSD — ₹6,999
+• **DELL & LENOVO & HP** (Dell) — i5 3rd, 8GB RAM, 256GB SSD — ₹7,999
+• **LENOVO THINKPAD** (Lenovo) — i5 4th, 8GB RAM, 256GB SSD — ₹10,499
+• **LENOVO THINKPAD T570** (Lenovo) — i5 6th, 8
+---
+
+QUERY: "HP laptops under 20000"
+STATUS: 200
+PRODUCTS(2): HP PROBOOK 430 G3 [26], HP ELITEBOOK 640 G5 [27]
+TEXT: Here are the HP laptops under ₹20,000 we have in stock:
+
+• **HP PROBOOK 430 G3** (HP) — i5 8th, 8GB RAM, 256GB SSD — ₹19,000
+• **HP ELITEBOOK 640 G5** (HP) — i5 8th, 8GB RAM, 256GB SSD — ₹19,000
+
+For bulk pricing or more info, WhatsApp us at +91 9640272323!
+---
+
+QUERY: "Lenovo ThinkPad"
+STATUS: 200
+PRODUCTS(6): LENOVO THINKPAD [3], LENOVO THINKPAD T570 [14], LENOVO THINKPAD L380 YOGA [16], LENOVO THINKPAD T480 [15], LENOVO THINKPAD X280 [18], LENOVO THINKPAD L13 [17]
+TEXT: Here are the Lenovo laptops we have in stock:
+
+• **LENOVO THINKPAD** (Lenovo) — i5 4th, 8GB RAM, 256GB SSD — ₹10,499
+• **LENOVO THINKPAD T570** (Lenovo) — i5 6th, 8GB RAM, 256GB SSD — ₹15,000
+• **LENOVO THINKPAD L380 YOGA** (Lenovo) — i5 8th, 8GB RAM, 256GB SSD — ₹20,000
+• **LENOVO THINKPAD T480** (
+---
+
+QUERY: "Apple MacBook"
+STATUS: 200
+PRODUCTS(6): MACBOOK PRO A1990 (4GB Graphics) [28], MACBOOK PRO A2551 [30], MACBOOK AIR A2337 (2020) [32], MACBOOK PRO A2141 (4GB Graphics) [29], MACBOOK PRO A2338 [33], MACBOOK PRO A2485 (2021) [31]
+TEXT: Here are the Apple laptops we have in stock:
+
+• **MACBOOK PRO A1990 (4GB Graphics)** (Apple) — i7, 16GB RAM, 256GB SSD — ₹36,000
+• **MACBOOK PRO A2551** (Apple) — i5, 16GB RAM, 512GB SSD — ₹38,000
+• **MACBOOK AIR A2337 (2020)** (Apple) — M1, 16GB RAM, 256GB SSD — ₹40,000
+• **MACBOOK PRO A2141 (4GB G
+---

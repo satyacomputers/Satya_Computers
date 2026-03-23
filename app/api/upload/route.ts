@@ -35,11 +35,17 @@ export async function POST(req: Request) {
         const filePath = join(uploadDir, name);
         await writeFile(filePath, buffer);
     } catch (fsError: any) {
-        console.error("FILESYSTEM REJECTION:", fsError.message);
+        // HEAL PROTOCOL: Serverless Environment Detected (e.g. Netlify/Vercel)
+        // Reverting to Base64 Embedded Asset Protocol to ensure persistence in Database
+        const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
+        
         return NextResponse.json({ 
-            error: "Persistent storage rejection (Netlify/Serverless limitation). Asset frame cannot be saved to disk. Use an external URL instead.",
-            detail: fsError.message
-        }, { status: 500 });
+          success: true, 
+          url: base64,
+          name: name,
+          isEmbedded: true,
+          notice: "Serverless disk rejection: Asset has been converted to an embedded Data URL for database persistence."
+        });
     }
 
     return NextResponse.json({ 

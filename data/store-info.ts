@@ -4,7 +4,7 @@ export const storeInfo = {
   mission: "To provide reliable and affordable computing solutions to students, professionals, and tech enthusiasts.",
   expertise: "Specializes in laptops from leading brands with competitive pricing and exceptional customer service.",
   location: "Located in the heart of the tech hub, Ameerpet, Hyderabad.",
-  address: "27, Satyam Theatre Rd, Kumar Basti, Srinivasa Nagar, Ameerpet, Hyderabad, Telangana 500018, India.",
+  address: "27, Satyam Theatre Rd, Kumar Basti, Srinivasa Nagar, Ameerpet, Hyderabad, Telangana 500016, India.",
   phone: "9640272323",
   whatsapp: "919640272323",
   email: "info@satyacomputers.in",
