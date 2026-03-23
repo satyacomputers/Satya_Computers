@@ -1,75 +1,93 @@
-import { GoogleGenerativeAI, Content } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import prisma, { libsql as client } from "@/lib/prisma";
+import { storeInfo } from "@/data/store-info";
 
-const SYSTEM_PROMPT = `
-You are an intelligent customer support assistant for Satya Computers, a trusted bulk laptop reseller based in Hyderabad, India.
+// FETCH CONTEXT DATA (Terms, Policies, Store Info)
+const POLICIES_CONTEXT = `
+TERMS & POLICIES SUMMARY:
+- PRIVACY: Committed to safeguarding personal info. Consent to collection/use as per Privacy Policy.
+- ACCOUNTS: Must be 18+. Responsible for credentials. Notify immediately for unauthorized access.
+- PRODUCTS: Accuracy aimed for, but descriptions/images not guaranteed always error-free. Right to correct inaccuracies without notice.
+- USE: Products for personal/professional use only; NO RESALE for commercial purposes.
+- PRICING: Right to cancel orders for pricing errors. Refunds provided. Prices/Availability subject to change.
 
-ABOUT SATYA COMPUTERS:
-- Specialized in bulk laptop supply to IT companies, corporates, and businesses
-- Based in Hyderabad, Telangana, India
-- Known for competitive bulk pricing and reliable stock availability
-- Serving clients across India with enterprise-grade hardware solutions
-
-YOUR ROLE:
-- Answer ONLY questions related to Satya Computers, its products, services, pricing, and policies
-- Be professional, friendly, and concise
-- If a question is outside Satya Computers' scope, politely say: "I can only assist with Satya Computers related queries. Please contact us directly for other questions."
-- Never make up prices, specifications, or policies that are not provided
-- Always encourage the customer to place an order or contact the team for custom requirements
-
-PRODUCTS WE OFFER:
-- Laptops from brands: Dell, HP, Lenovo, Asus, Acer, Apple, Microsoft
-- Categories: Business Laptops, Gaming Laptops, Student Laptops, Workstations
-- All laptops come with valid warranty
-- Stock availability: updated regularly
-
-BULK PRICING TIERS:
-- 1–4 units: Standard retail price
-- 5–10 units: Bulk Tier 1 — discounted price
-- 11–25 units: Bulk Tier 2 — better discount
-- 26+ units: Bulk Tier 3 — best pricing, contact sales team directly
-
-ORDERING PROCESS:
-1. Browse products on the website
-2. Select quantity and submit an order inquiry form
-3. Our team reviews and sends a custom quotation within 24 hours
-4. Payment and delivery terms are confirmed
-5. Delivery arranged across India
-
-PAYMENT & DELIVERY:
-- Payment modes: Bank Transfer, UPI, Cheque for bulk orders
-- Delivery: Pan India shipping available
-- Lead time: 3–7 business days depending on order size and location
-
-WARRANTY & SUPPORT:
-- All products carry manufacturer warranty
-- On-site support available for large orders in Hyderabad
-- Post-sale support provided for bulk clients
-
-CONTACT:
-- Location: Hyderabad, Telangana, India
-- Inquiries: via website contact form or WhatsApp
-- Response time: within 24 business hours
-
-FREQUENTLY ASKED QUESTIONS:
-Q: What is the minimum order quantity?
-A: Minimum order is 1 unit, but bulk pricing starts from 5 units.
-
-Q: Do you offer EMI or credit terms?
-A: Credit terms are available for verified corporate clients. Contact our sales team.
-
-Q: Can we get a custom configuration?
-A: Yes, we can source laptops with custom RAM, storage, and OS configurations for bulk orders.
-
-Q: Do you supply outside Hyderabad?
-A: Yes, we deliver Pan India.
-
-Q: Can we inspect before buying?
-A: Yes, clients in Hyderabad can visit for physical inspection. Contact us to schedule.
-
-Q: Do you provide GST invoice?
-A: Yes, GST invoices are provided for all orders.
+STORE DETAILS:
+- Name: ${storeInfo.name}
+- Email: ${storeInfo.email}
+- Phone: +91 ${storeInfo.phone}
+- WhatsApp: +91 ${storeInfo.phone}
+- Address: ${storeInfo.address}
+- Mission: ${storeInfo.mission}
+- Services: ${storeInfo.services.join(", ")}
 `;
+
+async function getSystemPrompt() {
+  // Fetch products from database
+  let productsSummary = "";
+  
+  // 1. Read from CSV (Source of Truth)
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const csvPath = path.join(process.cwd(), 'public', 'products', 'products.csv');
+    if (fs.existsSync(csvPath)) {
+      const csvData = fs.readFileSync(csvPath, 'utf8');
+      const lines = csvData.split('\n').filter((line: string) => line.trim() !== '');
+      const csvProducts = lines.slice(1).map((line: string, index: number) => {
+        const parts = line.split(',');
+        if (parts.length < 8) return null;
+        const id = parts[0].trim(); // Using S.No from CSV as ID
+        return `- [PRODUCT_ID:${id}] ${parts[1]} (${parts[2]}): ${parts[3]} RAM, ${parts[4]} Storage, ₹${parts[7].trim()}.`;
+      }).filter(Boolean).join('\n');
+      
+      if (csvProducts) {
+        productsSummary += "OFFICIAL WEBSITE STOCK (USE THESE IDs):\n" + csvProducts + "\n\n";
+      }
+    }
+  } catch (err) {
+    console.error("Error reading products.csv:", err);
+  }
+
+  // 2. Database Sync
+  try {
+    const dbProducts = await prisma.product.findMany({
+        take: 30, 
+        orderBy: { updatedAt: 'desc' }
+    });
+    
+    if (dbProducts.length > 0) {
+      productsSummary += "LIVE INVENTORY (DB):\n" + dbProducts.map(p => 
+        `- [PRODUCT_ID:${p.id}] ${p.name} (${p.brand}): ${p.processor}, ₹${p.price}.`
+      ).join("\n");
+    }
+  } catch (error) {
+    console.error("Error fetching products from DB for chat:", error);
+  }
+
+  if (!productsSummary) {
+    productsSummary = "General business IT services. Contact sales for availability.";
+  }
+
+  return `
+You are the Official AI Sales Assistant for ${storeInfo.name}. 
+
+${POLICIES_CONTEXT}
+
+AVAILABLE PRODUCTS:
+${productsSummary}
+
+CRITICAL INSTRUCTIONS:
+1. TAGGING: For EVERY product you mention or recommend, you MUST append its ID in brackets at the end of the sentence like this: [PX:id] 
+   - Use PX followed by the PRODUCT_ID from the list above. Example: "The HP EliteBook [PX:24] is perfect for you."
+2. ACCURACY: Only recommend products from the list above. If a user asks for Dell, list the Dell models and their IDs.
+3. CONCISENESS: No need to list all specs if you mention IDs; the system will show rich cards.
+4. OUT OF SCOPE: Decline off-topic questions.
+
+RESPONSE FORMAT:
+- Focus on professional advice.
+- Always include the [PX:id] tags so the user sees interactive product cards.
+`;
+}
 
 export async function POST(req: Request) {
   try {
@@ -79,14 +97,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ text: "No messages provided." }, { status: 400 });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("DEBUG: GEMINI_API_KEY is TOTALLY MISSING from process.env");
-      throw new Error("GEMINI_API_KEY is missing. Check your .env file.");
-    } else {
-      console.log(`DEBUG: Using Gemini API Key starting with: ${process.env.GEMINI_API_KEY.substring(0, 8)}...`);
+    const API_KEY = process.env.GEMINI_API_KEY;
+    if (!API_KEY) {
+      throw new Error("GEMINI_API_KEY is missing in environment variables.");
     }
 
-    const API_KEY = process.env.GEMINI_API_KEY;
+    const systemPrompt = await getSystemPrompt();
     
     // Convert history to REST API format
     const contents = messages.map((m: any) => ({
@@ -94,87 +110,136 @@ export async function POST(req: Request) {
       parts: [{ text: m.content }]
     }));
 
-    // REST API call to v1beta (Required for systemInstruction)
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-    
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: contents,
-        systemInstruction: {
-          parts: [{ text: SYSTEM_PROMPT }]
-        },
-        generationConfig: {
-          maxOutputTokens: 1000,
-          temperature: 0.7
+    // HYBRID FALLBACK STRATEGY: 
+    // 1. Try Gemini 2.5 Flash (User has 5 RPM quota)
+    // 2. Try Gemini 1.5 Flash (Standard fallback)
+    // 3. Try Gemini 2.0 Flash 
+    // 4. If still fails, use a "Smart Static Fallback" based on context.
+
+    const MODELS = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash"];
+    let lastError: any = null;
+    let finalOutput = "";
+
+    for (const modelName of MODELS) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: contents,
+            systemInstruction: {
+              parts: [{ text: systemPrompt }]
+            },
+            generationConfig: {
+              maxOutputTokens: 2048,
+              temperature: 0.1,
+              topP: 0.95,
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          finalOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          if (finalOutput) break; // Success!
+        } else {
+          lastError = await response.json();
+          console.warn(`Model ${modelName} failed with status ${response.status}. Trying next...`);
+          // Continue loop to next model if it's a rate limit or "not found"
+          if (response.status !== 429 && response.status !== 404 && response.status !== 503) {
+            break; // Stop for other fatal errors (like 400 Bad Request)
+          }
         }
-      })
-    });
-
-    if (!response.ok) {
-        const errorDetail = await response.json();
-        const err = new Error(errorDetail?.error?.message || "API Error");
-        // @ts-ignore
-        err.status = response.status;
-        throw err;
+      } catch (err) {
+        lastError = err;
+        console.error(`Fetch error with ${modelName}:`, err);
+      }
     }
 
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (finalOutput) {
+       // --- DYNAMIC PRODUCT RESOLUTION ---
+       const productMatches = finalOutput.match(/\[PX:([^\]]+)\]/g) || [];
+       const productIds = Array.from(new Set(productMatches.map(m => m.replace('[PX:', '').replace(']', ''))));
+       
+       let resolvedProducts: any[] = [];
+       
+       if (productIds.length > 0) {
+         try {
+           // 1. Fetch from DB
+           const result = await client.execute({
+             sql: 'SELECT * FROM "Product" WHERE id IN ('+ productIds.map(() => '?').join(',') +')',
+             args: productIds
+           });
+           
+           resolvedProducts = result.rows.map((p: any) => ({
+             id: p.id,
+             name: p.name,
+             price: `₹${Number(p.price).toLocaleString()}`,
+             image: p.image || '/products/dell_laptop_premium.png',
+             link: `/products/${p.id}`
+           }));
 
-    if (!text) {
-        throw new Error("Empty response from AI engine.");
+           // 2. Supplement from CSV if some are missing
+           if (resolvedProducts.length < productIds.length) {
+               const fs = require('fs');
+               const path = require('path');
+               const csvPath = path.join(process.cwd(), 'public', 'products', 'products.csv');
+               if (fs.existsSync(csvPath)) {
+                   const csvData = fs.readFileSync(csvPath, 'utf8');
+                   const lines = csvData.split('\n').filter((l: string) => l.trim() !== '');
+                   productIds.forEach(id => {
+                       const row = lines.find((l: string) => l.startsWith(id + ','));
+                       if (row && !resolvedProducts.find(rp => rp.id === id)) {
+                           const parts = row.split(',');
+                           resolvedProducts.push({
+                               id: id,
+                               name: parts[1],
+                               price: `₹${parts[7].trim()}`,
+                               shortSpecs: parts[2],
+                               image: '/products/dell_laptop_premium.png',
+                               link: `/products/${id}`
+                           });
+                       }
+                   });
+               }
+           }
+         } catch (err) {
+           console.error("Error resolving products for chat:", err);
+         }
+       }
+
+       return NextResponse.json({ 
+         text: finalOutput.replace(/\[PX:[^\]]+\]/g, '').trim(), 
+         products: resolvedProducts 
+       });
     }
 
-    return NextResponse.json({ text });
-  } catch (error: any) {
-    // CRITICAL: Log the full error to a file for persistent diagnostics
-    const errorData = `
---- GEMINI ERROR (${new Date().toISOString()}) ---
-Status: ${error?.status}
-Message: ${error?.message}
-Stack: ${error?.stack}
------------------------------------------------
+    // STATIC FALLBACK: If all AI models fail, provide a smart information-rich response.
+    // This uses the current system prompt context to build a manual response.
+    const staticMessage = `
+I'm currently moving through some technical traffic, but I can still help you! 
+
+I'm the AI Sales Assistant for **${storeInfo.name}**. 
+We specialize in bulk laptops (Dell, HP, Lenovo, Asus, Apple) for businesses and individuals across India.
+
+**Quick Info for you:**
+- **Location:** ${storeInfo.address}
+- **Bulk Inquiry:** You can WhatsApp us at +91 ${storeInfo.phone} for the best pricing on 10+ units.
+- **Inventory:** We have a wide range of Workstations and Business Laptops in stock.
+- **Shipping:** Pan-India delivery available within 3-7 days.
+
+Is there a specific model (like an HP EliteBook or Dell Latitude) you're looking for? Feel free to contact us at **${storeInfo.email}** or call **+91 ${storeInfo.phone}** for an immediate quote!
 `;
-    try {
-      require('fs').appendFileSync('gemini_error.txt', errorData);
-    } catch (e) {}
 
-    console.error("--- GEMINI ERROR DETECTED ---");
-    console.error("Status:", error?.status);
-    console.error("Message:", error?.message);
+    return NextResponse.json({ text: staticMessage.trim() });
 
-    let friendlyMsg = "I'm having a little trouble connecting right now. Please try again in a moment.";
-
-    const msg = error?.message?.toLowerCase() || "";
-    const status = error?.status;
-
-    if (
-      msg.includes("quota") ||
-      msg.includes("too many requests") ||
-      msg.includes("429") ||
-      msg.includes("resource_exhausted") ||
-      status === 429
-    ) {
-      friendlyMsg =
-        "Service is slightly overloaded. Please wait a few seconds and try again. 🙏";
-    } else if (
-      msg.includes("api key") ||
-      msg.includes("invalid key") ||
-      status === 401 ||
-      status === 403
-    ) {
-      friendlyMsg =
-        "AI authentication issues. Please check the GEMINI_API_KEY in .env.";
-    } else if (msg.includes("not found") || status === 404) {
-      friendlyMsg =
-        "Model not found. Try a different model like gemini-1.5-flash.";
-    } else if (status === 400) {
-      friendlyMsg =
-        "I couldn't process this request (400 Bad Request). This might be due to safety filters or malformed input.";
-    }
-
-    return NextResponse.json({ text: friendlyMsg }, { status: 200 });
+  } catch (error: any) {
+    console.error("Critical Chat API Error:", error);
+    return NextResponse.json({ 
+        text: "I'm having a little trouble connecting to my brain right now. Please reach out to our team at " + storeInfo.email + " or call +91 " + storeInfo.phone + " for immediate assistance! 🙏" 
+    }, { status: 200 });
   }
 }
+
+

@@ -15,6 +15,7 @@ type Message = {
   role: 'user' | 'bot';
   content: string;
   time: string;
+  products?: any[]; // Dynamic products from bot
 };
 
 const INITIAL_MESSAGE: Message = {
@@ -75,7 +76,8 @@ export default function WhatsAppWidget() {
         id: (Date.now() + 1).toString(),
         role: 'bot',
         content: data.text || "I'm sorry, I'm having trouble connecting right now. Please try again or contact us via WhatsApp.",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        products: data.products || [] // <-- Add this
       };
 
       setMessages(prev => [...prev, botMsg]);
@@ -85,6 +87,12 @@ export default function WhatsAppWidget() {
       setIsTyping(false);
     }
   };
+
+  function resetChat() {
+    setMessages([INITIAL_MESSAGE]);
+    setInput('');
+    setIsTyping(false);
+  }
 
   if (!mounted) return null;
 
@@ -96,7 +104,7 @@ export default function WhatsAppWidget() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="w-[90vw] sm:w-[380px] h-[550px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-black/5 flex flex-col overflow-hidden pointer-events-auto"
+            className="w-[90vw] sm:w-[380px] h-[600px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-black/5 flex flex-col overflow-hidden pointer-events-auto"
           >
             {/* Header */}
             <div className="bg-black text-white p-6 flex items-center justify-between">
@@ -118,7 +126,7 @@ export default function WhatsAppWidget() {
                   className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors"
                   title="Refresh Conversation"
                 >
-                  <RotateCcw size={18} />
+                   <RotateCcw size={18} />
                 </button>
                 <button 
                   onClick={() => setOpen(false)}
@@ -130,30 +138,58 @@ export default function WhatsAppWidget() {
               </div>
             </div>
 
-            {/* Messages */}
+            {/* Messages Area */}
             <div 
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50"
+              className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50"
             >
               {messages.map((m) => (
                 <div 
                   key={m.id}
                   className={cn(
-                    "flex flex-col max-w-[85%]",
+                    "flex flex-col max-w-[95%]",
                     m.role === 'user' ? "ml-auto items-end" : "items-start"
                   )}
                 >
+                  {/* Message Bubble */}
                   <div className={cn(
-                    "p-4 rounded-2xl text-xs leading-relaxed font-body shadow-sm whitespace-pre-wrap",
+                    "p-4 rounded-2xl text-[13px] leading-relaxed font-body shadow-sm whitespace-pre-wrap relative",
                     m.role === 'user' 
                       ? "bg-black text-white rounded-tr-none" 
                       : "bg-white text-black/80 border border-black/5 rounded-tl-none font-medium"
                   )}>
                     {m.content}
+
+                    {/* Bot-only Action Buttons */}
+                    {m.role === 'bot' && (
+                      <div className="mt-4 pt-4 border-t border-black/5 flex flex-wrap gap-2">
+                         <a 
+                           href={`https://wa.me/919640272323?text=Hi, I am interested in ${encodeURIComponent(m.content.substring(0, 50))}...`}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           title="Chat on WhatsApp"
+                           className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-600 transition-colors shadow-sm"
+                         >
+                           <MessageSquare size={12} /> WhatsApp
+                         </a>
+                         <a 
+                           href="tel:+919640272323"
+                           title="Call our Sales Team"
+                           className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-blue-700 transition-colors shadow-sm"
+                         >
+                           <MessageSquare size={12} className="rotate-90" /> Call Sales
+                         </a>
+                      </div>
+                    )}
                   </div>
-                  <span className="text-[9px] text-black/20 mt-1.5 font-bold uppercase tracking-widest">{m.time}</span>
+
+                  {/* Dynamic Product Micro-Cards */}
+                  {m.role === 'bot' && <ProductCards content={m.content} products={m.products} />}
+
+                  <span className="text-[9px] text-black/20 mt-1.5 font-bold uppercase tracking-widest px-2">{m.time}</span>
                 </div>
               ))}
+              
               {isTyping && (
                 <div className="flex items-center gap-2 text-black/20 p-2">
                   <div className="w-1 h-1 bg-current rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -181,7 +217,7 @@ export default function WhatsAppWidget() {
               </div>
             )}
 
-            {/* Input */}
+            {/* Input Form */}
             <div className="p-4 border-t border-black/5 bg-white pointer-events-auto">
               <form 
                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
@@ -206,14 +242,6 @@ export default function WhatsAppWidget() {
                   <Send size={18} />
                 </button>
               </form>
-              <div className="mt-3 text-center">
-                 <button 
-                   onClick={() => resetChat()}
-                   className="text-[9px] font-heading tracking-[0.2em] font-black text-black/20 hover:text-black transition-colors uppercase"
-                 >
-                   Reset Conversation
-                 </button>
-              </div>
             </div>
           </motion.div>
         )}
@@ -228,7 +256,6 @@ export default function WhatsAppWidget() {
         {open ? <X size={24} /> : <MessageSquare size={24} />}
       </button>
 
-      {/* Floating Tooltip */}
       {!open && (
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
@@ -242,10 +269,52 @@ export default function WhatsAppWidget() {
       )}
     </div>
   );
+}
 
-  function resetChat() {
-    setMessages([INITIAL_MESSAGE]);
-    setInput('');
-    setIsTyping(false);
-  }
+function ProductCards({ content, products }: { content: string, products?: any[] }) {
+  // Use API resolved products OR fallback to keyword search
+  const displayProducts = (products && products.length > 0) ? products : [];
+  
+  // If no products from API, we can still try to match common search terms if we want, 
+  // but better to rely on API now.
+
+  if (displayProducts.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-3 mt-3 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <p className="text-[9px] font-black uppercase text-black/30 tracking-[0.2em] px-2 flex items-center gap-2">
+        <span className="w-4 h-[1px] bg-black/10" /> Recommended Products
+      </p>
+      {displayProducts.map((p, idx) => (
+        <motion.div 
+          key={p.id + idx}
+          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ delay: idx * 0.1, type: 'spring', damping: 15 }}
+          className="bg-white border border-black/5 p-3 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-xl hover:border-black/15 transition-all duration-300 group overflow-hidden relative"
+        >
+           <div className="flex items-center gap-4 flex-1 min-w-0">
+             <div className="w-14 h-14 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-black/5 transition-transform group-hover:scale-110 duration-500 relative">
+                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+             </div>
+             <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-bold uppercase text-black leading-tight mb-1 group-hover:text-[var(--color-brand-primary)] transition-colors truncate">{p.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[10px] text-emerald-600 font-black tracking-tight">{p.price}</p>
+                  {p.shortSpecs && <span className="text-[9px] text-black/30 font-medium">· {p.shortSpecs}</span>}
+                </div>
+             </div>
+           </div>
+           <a 
+             href={p.link} 
+             title={`View ${p.name}`}
+             className="w-10 h-10 rounded-xl bg-gray-50 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all shadow-sm active:scale-90 ml-3 flex-shrink-0"
+           >
+              <ChevronRight size={18} />
+           </a>
+        </motion.div>
+      ))}
+    </div>
+  );
 }
