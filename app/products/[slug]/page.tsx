@@ -217,7 +217,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   ...(product.specs.os ? [{ label: 'Operating System', value: product.specs.os }] : []),
                   ...(product.specs.ports ? [{ label: 'Ports', value: product.specs.ports }] : []),
                   ...(product.specs.camera ? [{ label: 'Camera', value: product.specs.camera }] : []),
-                  { label: 'Condition', value: product.badge === 'SALE' ? 'Certified Refurbished' : 'Brand New (Sealed)' },
+                  { label: 'Condition', value: product.badge === 'SALE' ? 'Certified Refurbished' : 'Refurbished laptop' },
                   { label: 'Warranty', value: '6 Months (Satya Computers)' },
                 ].map(({ label, value }, i) => (
                   <tr key={label} className={i % 2 === 0 ? 'bg-[#F7F7F5]' : 'bg-white'}>
