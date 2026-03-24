@@ -32,11 +32,6 @@ export async function POST(req: Request) {
     }
 
     try {
-        const filePath = join(uploadDir, name);
-        await writeFile(filePath, buffer);
-    } catch (fsError: any) {
-        // HEAL PROTOCOL: Serverless Environment Detected (e.g. Netlify/Vercel)
-        // Reverting to Base64 Embedded Asset Protocol to ensure persistence in Database
         const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
         
         return NextResponse.json({ 
@@ -44,15 +39,11 @@ export async function POST(req: Request) {
           url: base64,
           name: name,
           isEmbedded: true,
-          notice: "Serverless disk rejection: Asset has been converted to an embedded Data URL for database persistence."
+          notice: "Asset converted to Base64 for global database persistence."
         });
+    } catch (fsError: any) {
+        return NextResponse.json({ error: 'Failed to encode asset image payload' }, { status: 500 });
     }
-
-    return NextResponse.json({ 
-      success: true, 
-      url: `/uploads/${name}`,
-      name: name
-    });
   } catch (error: any) {
     console.error('Core Upload Error:', error);
     return NextResponse.json({ error: error.message || 'Internal server error during transport' }, { status: 500 });
