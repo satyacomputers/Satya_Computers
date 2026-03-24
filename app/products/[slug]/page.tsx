@@ -12,44 +12,52 @@ import TrustBadges from '@/components/store/TrustBadges';
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
-  // 1. Try static
-  let raw = getProductBySlug(slug);
-  let isFromDb = false;
+  // 1. Fetch static fallback
+  let staticRaw = getProductBySlug(slug);
+  let raw: any = staticRaw;
+  
+  // 2. Fetch and merge DB data (DB takes precedence so admin updates work!)
+  try {
+    const result = await client.execute({
+      sql: 'SELECT * FROM "Product" WHERE id = ? LIMIT 1',
+      args: [slug]
+    });
+    
+    if (result.rows.length > 0) {
+      const row: any = result.rows[0];
+      const dbImage = (row.image && (row.image.startsWith('/') || row.image.startsWith('http') || row.image.startsWith('data:'))) 
+        ? row.image 
+        : (row.image ? `/uploads/${row.image}` : null);
 
-  // 2. Try DB if not found
-  if (!raw) {
-    try {
-      const result = await client.execute({
-        sql: 'SELECT * FROM "Product" WHERE id = ? LIMIT 1',
-        args: [slug]
-      });
-      
-      if (result.rows.length > 0) {
-        const row: any = result.rows[0];
-        raw = {
-          id: row.id,
-          name: row.name,
-          slug: row.id,
-          brand: row.brand,
-          price: row.price,
-          originalPrice: row.price * 1.2,
-          image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http') || row.image.startsWith('data:'))) 
-            ? row.image 
-            : (row.image ? `/uploads/${row.image}` : '/products/dell_laptop_premium.png'),
-          description: row.description || 'Professional workstation optimized for enterprise performance.',
-          badge: row.isFeatured ? 'HOT' : undefined,
-          specs: {
-            processor: row.processor || 'Intel Core i5',
-            ram: row.ram || '8GB',
-            storage: row.storage || '256GB SSD',
-            screen: row.display || '14" FHD'
-          }
-        };
-        isFromDb = true;
+      raw = {
+        ...staticRaw, // keep static fallbacks (like highlights)
+        id: row.id,
+        name: row.name,
+        slug: row.id,
+        brand: row.brand,
+        price: row.price,
+        originalPrice: staticRaw && staticRaw.originalPrice ? staticRaw.originalPrice : row.price * 1.2,
+        image: dbImage || (staticRaw ? staticRaw.image : '/products/dell_laptop_premium.png'),
+        description: row.description || (staticRaw ? staticRaw.description : 'Professional workstation optimized for enterprise performance.'),
+        badge: row.isFeatured ? 'HOT' : (staticRaw ? staticRaw.badge : undefined),
+        specs: {
+          ...(staticRaw ? staticRaw.specs : {}),
+          processor: row.processor || (staticRaw ? staticRaw.specs.processor : 'Intel Core i5'),
+          ram: row.ram || (staticRaw ? staticRaw.specs.ram : '8GB'),
+          storage: row.storage || (staticRaw ? staticRaw.specs.storage : '256GB SSD'),
+          screen: row.display || (staticRaw ? staticRaw.specs.screen : '14" FHD')
+        }
+      };
+
+      // Merge image gallery: Make the new DB image the primary thumbnail
+      if (dbImage && staticRaw?.images && staticRaw.images.length > 0) {
+        raw.images = [dbImage, ...staticRaw.images.slice(1)];
+      } else if (dbImage) {
+        raw.images = [dbImage, dbImage];
       }
-    } catch (e) {
-      console.error('DB Product Fetch Error:', e);
     }
+  } catch (e) {
+    console.error('DB Product Fetch Error:', e);
   }
 
   if (!raw) notFound();
