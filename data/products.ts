@@ -647,7 +647,9 @@ export const products: Product[] = [
     "image": "/products/macbook_pro_a2551.png",
     "images": [
       "/products/macbook_pro_a2551.png",
-      "/products/macbook_pro_a2551.png"
+      "/products/clean_28.png",
+      "/products/clean_31.png",
+      "/products/clean_32.png"
     ],
     "description": "Premium Apple MACBOOK PRO A2551. i5 with 16GB RAM and 512GB storage.",
     "specs": {
@@ -756,10 +758,24 @@ export function enrichProduct(p: Product) {
     return 'student';
   })();
 
+  // Use valid provided images. If the database returns the primary image (p.image) but 
+  // the gallery array doesn't include it, explicitly add it to the front so it appears in thumbnails.
+  let validGallery = p.images?.length && p.images.length > 0 ? p.images : [];
+  
+  // If the gallery somehow has exactly elements that match the static fallbacks, and the DB image is new
+  // we ensure the dbImage replaces the first fallback. 
+  let finalImages = [p.image, ...validGallery];
+  
+  // Remove duplicates
+  finalImages = Array.from(new Set(finalImages));
+  
+  // If empty, fallback to main image
+  if (finalImages.length === 0) finalImages = [p.image];
+
   return {
     ...p,
     category,
-    images: p.images?.length ? p.images : [p.image, p.image],
+    images: finalImages,
     longDescription: p.longDescription || `The ${p.name} offers ${p.specs.processor} performance with ${p.specs.ram} RAM and ${p.specs.storage} of fast storage. Its ${p.specs.screen} display delivers crisp, vibrant visuals. ${p.description} Available now at Satya Computers, Ameerpet, Hyderabad — walk in for a demo or order online.`,
     highlights: generateHighlights(p),
   };

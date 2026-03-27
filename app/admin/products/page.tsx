@@ -141,6 +141,7 @@ export default function ProductManager() {
                 <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Asset Identity</th>
                 <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Architecture</th>
                 <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Valuation</th>
+                <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Logistics</th>
                 <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Lifecycle</th>
                 <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Protocol</th>
               </tr>
@@ -148,7 +149,7 @@ export default function ProductManager() {
             <tbody className="divide-y divide-gray-50">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-10 py-32 text-center">
+                    <td colSpan={6} className="px-10 py-32 text-center">
                       <div className="flex flex-col items-center gap-6">
                         <div className="w-14 h-14 border-[5px] border-gray-100 border-t-[#F97316] rounded-full animate-spin" />
                         <p className="font-black text-[10px] uppercase tracking-[0.4em] text-gray-400">Accessing Technical Inventory...</p>
@@ -196,6 +197,14 @@ export default function ProductManager() {
                            </div>
                         </div>
                       </td>
+                      <td className="px-10 py-8">
+                        <div className="flex flex-col">
+                           <span className={`text-xl font-heading font-black ${ (product.stock || 0) > 0 ? 'text-[#0A1628]' : 'text-red-600'}`}>
+                             {(product.stock || 0)} UNITS
+                           </span>
+                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Available Stock</span>
+                        </div>
+                      </td>
                       <td className="px-10 py-8 text-center md:text-left">
                         <div className="flex flex-col">
                            <span className="text-2xl font-heading font-black text-[#0A1628]">₹{(product.price || 0).toLocaleString()}</span>
@@ -204,11 +213,11 @@ export default function ProductManager() {
                       </td>
                       <td className="px-10 py-8">
                         <div className={`inline-flex items-center gap-2.5 px-5 py-2 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-sm border ${
-                          (product.stockStatus === 'In Stock' || (product.stock && product.stock > 0)) ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                          (product.stockStatus === 'In Stock' || (product.stock && (product.stock as number) > 0)) ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                           'bg-red-50 text-red-600 border-red-100'
                         }`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${ (product.stockStatus === 'In Stock' || (product.stock && product.stock > 0)) ? 'bg-emerald-600' : 'bg-red-600'} animate-pulse`} />
-                          { (product.stockStatus === 'In Stock' || (product.stock && product.stock > 0)) ? 'Active' : 'Depleted'}
+                          <div className={`w-1.5 h-1.5 rounded-full ${ (product.stockStatus === 'In Stock' || (product.stock && (product.stock as number) > 0)) ? 'bg-emerald-600' : 'bg-red-600'} animate-pulse`} />
+                          { (product.stockStatus === 'In Stock' || (product.stock && (product.stock as number) > 0)) ? 'Active' : 'Depleted'}
                         </div>
                       </td>
                       <td className="px-10 py-8">
@@ -233,7 +242,7 @@ export default function ProductManager() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-10 py-32 text-center text-gray-300 uppercase tracking-[0.5em] font-black text-xs">Zero Assets Identified</td>
+                    <td colSpan={6} className="px-10 py-32 text-center text-gray-300 uppercase tracking-[0.5em] font-black text-xs">Zero Assets Identified</td>
                   </tr>
                 )}
               </tbody>

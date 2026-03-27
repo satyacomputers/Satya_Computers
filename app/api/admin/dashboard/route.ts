@@ -26,38 +26,51 @@ export async function GET(req: Request) {
     const results = await Promise.all([
       client.execute('SELECT COUNT(*) as count FROM "Product"'),
       client.execute('SELECT COUNT(*) as count FROM "Order"'),
+      client.execute('SELECT COUNT(*) as count FROM "CustomerOrder"'),
       client.execute('SELECT COUNT(*) as count FROM "Offer"'),
       client.execute('SELECT SUM(estimatedValue) as total FROM "Order" WHERE status = \'Confirmed\''),
+      client.execute('SELECT SUM(totalAmount) as total FROM "CustomerOrder"'),
       client.execute('SELECT * FROM "Order" ORDER BY createdAt DESC LIMIT 5'),
+      client.execute('SELECT * FROM "CustomerOrder" ORDER BY createdAt DESC LIMIT 5'),
       client.execute({
         sql: `
           SELECT 
-            strftime(?, createdAt) as period,
-            SUM(estimatedValue) as revenue,
+            period,
+            SUM(val) as revenue,
             COUNT(*) as orders
-          FROM "Order"
-          WHERE createdAt >= date('now', ?)
+          FROM (
+            SELECT strftime(?, createdAt) as period, estimatedValue as val FROM "Order" WHERE createdAt >= date('now', ?)
+            UNION ALL
+            SELECT strftime(?, createdAt) as period, totalAmount as val FROM "CustomerOrder" WHERE createdAt >= date('now', ?)
+          )
           GROUP BY period
-          ORDER BY createdAt ASC
+          ORDER BY period ASC
         `,
-        args: [strftimeFormat, dateLimit]
+        args: [strftimeFormat, dateLimit, strftimeFormat, dateLimit]
       })
     ]);
 
     const productCount = Number(results[0].rows[0]?.count || 0);
-    const orderCount = Number(results[1].rows[0]?.count || 0);
-    const offerCount = Number(results[2].rows[0]?.count || 0);
-    const totalRevenue = Number(results[3].rows[0]?.total || 0);
-    const recentOrders = results[4].rows;
+    const orderCountB2B = Number(results[1].rows[0]?.count || 0);
+    const orderCountB2C = Number(results[2].rows[0]?.count || 0);
+    const offerCount = Number(results[3].rows[0]?.count || 0);
+    const totalRevenueB2B = Number(results[4].rows[0]?.total || 0);
+    const totalRevenueB2C = Number(results[5].rows[0]?.total || 0);
     
-    const rawData = results[5].rows;
+    const recentB2B = results[6].rows.map((r: any) => ({ ...r, type: 'B2B' }));
+    const recentB2C = results[7].rows.map((r: any) => ({ ...r, type: 'B2C', companyName: r.customerName, estimatedValue: r.totalAmount, status: r.orderStatus }));
+    
+    const recentOrders = [...recentB2B, ...recentB2C]
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10);
+    
+    const rawData = results[8].rows;
     const chartData = rawData.map((row: any, i: number) => ({
       name: labelPrefix ? `${labelPrefix} ${i + 1}` : row.period,
       revenue: Number(row.revenue || 0),
       orders: Number(row.orders || 0)
     }));
 
-    // Ensure we have at least some data points for the UI
     if (chartData.length === 0) {
       chartData.push({ name: 'Initial', revenue: 0, orders: 0 });
     }
@@ -65,9 +78,11 @@ export async function GET(req: Request) {
     return NextResponse.json({
       stats: {
         productCount,
-        orderCount,
+        orderCount: orderCountB2B + orderCountB2C,
+        b2bCount: orderCountB2B,
+        b2cCount: orderCountB2C,
         offerCount,
-        totalRevenue
+        totalRevenue: totalRevenueB2B + totalRevenueB2C
       },
       recentOrders,
       chartData

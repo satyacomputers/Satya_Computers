@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Menu, X, LogOut, ChevronRight, Home, Box, Globe, Info, Phone } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, ChevronRight, Home, Box, Globe, Info, Phone, Package } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -28,6 +28,7 @@ export default function GoldNavBar() {
   useEffect(() => {
     setMounted(true);
     const savedUser = localStorage.getItem('satya_user');
+    const savedEmail = localStorage.getItem('satya_user_email');
     if (savedUser) setUser(savedUser);
   }, []);
 
@@ -36,6 +37,7 @@ export default function GoldNavBar() {
       await signOut({ redirect: true, callbackUrl: '/' });
     }
     localStorage.removeItem('satya_user');
+    localStorage.removeItem('satya_user_email');
     setUser(null);
     window.location.reload();
   };
@@ -93,6 +95,11 @@ export default function GoldNavBar() {
             {/* Right Icons */}
             <div className="flex items-center space-x-5">
               <div className="flex items-center gap-3">
+                {displayName && (
+                  <Link href="/my-orders" className="font-heading text-sm text-[var(--color-brand-primary)] hover:text-black transition-colors underline decoration-2 underline-offset-4 hidden lg:block tracking-widest uppercase mt-1 mr-4">
+                    My Orders
+                  </Link>
+                )}
                 <Link href="/account" className="flex items-center gap-2 text-brand-text hover:text-[var(--color-brand-primary)] transition-colors" aria-label="User Profile">
                   <User size={24} />
                   {displayName && <span className="font-heading text-sm hidden sm:block mt-1 tracking-widest">{displayName}</span>}
@@ -107,6 +114,7 @@ export default function GoldNavBar() {
                   </button>
                 )}
               </div>
+
               <Link href="/cart" className="relative text-brand-text hover:text-[var(--color-brand-primary)] transition-colors" aria-label="Shopping Cart">
                 <ShoppingCart size={24} />
                 {itemCount > 0 && (
@@ -209,7 +217,11 @@ export default function GoldNavBar() {
                        <User size={18} className="text-black/30 group-hover:text-black" />
                        <span className="font-heading text-[11px] tracking-widest text-black/50 group-hover:text-black uppercase font-bold">Account</span>
                      </Link>
-                     <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 p-4 bg-white border border-black/5 rounded-xl hover:border-black transition-all group shadow-sm">
+                     <Link href="/my-orders" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 p-4 bg-white border border-black/5 rounded-xl hover:border-black transition-all group shadow-sm">
+                       <Package size={18} className="text-black/30 group-hover:text-black" />
+                       <span className="font-heading text-[11px] tracking-widest text-black/50 group-hover:text-black uppercase font-bold">Orders</span>
+                     </Link>
+                     <Link href="/cart" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 p-4 bg-white border border-black/5 rounded-xl hover:border-black transition-all group shadow-sm col-span-2">
                        <ShoppingCart size={18} className="text-black/30 group-hover:text-black" />
                        <span className="font-heading text-[11px] tracking-widest text-black/50 group-hover:text-black uppercase font-bold">Cart ({itemCount})</span>
                      </Link>

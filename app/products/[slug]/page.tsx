@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getProductBySlug, getRecommendedProducts, enrichProduct } from '@/data/products';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import ProductImageGallery from '@/components/store/ProductImageGallery';
+import ProductCard from '@/components/store/ProductCard';
 import { libsql as client } from '@/lib/prisma';
 import AddToCartButton from '@/components/store/AddToCartButton';
 import BuyNowButton from '@/components/store/BuyNowButton';
@@ -49,11 +50,34 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         }
       };
 
-      // Merge image gallery: Make the new DB image the primary thumbnail
-      if (dbImage && staticRaw?.images && staticRaw.images.length > 0) {
-        raw.images = [dbImage, ...staticRaw.images.slice(1)];
+      // Merge image gallery: Prioritize the 'gallery' array from DB
+      if (row.gallery) {
+        try {
+          const parsedGallery = JSON.parse(row.gallery);
+          if (Array.isArray(parsedGallery) && parsedGallery.length > 0) {
+            raw.images = parsedGallery;
+          } else if (dbImage) {
+            raw.images = [dbImage];
+          } else if (staticRaw?.images && staticRaw.images.length > 0) {
+            raw.images = staticRaw.images;
+          }
+        } catch (e) {
+          console.error('Gallery parse error:', e);
+          if (dbImage) {
+            raw.images = [dbImage];
+          } else if (staticRaw?.images && staticRaw.images.length > 0) {
+            raw.images = staticRaw.images;
+          }
+        }
       } else if (dbImage) {
-        raw.images = [dbImage, dbImage];
+        raw.images = [dbImage];
+      } else if (staticRaw?.images && staticRaw.images.length > 0) {
+        raw.images = staticRaw.images;
+      }
+      
+      // Safety layer
+      if (!raw.images || raw.images.length === 0) {
+        raw.images = [raw.image || '/products/dell_laptop_premium.png'];
       }
     }
   } catch (e) {
@@ -247,41 +271,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {recommended.map((rec) => {
-                const r = enrichProduct(rec);
+                // Ensure recommended products have access to the unified card component
                 return (
-                  <Link
-                    key={r.slug}
-                    href={`/products/${r.slug}`}
-                    className="group border border-black/8 bg-white hover:border-[var(--color-brand-primary)]/40 hover:shadow-md transition-all duration-300 flex flex-col"
-                  >
-                    <div className="relative aspect-[4/3] bg-[#F7F7F5] overflow-hidden">
-                      {r.badge && (
-                        <span className="absolute top-3 left-3 z-10 bg-[var(--color-brand-primary)] text-white px-2 py-0.5 font-heading text-[10px] tracking-widest">
-                          {r.badge}
-                        </span>
-                      )}
-                      <Image
-                        src={r.images[0]}
-                        alt={r.name}
-                        fill
-                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    <div className="p-4 flex flex-col flex-1">
-                      <p className="font-heading text-[10px] tracking-widest text-[var(--color-brand-primary)] mb-1">{r.brand}</p>
-                      <p className="font-body text-sm text-brand-text font-medium mb-3 line-clamp-2 leading-snug">{r.name}</p>
-                      <div className="mt-auto flex items-center gap-3">
-                        <span className="font-body text-base text-[var(--color-brand-primary)] font-semibold">
-                          ₹{r.price.toLocaleString('en-IN')}
-                        </span>
-                        {r.originalPrice > r.price && (
-                          <span className="font-body text-xs text-brand-text/35 line-through">
-                            ₹{r.originalPrice.toLocaleString('en-IN')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
+                  <div key={rec.id} className="w-full">
+                    <ProductCard product={rec} />
+                  </div>
                 );
               })}
             </div>

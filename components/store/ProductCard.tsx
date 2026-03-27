@@ -32,11 +32,26 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const isBrandColorBadge = product.badge === 'HOT' || product.badge === 'SALE';
 
+  const [activeImgIdx, setActiveImgIdx] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!product.images || product.images.length <= 1) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const sectionWidth = width / product.images.length;
+    let newIdx = Math.floor(x / sectionWidth);
+    newIdx = Math.max(0, Math.min(newIdx, product.images.length - 1));
+    if (newIdx !== activeImgIdx) setActiveImgIdx(newIdx);
+  };
+
+  const currentDisplayImage = product.images && product.images.length > 0 ? product.images[activeImgIdx] : product.image;
+
   return (
     <motion.div
       className="group relative flex flex-col h-full cursor-pointer"
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { setHovered(false); setActiveImgIdx(0); }}
       onClick={handleCardClick}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -74,7 +89,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Image Area */}
-        <div className="relative aspect-[4/3] w-full bg-gradient-to-br from-[#f7f7f7] to-[#efefef] overflow-hidden">
+        <div 
+          className="relative aspect-[4/3] w-full bg-gradient-to-br from-[#f7f7f7] to-[#efefef] overflow-hidden"
+          onMouseMove={handleMouseMove}
+        >
           {/* Dot Grid */}
           <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle,_#00000012_1px,_transparent_1px)] bg-[size:14px_14px]" />
 
@@ -100,8 +118,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Product Image with 3D lift */}
           <motion.div
+            key={currentDisplayImage}
             className="relative w-full h-full z-10 p-6"
-            animate={{ scale: hovered ? 1.07 : 1, y: hovered ? -8 : 0 }}
+            initial={{ opacity: 0.8 }}
+            animate={{ opacity: 1, scale: hovered ? 1.07 : 1, y: hovered ? -8 : 0 }}
             transition={{ type: 'spring', stiffness: 200, damping: 22 }}
           >
             {/* Shadow blob under image */}
@@ -111,13 +131,25 @@ export default function ProductCard({ product }: ProductCardProps) {
               transition={{ duration: 0.4 }}
             />
             <NextImage
-              src={product.image}
+              src={currentDisplayImage}
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-contain mix-blend-multiply filter drop-shadow-xl"
             />
           </motion.div>
+
+          {/* Scrubbing Indicators */}
+          {product.images && product.images.length > 1 && (
+            <div className={`absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-30 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}>
+              {product.images.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1.5 rounded-full transition-all duration-300 ${i === activeImgIdx ? 'w-4 bg-[var(--color-brand-primary)]' : 'w-1.5 bg-black/20'}`} 
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Animated accent bar */}

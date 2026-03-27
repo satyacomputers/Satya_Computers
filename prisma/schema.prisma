@@ -24,6 +24,8 @@ model Product {
   minOrderQty     Int      @default(1)
   stockStatus     String   @default("In Stock")
   image           String?
+  gallery         String?  // Store as JSON stringified array of image URLs
+  stock           Int      @default(0)
   description     String?
   isFeatured      Boolean  @default(false)
   warranty        String?
@@ -129,4 +131,24 @@ model ContactMessage {
   message   String
   status    String   @default("New")
   createdAt DateTime @default(now())
+}
+
+model CustomerOrder {
+  id            String   @id @default(cuid())
+  orderId       String   @unique
+  customerName  String
+  email         String
+  phone         String
+  address       String
+  city          String?
+  state         String?
+  pincode       String?
+  products      String   // Contains JSON array of { productId, name, price, quantity, image }
+  totalAmount   Float
+  paymentMethod String   // "COD" or "UPI"
+  paymentStatus String   @default("Pending") // Pending, Paid
+  orderStatus   String   @default("Processing") // Processing, Shipped, Delivered, Cancelled
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

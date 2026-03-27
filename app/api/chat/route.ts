@@ -6,7 +6,14 @@ import { storeInfo } from "@/data/store-info";
 async function getSystemPrompt() {
   let productList = "";
   try {
-    const dbProducts = await prisma.product.findMany({ take: 50, orderBy: { price: 'asc' } });
+    const dbProducts = await prisma.product.findMany({ 
+      where: { 
+        stock: { gt: 0 },
+        stockStatus: 'In Stock'
+      },
+      take: 50, 
+      orderBy: { price: 'asc' } 
+    });
     if (dbProducts.length > 0) {
       productList = dbProducts.map(p =>
         `[PX:${p.id}] ${p.name} | ${p.brand} | ${p.processor} | ${p.ram} | ${p.storage} | ₹${p.price}`
@@ -46,7 +53,7 @@ async function smartFallback(userMessage: string) {
   if (priceMatch) maxPrice = parseInt(priceMatch[1]);
 
   try {
-    const result = await client.execute({ sql: 'SELECT * FROM "Product" ORDER BY price ASC', args: [] });
+    const result = await client.execute({ sql: "SELECT * FROM \"Product\" WHERE stock > 0 AND stockStatus = 'In Stock' ORDER BY price ASC", args: [] });
     let products: any[] = result.rows;
 
     if (brandFilter) products = products.filter((p: any) => p.brand === brandFilter);

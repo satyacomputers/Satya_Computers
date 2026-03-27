@@ -17,14 +17,16 @@ import {
   ChevronRight,
   Shield,
   User,
-  Globe
+  Globe,
+  ShoppingCart
 } from 'lucide-react';
 
 const navItems = [
   { id: 1, label: 'Overview', icon: LayoutDashboard, route: '/admin' },
   { id: 2, label: 'Inventory', icon: Laptop, route: '/admin/products' },
   { id: 4, label: 'Promotions', icon: Tag, route: '/admin/offers' },
-  { id: 5, label: 'Requests', icon: Package, route: '/admin/orders' },
+  { id: 5, label: 'B2B Quotes', icon: Package, route: '/admin/orders' },
+  { id: 11, label: 'B2C Orders', icon: ShoppingCart, route: '/admin/customer-orders' },
   { id: 6, label: 'Directory', icon: Users, route: '/admin/clients' },
   { id: 10, label: 'Team', icon: User, route: '/admin/team' },
   { id: 7, label: 'Broadcast', icon: Megaphone, route: '/admin/announcements' },

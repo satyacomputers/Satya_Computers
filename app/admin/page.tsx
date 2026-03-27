@@ -302,17 +302,22 @@ export default function DashboardHome() {
                <table className="w-full text-left">
                  <thead>
                    <tr>
-                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Target Entity</th>
-                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Parameters</th>
-                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status Matrix</th>
+                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Target Entity</th>
+                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Type</th>
+                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Value</th>
+                     <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-left">Status Matrix</th>
                    </tr>
                  </thead>
                  <tbody className="divide-y divide-gray-50">
                     {loading ? (
-                      <tr><td colSpan={3} className="px-8 py-20 text-center font-bold text-gray-300">INITIALIZING FEED...</td></tr>
+                      <tr><td colSpan={4} className="px-8 py-20 text-center font-bold text-gray-300">INITIALIZING FEED...</td></tr>
                     ) : dashboardData?.recentOrders?.length > 0 ? (
                       dashboardData.recentOrders.map((order: any, i: number) => (
-                        <tr key={i} className="hover:bg-gray-50 transition-all group">
+                        <tr 
+                          key={i} 
+                          className="hover:bg-gray-50 transition-all group cursor-pointer"
+                          onClick={() => router.push(order.type === 'B2B' ? '/admin/orders' : '/admin/customer-orders')}
+                        >
                           <td className="px-8 py-6">
                             <p className="font-bold text-[#0A1628] leading-none mb-1 uppercase tracking-tighter">{order.companyName}</p>
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -320,12 +325,17 @@ export default function DashboardHome() {
                             </p>
                           </td>
                           <td className="px-8 py-6">
-                            <p className="text-sm font-medium text-gray-600">{order.totalUnits} Units Registered</p>
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded ${order.type === 'B2B' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                              {order.type}
+                            </span>
+                          </td>
+                          <td className="px-8 py-6">
+                            <p className="text-sm font-bold text-[#0A1628]">₹{order.estimatedValue?.toLocaleString()}</p>
                           </td>
                           <td className="px-8 py-6">
                             <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${
-                              order.status === 'Confirmed' ? 'bg-emerald-100 text-emerald-700' :
-                              order.status === 'Pending' ? 'bg-orange-100 text-orange-700' :
+                              order.status === 'Confirmed' || order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
+                              order.status === 'Pending' || order.status === 'Processing' ? 'bg-orange-100 text-orange-700' :
                               'bg-blue-100 text-blue-700'
                             }`}>
                               {order.status}
@@ -334,7 +344,7 @@ export default function DashboardHome() {
                         </tr>
                       ))
                     ) : (
-                      <tr><td colSpan={3} className="px-8 py-20 text-center font-bold text-gray-300 uppercase tracking-[0.2em]">Zero Intercepts Detected</td></tr>
+                      <tr><td colSpan={4} className="px-8 py-20 text-center font-bold text-gray-300 uppercase tracking-[0.2em]">Zero Intercepts Detected</td></tr>
                     )}
                  </tbody>
                </table>

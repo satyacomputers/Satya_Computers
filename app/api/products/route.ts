@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const { 
       name, brand, price, description, processor, ram, storage, 
       display, bulkPrice5_10, bulkPrice11_25, bulkPrice26Plus, 
-      stockStatus, isFeatured, minOrderQty, image 
+      stockStatus, isFeatured, minOrderQty, image, gallery, stock
     } = body;
 
     if (!name || !brand || !price) {
@@ -27,8 +27,8 @@ export async function POST(req: Request) {
       sql: `INSERT INTO "Product" (
         id, name, brand, processor, ram, storage, display, price, 
         bulkPrice5_10, bulkPrice11_25, bulkPrice26Plus, minOrderQty, 
-        stockStatus, description, isFeatured, image, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+        stockStatus, description, isFeatured, image, gallery, stock, createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
       args: [
         id, name, brand, processor || '', ram || '', storage || '', display || '', 
         parseFloat(price), 
@@ -39,7 +39,9 @@ export async function POST(req: Request) {
         stockStatus || 'In Stock',
         description || '',
         isFeatured ? 1 : 0,
-        image || ''
+        image || '',
+        Array.isArray(gallery) ? JSON.stringify(gallery) : (gallery || '[]'),
+        parseInt(stock || 0)
       ]
     });
 

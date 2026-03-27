@@ -24,20 +24,24 @@ export async function POST(request: Request) {
     const totalUnits = cartItems.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
     const result = await client.execute({
-      sql: `INSERT INTO "Order" (id, orderId, companyName, contactPerson, email, phone, products, totalUnits, estimatedValue, status, notes, createdAt, updatedAt) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      sql: `INSERT INTO "CustomerOrder" (id, orderId, customerName, email, phone, address, city, state, pincode, products, totalAmount, paymentMethod, paymentStatus, orderStatus, notes, createdAt, updatedAt) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
       args: [
         uuidv4(),
         orderId,
-        'Individual Customer',
         fullName,
         email,
         whatsapp,
+        address,
+        null, // city
+        null, // state
+        null, // pincode
         productsString,
-        totalUnits,
         totalPrice,
+        paymentMethod || 'COD',
         'Pending',
-        `[${paymentMethod || 'COD'}] ${address}`
+        'Processing',
+        null // notes
       ],
     });
 

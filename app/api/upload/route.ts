@@ -32,17 +32,19 @@ export async function POST(req: Request) {
     }
 
     try {
-        const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
+        const filePath = join(uploadDir, name);
+        await writeFile(filePath, buffer);
         
         return NextResponse.json({ 
           success: true, 
-          url: base64,
+          url: `/uploads/${name}`,
           name: name,
-          isEmbedded: true,
-          notice: "Asset converted to Base64 for global database persistence."
+          isEmbedded: false,
+          notice: "Asset persisted to local storage directory successfully."
         });
     } catch (fsError: any) {
-        return NextResponse.json({ error: 'Failed to encode asset image payload' }, { status: 500 });
+        console.error('File write failed:', fsError);
+        return NextResponse.json({ error: 'Failed to write asset to disk' }, { status: 500 });
     }
   } catch (error: any) {
     console.error('Core Upload Error:', error);

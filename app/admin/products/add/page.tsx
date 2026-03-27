@@ -12,7 +12,10 @@ import {
   Loader2,
   Database,
   Cpu,
-  Layers
+  Layers,
+  Plus,
+  Copy,
+  Check
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -32,16 +35,19 @@ export default function AddProduct() {
     storage: '256GB SSD',
     display: '',
     image: '',
+    gallery: [] as string[],
     bulkPrice5_10: '',
     bulkPrice11_25: '',
     bulkPrice26Plus: '',
     stockStatus: 'In Stock',
+    stock: 0,
     isFeatured: false,
     minOrderQty: 1
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -60,8 +66,8 @@ export default function AddProduct() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      setError('Image size must be less than 2MB');
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB');
       return;
     }
 
@@ -87,6 +93,56 @@ export default function AddProduct() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    if (formData.gallery.length + files.length > 10) {
+      setError('Maximum 10 images allowed in gallery');
+      return;
+    }
+
+    setGalleryUploading(true);
+    setError('');
+
+    try {
+      const newImages: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 5 * 1024 * 1024) continue;
+
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', file);
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formDataUpload,
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          newImages.push(data.url);
+        }
+      }
+
+      setFormData(prev => ({ 
+        ...prev, 
+        gallery: [...prev.gallery, ...newImages] 
+      }));
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: prev.gallery.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -306,6 +362,66 @@ export default function AddProduct() {
               </div>
             </div>
           </div>
+
+          <div className="bg-white p-10 rounded-[3.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-100 space-y-8">
+            <div className="flex items-center gap-4 border-b border-gray-50 pb-6">
+               <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                  <Upload size={24} />
+               </div>
+               <h3 className="font-heading font-black text-xl uppercase tracking-tight text-[#0A1628]">Asset Gallery Portfolio</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {formData.gallery.map((img, idx) => (
+                <div key={idx} className="relative group aspect-square rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
+                  <img src={img} alt={`Gallery ${idx}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform">
+                      <p className="text-[8px] font-black text-white uppercase tracking-widest truncate">{img.split('/').pop()}</p>
+                  </div>
+                  <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        type="button"
+                        title="Copy Asset URL"
+                        onClick={() => {
+                          navigator.clipboard.writeText(img);
+                          alert('Asset URL copied to clipboard for description use.');
+                        }}
+                        className="w-8 h-8 rounded-full bg-white/90 backdrop-blur shadow-md text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110"
+                      >
+                        <Copy size={14} />
+                      </button>
+                      <button 
+                        type="button"
+                        title="Remove Image"
+                        onClick={() => removeGalleryImage(idx)}
+                        className="w-8 h-8 rounded-full bg-white/90 backdrop-blur shadow-md text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:scale-110"
+                      >
+                        <X size={14} />
+                      </button>
+                  </div>
+                </div>
+              ))}
+              {formData.gallery.length < 10 && (
+                <div 
+                  onClick={() => document.getElementById('gallery-upload')?.click()}
+                  className="aspect-square rounded-3xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:border-[#F97316] hover:bg-orange-50/30 transition-all text-gray-400 hover:text-[#F97316]"
+                >
+                  {galleryUploading ? <Loader2 size={24} className="animate-spin" /> : <Plus size={24} />}
+                  <span className="text-[10px] font-black uppercase tracking-widest mt-2">{galleryUploading ? 'Uploading...' : 'Add Image'}</span>
+                  <input 
+                    id="gallery-upload"
+                    type="file" 
+                    multiple
+                    title="Gallery Images"
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleGalleryUpload}
+                    disabled={galleryUploading}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-8">
@@ -328,7 +444,7 @@ export default function AddProduct() {
                     {uploading ? <Loader2 className="animate-spin" size={32} /> : <Upload size={32} />}
                   </div>
                   <p className="text-xs font-black text-white uppercase tracking-widest">{uploading ? 'TRANSMITTING...' : 'Upload Asset Frame'}</p>
-                  <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-2">Maximum Payload: 2MB</p>
+                  <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-2">Maximum Payload: 5MB</p>
                 </>
               )}
               <input 
@@ -388,6 +504,20 @@ export default function AddProduct() {
                   <option value="Out of Stock">Out of Stock (Depleted)</option>
                   <option value="Coming Soon">Coming Soon (Provisioning)</option>
                 </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="stock" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 ml-1">Current Stock Inventory *</label>
+                <input 
+                  id="stock"
+                  name="stock"
+                  type="number" 
+                  required
+                  value={formData.stock}
+                  onChange={handleChange}
+                  placeholder="0"
+                  className="w-full px-6 py-4 rounded-[1.5rem] border border-transparent bg-gray-50 focus:bg-white focus:border-[#F97316] outline-none transition-all font-bold text-[#0A1628] shadow-inner" 
+                />
               </div>
 
               <div className="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] border border-gray-100 group hover:border-[#F97316]/20 transition-all">

@@ -2,7 +2,7 @@ import { libsql as client } from './prisma';
 
 export async function getFeaturedProducts() {
   try {
-    const result = await client.execute('SELECT * FROM "Product" WHERE isFeatured = 1 ORDER BY createdAt DESC LIMIT 10');
+    const result = await client.execute("SELECT * FROM \"Product\" WHERE isFeatured = 1 AND stock > 0 AND stockStatus = 'In Stock' ORDER BY createdAt DESC LIMIT 10");
     
     const brandColors: Record<string, string> = {
       'RAZER': '#60C5E4',
@@ -143,6 +143,7 @@ export async function getCategoryStats() {
     const result = (await client.execute(`
       SELECT category, COUNT(*) as count 
       FROM "Product" 
+      WHERE stock > 0 AND stockStatus = 'In Stock'
       GROUP BY category
     `)) as any;
     return result.rows.reduce((acc: any, row: any) => {
