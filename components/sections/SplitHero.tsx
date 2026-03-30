@@ -7,7 +7,7 @@ import { Search, Activity, Wifi, ShieldCheck, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SpinningBadge = () => (
-  <div className="absolute -bottom-14 -right-16 z-50 w-36 h-36 md:w-52 md:h-52 rounded-full border-2 border-black/10 bg-white/95 backdrop-blur-2xl flex items-center justify-center p-2 shadow-[0_30px_60px_rgba(0,0,0,0.25)] group/badge hover:scale-105 transition-transform duration-700">
+  <div className="absolute -bottom-16 -right-20 md:-bottom-24 md:-right-28 z-50 w-28 h-28 md:w-52 md:h-52 rounded-full border-2 border-black/10 bg-white/95 backdrop-blur-2xl flex items-center justify-center p-2 shadow-[0_30px_60px_rgba(0,0,0,0.25)] group/badge hover:scale-105 transition-transform duration-700 pointer-events-none">
     <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible animate-[spin_20s_linear_infinite] group-hover/badge:[animation-duration:10s]">
        <path id="circlePath" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="transparent"/>
        <text className="font-heading text-[10.5px] tracking-[0.25em] font-bold fill-black/80 uppercase">
@@ -16,7 +16,7 @@ const SpinningBadge = () => (
           </textPath>
        </text>
     </svg>
-    <div className="absolute inset-0 flex items-center justify-center p-12">
+    <div className="absolute inset-0 flex items-center justify-center p-8 md:p-12">
       <img src="/satya_computers_logo.png" alt="SC" className="w-full h-auto drop-shadow-xl saturate-[1.2]" />
     </div>
   </div>
@@ -115,10 +115,10 @@ export default function SplitHero({ spotlightProduct }: { spotlightProduct?: any
            </div>
         </div>
 
-        <h1 className="font-heading text-[4.5rem] leading-[0.85] md:text-[6.5rem] lg:text-[7rem] xl:text-[8rem] tracking-normal text-brand-text mb-10 relative z-10 w-full break-words">
+        <h1 className="font-heading text-[3.8rem] leading-[0.85] md:text-[6.5rem] lg:text-[7rem] xl:text-[8rem] tracking-normal text-brand-text mb-8 md:mb-10 relative z-10 w-full break-words">
           BOLD.<br/>
           PREMIUM.<br/>
-          <span className="text-[var(--color-brand-primary)] relative block mt-2 text-[3.8rem] leading-[0.85] md:text-[5.5rem] lg:text-[6rem] xl:text-[6.8rem]">
+          <span className="text-[var(--color-brand-primary)] relative block mt-2 text-[3rem] leading-[0.85] md:text-[5.5rem] lg:text-[6rem] xl:text-[6.8rem]">
             UNCOMPROMISING.
             <span className="absolute -bottom-2 -right-4 w-4 h-1 bg-black animate-pulse opacity-20 hidden md:block" />
           </span>
@@ -128,12 +128,12 @@ export default function SplitHero({ spotlightProduct }: { spotlightProduct?: any
           Elite-tier calculating machinery for creators and engineers. Brutal performance, refined aesthetics.
         </p>
 
-        <div className="flex flex-wrap gap-6 items-center w-full">
-          <Link href="/products" className="flex-1 sm:flex-none">
-            <BrutalButton className="!h-16 !px-12 text-2xl w-full">ACCESS SYSTEMS</BrutalButton>
+        <div className="flex flex-wrap gap-4 md:gap-6 items-center w-full">
+          <Link href="/products" className="w-full sm:w-auto">
+            <BrutalButton className="!h-14 md:!h-16 !px-8 md:!px-12 text-xl md:text-2xl w-full">ACCESS SYSTEMS</BrutalButton>
           </Link>
           
-          <Link href="/products?focus=search" className="h-16 w-16 bg-white border-2 border-black flex items-center justify-center group hover:bg-black transition-all">
+          <Link href="/products?focus=search" className="h-14 w-14 md:h-16 md:w-16 bg-white border-2 border-black flex items-center justify-center group hover:bg-black transition-all">
              <Search size={24} className="group-hover:text-white transition-colors" />
           </Link>
 
@@ -233,15 +233,17 @@ export default function SplitHero({ spotlightProduct }: { spotlightProduct?: any
           ))}
         </div>
 
-        {/* ─ HUD Labels ─ */}
-        <HUDLabel text="Neural Engine Active" top="14%" left="10%" delay="0s" />
-        <HUDLabel text="Thermal: Optimal" top="80%" left="8%" delay="1.3s" />
-        <HUDLabel text="System Ready" top="10%" left="72%" delay="2.7s" />
+        {/* ─ HUD Labels ─ Hidden on mobile for cleaner aesthetic */}
+        <div className="hidden md:block">
+          <HUDLabel text="Neural Engine Active" top="14%" left="10%" delay="0s" />
+          <HUDLabel text="Thermal: Optimal" top="80%" left="8%" delay="1.3s" />
+          <HUDLabel text="System Ready" top="10%" left="72%" delay="2.7s" />
+        </div>
 
         {/* ─ 3D CARD STACK ─ */}
         <div
           ref={stackRef}
-          className="relative w-full max-w-5xl h-[550px] md:h-[820px] flex items-center justify-center group transition-transform duration-150 ease-out"
+          className="relative w-full max-w-5xl h-[500px] md:h-[820px] flex items-center justify-center group transition-transform duration-150 ease-out transform scale-75 md:scale-100"
         >
           {/* ── CARD 1: Back-Left (MacBook) ── */}
           <Link
@@ -322,49 +324,50 @@ export default function SplitHero({ spotlightProduct }: { spotlightProduct?: any
               </div>
 
               {/* ─ Data Panel ─ */}
-              <div className="flex-1 bg-white p-7 pt-6 flex flex-col justify-between relative">
+              <div className="flex-1 bg-white p-4 md:p-7 pt-4 md:pt-6 flex flex-col justify-between relative">
                 <div className="absolute bottom-0 right-0 p-5 opacity-[0.04] pointer-events-none">
                   <img src="/satya_computers_logo.png" alt="" className="h-24 w-auto grayscale" />
                 </div>
                 
                 <div className="relative z-20">
-                  <h3 className="font-heading text-[2.6rem] md:text-[3.2rem] text-black uppercase leading-[0.82] tracking-[-0.03em] font-black mb-6">
+                  <h3 className="font-heading text-[1.8rem] md:text-[3.2rem] text-black uppercase leading-[0.82] tracking-[-0.03em] font-black mb-4 md:mb-6">
                     {product.name.split(' ').slice(0, 2).join(' ')}<br/>
                     <span className="text-[var(--color-brand-primary)] italic">{product.name.split(' ').slice(2).join(' ') || 'STUDIO'}</span>
                   </h3>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="border-l-[3px] border-black pl-3">
-                      <span className="block font-heading text-[8px] text-black/30 tracking-[0.4em] mb-1.5 uppercase font-bold">ARC ENGINE</span>
-                      <span className="block font-body text-[12px] font-black text-black uppercase">{product.processor}</span>
+                <div className="grid grid-cols-2 gap-4 text-left sm:text-left">
+                  <div className="border-l-[2px] md:border-l-[3px] border-black pl-2 md:pl-3">
+                    <span className="block font-heading text-[7px] md:text-[8px] text-black/30 tracking-[0.4em] mb-1 uppercase font-bold">ARC ENGINE</span>
+                    <span className="block font-body text-[10px] md:text-[12px] font-black text-black uppercase">{product.processor}</span>
+                  </div>
+                  <div className="border-l-[2px] md:border-l-[3px] border-black/10 pl-2 md:pl-3">
+                    <span className="block font-heading text-[7px] md:text-[8px] text-black/30 tracking-[0.4em] mb-1 uppercase font-bold">MEMORY/GFX</span>
+                    <span className="block font-body text-[10px] md:text-[12px] font-black text-black uppercase">{product.ram} / {product.storage}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col items-center justify-between border-t-[3px] border-black pt-4 md:pt-5 mt-auto gap-4">
+                <div className="text-center h-12 md:h-12 overflow-hidden w-full">
+                  <div className="group-hover/main:-translate-y-full transition-transform duration-500 ease-in-out">
+                    <div className="h-12 flex flex-col justify-end items-center">
+                      <p className="font-heading text-[8px] text-black/30 tracking-[0.3em] mb-1 uppercase font-bold">MKT VALUE</p>
+                      <p className="font-body text-xl md:text-3xl font-black text-black leading-none tracking-tighter">₹{product.mrp?.toLocaleString()}</p>
                     </div>
-                    <div className="border-l-[3px] border-black/10 pl-3">
-                      <span className="block font-heading text-[8px] text-black/30 tracking-[0.4em] mb-1.5 uppercase font-bold">MEMORY/GFX</span>
-                      <span className="block font-body text-[12px] font-black text-black uppercase">{product.ram} / {product.storage}</span>
+                    <div className="h-12 flex flex-col justify-end items-center">
+                      <p className="font-heading text-[8px] text-[var(--color-brand-primary)] tracking-[0.3em] mb-1 uppercase font-bold">OUR PRICE</p>
+                      <p className="font-body text-xl md:text-3xl font-black text-[var(--color-brand-primary)] leading-none tracking-tighter">₹{product.price?.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-end justify-between border-t-[3px] border-black pt-5 mt-auto">
-                  <div className="group/stock">
-                    <span className="flex items-center gap-2.5 bg-black text-white px-5 py-2.5 font-heading text-[11px] tracking-[0.3em] font-bold cursor-pointer hover:bg-[var(--color-brand-primary)] transition-colors duration-300 active:scale-95">
-                      <Box size={14} className="text-emerald-400" />
-                      LIVE&nbsp;INVENTORY
-                    </span>
-                  </div>
-                  <div className="text-right h-12 overflow-hidden">
-                    <div className="group-hover/main:-translate-y-full transition-transform duration-500 ease-in-out">
-                      <div className="h-12 flex flex-col justify-end">
-                        <p className="font-heading text-[8px] text-black/30 tracking-[0.3em] mb-1 uppercase font-bold">MKT VALUE</p>
-                        <p className="font-body text-3xl font-black text-black leading-none tracking-tighter">₹{product.mrp?.toLocaleString()}</p>
-                      </div>
-                      <div className="h-12 flex flex-col justify-end">
-                        <p className="font-heading text-[8px] text-[var(--color-brand-primary)] tracking-[0.3em] mb-1 uppercase font-bold">OUR PRICE</p>
-                        <p className="font-body text-3xl font-black text-[var(--color-brand-primary)] leading-none tracking-tighter">₹{product.price?.toLocaleString()}</p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="group/stock w-full">
+                  <span className="flex items-center justify-center gap-2.5 bg-black text-white px-5 py-2.5 font-heading text-[11px] tracking-[0.3em] font-bold cursor-pointer hover:bg-[var(--color-brand-primary)] transition-colors duration-300 active:scale-95 w-full">
+                    <Box size={14} className="text-emerald-400" />
+                    LIVE&nbsp;INVENTORY
+                  </span>
                 </div>
+              </div>
               </div>
             </div>
 
