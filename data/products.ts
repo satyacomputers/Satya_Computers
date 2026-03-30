@@ -12,6 +12,8 @@ export interface Product {
   description: string;
   longDescription?: string;
   highlights?: string[];
+  stock?: number;
+  stockStatus?: string;
   specs: {
     processor: string;
     ram: string;

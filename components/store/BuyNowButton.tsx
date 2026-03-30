@@ -23,6 +23,10 @@ export default function BuyNowButton({ product }: { product: Product }) {
     router.push('/checkout');
   };
 
+  const isInStock = product.stockStatus === undefined || product.stockStatus === 'In Stock';
+
+  if (!isInStock) return null;
+
   return (
     <div className="w-full md:w-auto">
       <BrutalButton 

@@ -15,9 +15,19 @@ import {
   Database,
   BarChart3,
   Loader2,
-  FileText
+  FileText,
+  Copy,
+  CheckCircle2,
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import dynamic from 'next/dynamic';
+
+const OperationalIntegrity3D = dynamic(() => import('@/components/admin/OperationalIntegrity3D'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full min-h-[300px] bg-gray-50 animate-pulse rounded-[3rem] border border-gray-100 flex items-center justify-center text-gray-300 font-black tracking-widest text-xs uppercase">Connecting to Satellite...</div>
+});
 
 // Fixed stable formatter for consistent SSR/Client hydration
 const formatDateProfessional = (dateStr: string | null) => {
@@ -85,36 +95,48 @@ export default function DashboardHome() {
     window.print();
   };
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
   const stats = [
     { 
       label: 'Inventory Assets', 
       value: loading ? '...' : (dashboardData?.stats?.productCount || '0'), 
       icon: Package, 
       color: 'from-blue-600 to-indigo-600',
-      trend: '+12.5%'
+      trend: '+12.5%',
+      desc: 'Stock units currently active'
     },
     { 
       label: 'Active Requests', 
       value: loading ? '...' : (dashboardData?.stats?.orderCount || '0'), 
       icon: Clock, 
       color: 'from-orange-500 to-red-500', 
-      trend: '4 High Priority'
+      trend: 'B2B: ' + (dashboardData?.stats?.b2bCount || '0'),
+      desc: 'Pipeline throughput'
     },
     { 
       label: 'Market Reach', 
       value: '1.2k', 
       icon: Zap, 
       color: 'from-emerald-500 to-teal-500', 
-      trend: '+22% Growth'
+      trend: '+22% Growth',
+      desc: 'Client acquisition'
     },
     { 
       label: 'Gross Telemetry', 
       value: loading ? '...' : `₹${((dashboardData?.stats?.totalRevenue || 0) / 100000).toFixed(1)}L`, 
       icon: IndianRupee, 
       color: 'from-purple-600 to-pink-600', 
-      trend: 'Target Aligned'
+      trend: 'Target Aligned',
+      desc: 'Consolidated revenue'
     },
   ];
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(text);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   return (
     <div className="space-y-10 p-4 lg:p-0">
@@ -168,10 +190,14 @@ export default function DashboardHome() {
                </div>
              </div>
              
-             <div className="relative z-10">
-               <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-               <h3 className="text-4xl font-heading font-black text-[#0A1628] tracking-tighter">{stat.value}</h3>
-             </div>
+              <div className="relative z-10">
+                <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                <div className="flex items-baseline gap-2">
+                   <h3 className="text-4xl font-heading font-black text-[#0A1628] tracking-tighter">{stat.value}</h3>
+                   <span className="text-[10px] font-bold text-gray-300">Units</span>
+                </div>
+                <p className="text-[10px] text-gray-400 font-medium mt-2 italic">{stat.desc}</p>
+              </div>
 
              {/* Decorative Background Element */}
              <div className={`absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br ${stat.color} opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-700`} />
@@ -314,34 +340,58 @@ export default function DashboardHome() {
                     ) : dashboardData?.recentOrders?.length > 0 ? (
                       dashboardData.recentOrders.map((order: any, i: number) => (
                         <tr 
-                          key={i} 
-                          className="hover:bg-gray-50 transition-all group cursor-pointer"
-                          onClick={() => router.push(order.type === 'B2B' ? '/admin/orders' : '/admin/customer-orders')}
-                        >
-                          <td className="px-8 py-6">
-                            <p className="font-bold text-[#0A1628] leading-none mb-1 uppercase tracking-tighter">{order.companyName}</p>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                              {mounted ? formatDateProfessional(order.createdAt) : '...'}
-                            </p>
-                          </td>
-                          <td className="px-8 py-6">
-                            <span className={`text-[10px] font-black px-2 py-0.5 rounded ${order.type === 'B2B' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                              {order.type}
-                            </span>
-                          </td>
-                          <td className="px-8 py-6">
-                            <p className="text-sm font-bold text-[#0A1628]">₹{order.estimatedValue?.toLocaleString()}</p>
-                          </td>
-                          <td className="px-8 py-6">
-                            <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${
-                              order.status === 'Confirmed' || order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
-                              order.status === 'Pending' || order.status === 'Processing' ? 'bg-orange-100 text-orange-700' :
-                              'bg-blue-100 text-blue-700'
-                            }`}>
-                              {order.status}
-                            </span>
-                          </td>
-                        </tr>
+                           key={i} 
+                           className="hover:bg-gray-50/80 transition-all group border-l-2 border-transparent hover:border-[#F97316]"
+                         >
+                           <td className="px-8 py-6">
+                             <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black ${order.type === 'B2B' ? 'bg-indigo-50 text-indigo-500' : 'bg-emerald-50 text-emerald-500'}`}>
+                                   {order.type[0]}
+                                </div>
+                                <div>
+                                   <p className="font-bold text-[#0A1628] leading-none mb-1 uppercase tracking-tighter text-sm">{order.companyName || order.customerName}</p>
+                                   <div className="flex items-center gap-2">
+                                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">ID: {order.orderId || order.id}</span>
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); copyToClipboard(order.orderId || order.id); }}
+                                        title="Copy Order ID"
+                                        aria-label={`Copy ID ${order.orderId || order.id}`}
+                                        className="text-gray-300 hover:text-[#F97316] transition-colors"
+                                      >
+                                        {copiedId === (order.orderId || order.id) ? <CheckCircle2 size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                                      </button>
+                                   </div>
+                                </div>
+                             </div>
+                           </td>
+                           <td className="px-8 py-6">
+                             <span className="text-[10px] font-bold text-gray-500">
+                                {mounted ? formatDateProfessional(order.createdAt) : '...'}
+                             </span>
+                           </td>
+                           <td className="px-8 py-6">
+                             <p className="text-sm font-black text-[#F97316]">₹{(order.estimatedValue || order.totalAmount)?.toLocaleString()}</p>
+                           </td>
+                           <td className="px-8 py-6">
+                             <div className="flex items-center gap-4">
+                                <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${
+                                  order.status === 'Confirmed' || order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
+                                  order.status === 'Pending' || order.status === 'Processing' ? 'bg-orange-50 text-orange-600 border border-orange-100 animate-pulse' :
+                                  'bg-blue-50 text-blue-600 border border-blue-100'
+                                }`}>
+                                  {order.status}
+                                </span>
+                                <button 
+                                   onClick={() => router.push(order.type === 'B2B' ? '/admin/orders' : '/admin/customer-orders')}
+                                   title="View Order Details"
+                                   aria-label="View Order Details"
+                                   className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-lg bg-[#0A1628] text-white flex items-center justify-center transition-all hover:bg-[#F97316]"
+                                >
+                                   <ExternalLink size={14} />
+                                </button>
+                             </div>
+                           </td>
+                         </tr>
                       ))
                     ) : (
                       <tr><td colSpan={4} className="px-8 py-20 text-center font-bold text-gray-300 uppercase tracking-[0.2em]">Zero Intercepts Detected</td></tr>
@@ -352,44 +402,31 @@ export default function DashboardHome() {
            </div>
         </div>
 
-        {/* System Overview Card */}
-        <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm flex flex-col justify-between">
-           <div>
-             <h3 className="text-xl font-heading font-bold text-[#0A1628] mb-8">Operational Integrity</h3>
-             <div className="space-y-8">
-               {[
-                 { label: 'Cloud Database Affinity', value: 94, color: 'bg-[#F97316]' },
-                 { label: 'API Transaction Latency', value: 88, color: 'bg-blue-600' },
-                 { label: 'Inventory Sync Precision', value: 76, color: 'bg-indigo-600' }
-               ].map((item, i) => (
-                 <div key={i}>
-                   <div className="flex justify-between items-center mb-3">
-                     <span className="text-sm font-bold text-[#0A1628] uppercase tracking-tighter">{item.label}</span>
-                     <span className="text-[10px] font-black text-gray-400">{item.value}%</span>
-                   </div>
-                   <div className="h-2 w-full bg-gray-50 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${item.value}%` }}
-                        transition={{ duration: 1, delay: i * 0.2 }}
-                        className={`h-full ${item.color} rounded-full`} 
-                      />
-                   </div>
-                 </div>
-               ))}
-             </div>
-           </div>
-
-           <div className="mt-12 p-6 bg-gray-50 rounded-[2rem] border border-gray-100 flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#F97316]">
-                 <BarChart3 size={32} />
+         {/* System Overview Card (3D Integration) */}
+         <div className="bg-[#0A1628] p-10 rounded-[3rem] border border-white/10 shadow-2xl flex flex-col justify-between overflow-hidden relative group/integrity">
+            <div className="relative z-10">
+              <div className="flex justify-between items-center mb-8">
+                 <h3 className="text-xl font-heading font-bold text-white">Operational Integrity</h3>
+                 <div className="px-3 py-1 rounded-full bg-[#F97316]/20 text-[#F97316] text-[8px] font-black uppercase tracking-widest border border-[#F97316]/30">Active-Node</div>
               </div>
-              <div>
-                 <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Architecture Note</p>
-                 <p className="text-sm font-bold text-[#0A1628] leading-snug">System utilizing libSQL edge database with Prisma adapter for sub-10ms response times.</p>
+              <div className="h-[300px] w-full rounded-2xl overflow-hidden bg-white/5 border border-white/5 relative shadow-inner">
+                 <OperationalIntegrity3D />
               </div>
-           </div>
-        </div>
+            </div>
+            
+            <div className="mt-8 relative z-10 flex items-center gap-6">
+               <div className="w-16 h-16 rounded-2xl bg-white/10 shadow-sm flex items-center justify-center text-[#F97316]">
+                  <ShieldCheck size={32} />
+               </div>
+               <div>
+                  <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Architecture Integrity</p>
+                  <p className="text-sm font-bold text-gray-300 leading-snug">System utilizing libSQL edge database with sub-10ms latency thresholds.</p>
+               </div>
+            </div>
+            
+            {/* Background Grain/Grid decoration */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.05)_1px,_transparent_1px),_linear-gradient(90deg,rgba(255,255,255,0.05)_1px,_transparent_1px)] bg-[size:20px_20px]" />
+         </div>
       </div>
     </div>
   );

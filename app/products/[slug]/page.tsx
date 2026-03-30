@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getProductBySlug, getRecommendedProducts, enrichProduct } from '@/data/products';
+import { getProductBySlug, getRecommendedProducts, enrichProduct, type Product } from '@/data/products';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import ProductImageGallery from '@/components/store/ProductImageGallery';
 import ProductCard from '@/components/store/ProductCard';
@@ -41,6 +41,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         image: dbImage || (staticRaw ? staticRaw.image : '/products/dell_laptop_premium.png'),
         description: row.description || (staticRaw ? staticRaw.description : 'Professional workstation optimized for enterprise performance.'),
         badge: row.isFeatured ? 'HOT' : (staticRaw ? staticRaw.badge : undefined),
+        stock: row.stock ?? 0,
+        stockStatus: row.stockStatus || 'In Stock',
         specs: {
           ...(staticRaw ? staticRaw.specs : {}),
           processor: row.processor || (staticRaw ? staticRaw.specs.processor : 'Intel Core i5'),
@@ -87,7 +89,41 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!raw) notFound();
 
   const product = enrichProduct(raw);
-  const recommended = getRecommendedProducts(raw, 4);
+  
+  // Fetch recommended products from DB
+  let recommended: Product[] = [];
+  try {
+    const recResult = await client.execute({
+      sql: 'SELECT * FROM "Product" WHERE id != ? AND (brand = ? OR category = ?) AND stock > 0 LIMIT 4',
+      args: [raw.id, raw.brand, raw.category]
+    });
+    recommended = recResult.rows.map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      slug: row.id,
+      brand: row.brand,
+      category: row.category,
+      price: row.price,
+      originalPrice: row.price * 1.2,
+      image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http') || row.image.startsWith('data:'))) 
+        ? row.image 
+        : (row.image ? `/uploads/${row.image}` : '/products/dell_laptop_premium.png'),
+      description: row.description || 'Professional workstation optimized for enterprise performance.',
+      badge: row.isFeatured ? 'HOT' : undefined,
+      stock: row.stock ?? 0,
+      stockStatus: row.stockStatus || 'In Stock',
+      specs: {
+        processor: row.processor || 'Intel Core i5',
+        ram: row.ram || '8GB',
+        storage: row.storage || '256GB SSD',
+        screen: row.display || '14" FHD'
+      }
+    }));
+  } catch (e) {
+    console.error('Failed to fetch recommended products:', e);
+    recommended = getRecommendedProducts(raw, 4); // Fallback
+  }
+
   const savings = product.originalPrice - product.price;
   const savingsPct = Math.round((savings / product.originalPrice) * 100);
 
@@ -147,6 +183,25 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 You save ₹{savings.toLocaleString('en-IN')} ({savingsPct}% off)
               </p>
             )}
+            
+            {/* Stock status display */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-heading tracking-widest uppercase border ${
+                product.stockStatus === 'In Stock' 
+                  ? 'bg-green-50 border-green-200 text-green-600' 
+                  : (product.stockStatus === 'Waitlist' ? 'bg-amber-50 border-amber-200 text-amber-600' : 'bg-red-50 border-red-200 text-red-600')
+              }`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  product.stockStatus === 'In Stock' ? 'bg-green-500' : (product.stockStatus === 'Waitlist' ? 'bg-amber-500' : 'bg-red-500')
+                }`} />
+                {product.stockStatus}
+              </div>
+              {product.stock && product.stock > 0 && (
+                <span className="text-xs font-body text-brand-text/45">
+                  ({product.stock} units available)
+                </span>
+              )}
+            </div>
 
             {/* Short description */}
             <p className="font-body text-base text-brand-text/70 mb-8 leading-relaxed border-b border-black/8 pb-8">

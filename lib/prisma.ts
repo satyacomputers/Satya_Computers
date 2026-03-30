@@ -12,7 +12,7 @@ const globalForPrisma = global as unknown as {
 };
 
 export const libsql = globalForPrisma.libsql || createClient({
-  url: url || "", // Fallback to empty string, though we expect it from .env
+  url: url || "file:dev.db", // Use local file for development if URL is missing
   authToken: authToken,
 });
 

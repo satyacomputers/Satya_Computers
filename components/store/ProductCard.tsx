@@ -78,13 +78,24 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Top Identity Bar */}
         <div className="flex items-center justify-between px-4 py-2.5 bg-[#FAFAFA] border-b border-black/5">
           <span className="font-heading text-[9px] tracking-[0.3em] text-black/35 uppercase">SYS: {product.brand.slice(0, 4)}.{product.id.slice(-4)}</span>
-          <div className="flex items-center gap-1.5">
-            <motion.div
-              animate={{ opacity: [1, 0.2, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-[var(--color-brand-primary)]"
-            />
-            <span className="font-heading text-[9px] tracking-[0.2em] text-[var(--color-brand-primary)]">ACTIVE</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <motion.div
+                animate={{ opacity: [1, 0.2, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className={`w-1.5 h-1.5 rounded-full ${
+                  !product.stockStatus || product.stockStatus === 'In Stock' ? 'bg-green-500' : (product.stockStatus === 'Waitlist' ? 'bg-amber-500' : 'bg-red-500')
+                }`}
+              />
+              <span className={`font-heading text-[9px] tracking-[0.2em] font-bold ${
+                !product.stockStatus || product.stockStatus === 'In Stock' ? 'text-green-600' : (product.stockStatus === 'Waitlist' ? 'text-amber-600' : 'text-red-600')
+              }`}>
+                {(product.stockStatus || 'IN STOCK').toUpperCase()}
+              </span>
+            </div>
+            {product.stock !== undefined && product.stock > 0 && (
+              <span className="font-heading text-[9px] text-black/25">({product.stock})</span>
+            )}
           </div>
         </div>
 

@@ -37,6 +37,8 @@ export default async function ProductsPage() {
         images: parsedImages, // Pass along admin gallery images
         description: row.description || 'Professional workstation optimized for enterprise performance.',
         badge: row.isFeatured ? 'NEW' : undefined,
+        stock: row.stock ?? 0,
+        stockStatus: row.stockStatus || 'In Stock',
         specs: {
           processor: row.processor || 'Intel Core i5',
           ram: row.ram || '8GB',

@@ -8,7 +8,6 @@ import B2BTier from '@/components/sections/B2BTier';
 import CategoryGrid from '@/components/sections/CategoryGrid';
 import InteractiveFAQ from '@/components/sections/InteractiveFAQ';
 import EliteSelection from '@/components/sections/EliteSelection';
-import InternalComponents from '@/components/sections/InternalComponents';
 import HotOffers from '@/components/sections/HotOffers';
 import SystemQuiz from '@/components/sections/SystemQuiz';
 import EcoImpact from '@/components/sections/EcoImpact';
@@ -51,7 +50,6 @@ export default async function Home() {
       <CategoryGrid counts={categoryStats} />
       <EliteSelection products={featuredProducts} />
       <HotOffers offers={activeOffers} />
-      <InternalComponents />
 
       <SystemQuiz />
       <TestingProcess />

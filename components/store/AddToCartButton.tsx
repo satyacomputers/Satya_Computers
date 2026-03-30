@@ -19,15 +19,22 @@ export default function AddToCartButton({ product }: { product: Product }) {
     });
   };
 
+  const isOutOfStock = product.stockStatus !== undefined && product.stockStatus !== 'In Stock';
+  const isWaitlist = product.stockStatus === 'Waitlist';
+
   return (
     <div className="w-full md:w-auto">
       <BrutalButton 
         onClick={handleAdd} 
-        className={`w-full min-w-[200px] ${currentQuantity > 0 ? 'bg-green-600 text-white border-green-600 hover:bg-green-700 shadow-lg' : ''}`}
+        disabled={isOutOfStock && !isWaitlist}
+        className={`w-full min-w-[200px] ${
+          (isOutOfStock && !isWaitlist) ? 'opacity-50 grayscale cursor-not-allowed border-black/10' :
+          currentQuantity > 0 ? 'bg-green-600 text-white border-green-600 hover:bg-green-700 shadow-lg' : ''
+        }`}
       >
-        {currentQuantity > 0 
-          ? `ADDED (Qty: ${currentQuantity}) ✓` 
-          : 'ADD TO CART'}
+        {isOutOfStock && !isWaitlist ? 'OUT OF STOCK' : 
+          isWaitlist ? 'JOIN WAITLIST' :
+          currentQuantity > 0 ? `ADDED (Qty: ${currentQuantity}) ✓` : 'ADD TO CART'}
       </BrutalButton>
     </div>
   );
