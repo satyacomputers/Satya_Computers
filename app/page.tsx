@@ -5,7 +5,6 @@ import TestingProcess from '@/components/sections/TestingProcess';
 import MissionLogs from '@/components/sections/MissionLogs';
 import B2BTier from '@/components/sections/B2BTier';
 import InteractiveFAQ from '@/components/sections/InteractiveFAQ';
-import EliteSelection from '@/components/sections/EliteSelection';
 import HotOffers from '@/components/sections/HotOffers';
 import SystemQuiz from '@/components/sections/SystemQuiz';
 import EcoImpact from '@/components/sections/EcoImpact';
@@ -16,7 +15,8 @@ import {
   getActiveOffers, 
   getCompanyStats, 
   getPartners, 
-  getCategoryStats
+  getCategoryStats,
+  getHeroProduct
 } from '@/lib/cms';
 
 export const dynamic = 'force-dynamic';
@@ -28,14 +28,16 @@ export default async function Home() {
     activeOffers, 
     companyStats, 
     partners, 
-    categoryStats
+    categoryStats,
+    heroProduct
   ] = await Promise.all([
     getFeaturedProducts(),
     getLiveAnnouncement(),
     getActiveOffers(),
     getCompanyStats(),
     getPartners(),
-    getCategoryStats()
+    getCategoryStats(),
+    getHeroProduct()
   ]);
 
   return (
@@ -43,9 +45,8 @@ export default async function Home() {
       <GrainOverlay opacity={5} />
       
       <FlashSaleBanner announcement={liveAnnouncement} />
-      <SplitHero />
+      <SplitHero spotlightProduct={heroProduct} />
       
-      <EliteSelection products={featuredProducts} />
       <HomeProductsSection />
       <HotOffers offers={activeOffers} />
 

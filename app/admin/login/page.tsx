@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, Lock, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Shield, Lock, User, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLogin() {
   const [mounted, setMounted] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -106,13 +107,20 @@ export default function AdminLogin() {
                   <Lock size={20} />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   placeholder="Password"
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#F97316]/50 focus:bg-white/[0.08] transition-all font-medium"
+                  className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#F97316]/50 focus:bg-white/[0.08] transition-all font-medium"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 

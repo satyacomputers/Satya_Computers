@@ -195,3 +195,38 @@ export async function getLiveActivity() {
     return ["System operational", "Inventory synchronized"];
   }
 }
+
+export async function getHeroProduct() {
+  try {
+    const result = await client.execute(`
+      SELECT * FROM "Product" 
+      WHERE stock > 0 AND stockStatus = 'In Stock' 
+      ORDER BY price DESC 
+      LIMIT 1
+    `);
+    
+    if (result.rows.length > 0) {
+      const row = result.rows[0];
+      return {
+        id: String(row.id),
+        name: String(row.name),
+        brand: String(row.brand || 'Premium'),
+        processor: String(row.processor || 'High-End CPU'),
+        ram: String(row.ram || '16GB'),
+        storage: String(row.storage || '512GB SSD'),
+        display: String(row.display || 'Retina Display'),
+        price: Number(row.price),
+        mrp: Number(row.mrp || row.price * 1.2),
+        image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http') || row.image.startsWith('data:'))) 
+          ? row.image 
+          : (row.image ? `/uploads/${row.image}` : 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=1200'),
+        isFeatured: Boolean(row.isFeatured)
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('getHeroProduct error:', error);
+    return null;
+  }
+}
+

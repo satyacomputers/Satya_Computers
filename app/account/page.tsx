@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import BrutalButton from '@/components/ui/BrutalButton';
 import Link from 'next/link';
-import { Package, User, LogOut, ChevronRight, Settings, ShoppingBag } from 'lucide-react';
+import { Package, User, LogOut, ChevronRight, Settings, ShoppingBag, Eye, EyeOff } from 'lucide-react';
 
 export default function AccountPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<{ name: string, email: string } | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -197,31 +199,49 @@ export default function AccountPage() {
               />
             </div>
             
-            <div>
+            <div className="relative group">
               <label htmlFor="password" className="block text-xs font-heading tracking-[0.2em] text-black/60 mb-2 uppercase font-bold">PASSWORD</label>
-              <input
-                id="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                className="w-full bg-[#F5F5F5] border-2 border-black/10 text-black px-4 py-3 focus:outline-none focus:border-black transition-colors font-body"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full bg-[#F5F5F5] border-2 border-black/10 text-black px-4 py-3 pr-12 focus:outline-none focus:border-black transition-colors font-body"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-black/20 hover:text-black transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {!isLogin && (
-              <div>
+              <div className="relative group">
                 <label htmlFor="confirmPassword" className="block text-xs font-heading tracking-[0.2em] text-black/60 mb-2 uppercase font-bold">CONFIRM PASSWORD</label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className="w-full bg-[#F5F5F5] border-2 border-black/10 text-black px-4 py-3 focus:outline-none focus:border-black transition-colors font-body"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="w-full bg-[#F5F5F5] border-2 border-black/10 text-black px-4 py-3 pr-12 focus:outline-none focus:border-black transition-colors font-body"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-black/20 hover:text-black transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
             )}
             

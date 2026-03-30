@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import { Package, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import BrutalButton from '@/components/ui/BrutalButton';
 import { Suspense, useEffect, useState } from 'react';
 
 interface OrderData {
@@ -24,6 +25,12 @@ function OrderStatusContent() {
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<OrderData | null>(null);
   const [searchInput, setSearchInput] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('satya_user');
+    setIsLoggedIn(!!savedUser);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,11 +72,37 @@ function OrderStatusContent() {
     );
   }
 
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-brand-bg flex items-center justify-center p-4">
+        <GrainOverlay opacity={30} />
+        <div className="bg-white border-4 border-black p-12 shadow-[12px_12px_0_rgba(241,90,36,1)] max-w-lg w-full text-center relative z-10">
+          <div className="w-20 h-20 bg-[var(--color-brand-primary)] border-4 border-black flex items-center justify-center mx-auto mb-8 text-white shadow-xl">
+             <Package size={40} />
+          </div>
+          <h1 className="font-heading text-4xl text-brand-text mb-4 uppercase tracking-tighter leading-none">
+            AUTHENTICATION <span className="text-[var(--color-brand-primary)]">REQUIRED</span>
+          </h1>
+          <p className="font-body text-brand-text/60 mb-10 uppercase text-[10px] tracking-[0.25em] leading-relaxed font-bold">
+            To access our professional order tracking system and real-time deployment logs, you must have a registered Satya Computers account.
+          </p>
+          
+          <div className="flex flex-col gap-4">
+             <Link href="/account" className="w-full">
+               <BrutalButton className="w-full !h-16 text-lg">ACCESS MY ACCOUNT</BrutalButton>
+             </Link>
+             <p className="font-body text-[9px] text-black/30 tracking-[0.3em] mt-2 uppercase">Your privacy and security are our priority.</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   if (!orderId || error || !order) {
     return (
       <main className="min-h-screen bg-brand-bg flex items-center justify-center p-4">
         <GrainOverlay opacity={30} />
-        <div className="bg-white border border-black/10 p-12 shadow-2xl max-w-lg w-full text-center relative z-10">
+        <div className="bg-white border-4 border-black p-12 shadow-[12px_12px_0_rgba(0,0,0,1)] max-w-lg w-full text-center relative z-10">
           <AlertCircle className="w-16 h-16 mx-auto mb-6 text-red-500" />
           <h1 className="font-heading text-4xl text-brand-text mb-4 uppercase tracking-tighter">
             {error ? 'ORDER NOT FOUND' : 'TRACK YOUR ORDER'}
@@ -87,20 +120,20 @@ function OrderStatusContent() {
                  placeholder="SATYA-XXXXX" 
                  value={searchInput}
                  onChange={(e) => setSearchInput(e.target.value)}
-                 className="w-full bg-[#FAFAFA] border border-black/10 p-5 font-heading text-sm tracking-[0.2em] focus:outline-none focus:border-[var(--color-brand-primary)] focus:bg-white transition-all duration-300 placeholder:opacity-30"
+                 className="w-full bg-[#FAFAFA] border-2 border-black/10 p-5 font-heading text-sm tracking-[0.2em] focus:outline-none focus:border-black focus:bg-white transition-all duration-300 placeholder:opacity-30"
                />
                <div className="absolute inset-0 border border-black/5 pointer-events-none group-hover:border-black/20 transition-all" />
              </div>
-             <button type="submit" className="bg-black text-white py-5 font-heading text-xs tracking-[0.3em] font-black uppercase hover:bg-[var(--color-brand-primary)] transition-all shadow-xl shadow-black/10 hover:shadow-[0_10px_30px_rgba(241,90,36,0.3)]">
+             <button type="submit" className="bg-black text-white py-5 font-heading text-xs tracking-[0.3em] font-black uppercase hover:bg-[var(--color-brand-primary)] transition-all shadow-xl shadow-black/10">
                INITIATE TRACKING
              </button>
           </form>
 
-          <div className="mt-10 flex flex-col gap-4 border-t border-black/5 pt-8">
-             <Link href="/" className="text-brand-text/40 font-heading text-[10px] tracking-widest hover:text-black transition-all">
+          <div className="mt-10 flex flex-col gap-4 border-t-4 border-black/5 pt-8">
+             <Link href="/" className="text-black/40 font-heading text-[10px] tracking-widest hover:text-black transition-all">
                RETURN TO HUB
              </Link>
-             <Link href="/contact" className="text-brand-text/40 font-heading text-[10px] tracking-widest hover:text-black transition-all">
+             <Link href="/contact" className="text-black/40 font-heading text-[10px] tracking-widest hover:text-black transition-all">
                CONTACT ARCHITECTS
              </Link>
           </div>

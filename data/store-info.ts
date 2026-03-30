@@ -7,7 +7,7 @@ export const storeInfo = {
   address: "27, Satyam Theatre Rd, Kumar Basti, Srinivasa Nagar, Ameerpet, Hyderabad, Telangana 500016, India.",
   phone: "9640272323",
   whatsapp: "919640272323",
-  email: "info@satyacomputers.in",
+  email: "satyacomputers01@gmail.com",
   services: [
     "Laptop and Desktop sales",
     "Repair services and hardware upgrades",

@@ -45,7 +45,19 @@ const HUDLabel = ({ text, top, left, delay }: { text: string; top: string; left:
   );
 };
 
-export default function SplitHero() {
+export default function SplitHero({ spotlightProduct }: { spotlightProduct?: any }) {
+  // Use DB product or fallback to default
+  const product = spotlightProduct || {
+    name: "Dell XPS 14",
+    brand: "DELL",
+    processor: "Ultra 7 155H",
+    ram: "32GB",
+    storage: "RTX 4050",
+    price: 27200,
+    mrp: 170000,
+    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=1200"
+  };
+
   const [, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -293,8 +305,8 @@ export default function SplitHero() {
                 </div>
                 
                 <img
-                  src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=1200"
-                  alt="Dell XPS 14"
+                  src={product.image}
+                  alt={product.name}
                   className="w-full h-full object-cover relative z-10 drop-shadow-[0_40px_80px_rgba(0,0,0,0.95)]
                     transition-all duration-1000 ease-out
                     group-hover/main:scale-110 group-hover/main:-rotate-3"
@@ -317,18 +329,18 @@ export default function SplitHero() {
                 
                 <div className="relative z-20">
                   <h3 className="font-heading text-[2.6rem] md:text-[3.2rem] text-black uppercase leading-[0.82] tracking-[-0.03em] font-black mb-6">
-                    Dell XPS 14<br/>
-                    <span className="text-[var(--color-brand-primary)] italic">STUDIO</span>
+                    {product.name.split(' ').slice(0, 2).join(' ')}<br/>
+                    <span className="text-[var(--color-brand-primary)] italic">{product.name.split(' ').slice(2).join(' ') || 'STUDIO'}</span>
                   </h3>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="border-l-[3px] border-black pl-3">
                       <span className="block font-heading text-[8px] text-black/30 tracking-[0.4em] mb-1.5 uppercase font-bold">ARC ENGINE</span>
-                      <span className="block font-body text-[12px] font-black text-black uppercase">Ultra 7 155H</span>
+                      <span className="block font-body text-[12px] font-black text-black uppercase">{product.processor}</span>
                     </div>
                     <div className="border-l-[3px] border-black/10 pl-3">
-                      <span className="block font-heading text-[8px] text-black/30 tracking-[0.4em] mb-1.5 uppercase font-bold">V-CARD</span>
-                      <span className="block font-body text-[12px] font-black text-black uppercase">RTX 4050</span>
+                      <span className="block font-heading text-[8px] text-black/30 tracking-[0.4em] mb-1.5 uppercase font-bold">MEMORY/GFX</span>
+                      <span className="block font-body text-[12px] font-black text-black uppercase">{product.ram} / {product.storage}</span>
                     </div>
                   </div>
                 </div>
@@ -344,11 +356,11 @@ export default function SplitHero() {
                     <div className="group-hover/main:-translate-y-full transition-transform duration-500 ease-in-out">
                       <div className="h-12 flex flex-col justify-end">
                         <p className="font-heading text-[8px] text-black/30 tracking-[0.3em] mb-1 uppercase font-bold">MKT VALUE</p>
-                        <p className="font-body text-3xl font-black text-black leading-none tracking-tighter">₹1,70,000</p>
+                        <p className="font-body text-3xl font-black text-black leading-none tracking-tighter">₹{product.mrp?.toLocaleString()}</p>
                       </div>
                       <div className="h-12 flex flex-col justify-end">
                         <p className="font-heading text-[8px] text-[var(--color-brand-primary)] tracking-[0.3em] mb-1 uppercase font-bold">OUR PRICE</p>
-                        <p className="font-body text-3xl font-black text-[var(--color-brand-primary)] leading-none tracking-tighter">₹27,200</p>
+                        <p className="font-body text-3xl font-black text-[var(--color-brand-primary)] leading-none tracking-tighter">₹{product.price?.toLocaleString()}</p>
                       </div>
                     </div>
                   </div>
