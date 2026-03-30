@@ -6,6 +6,7 @@ export interface Product {
   category?: 'business' | 'gaming' | 'creator' | 'student' | 'ultrabook' | 'workstation' | '2-in-1' | 'parts';
   price: number;
   originalPrice: number;
+  mrp?: number;
   image: string;
   images?: string[];
   badge?: 'NEW' | 'HOT' | 'SALE';

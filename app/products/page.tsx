@@ -30,7 +30,7 @@ export default async function ProductsPage() {
         brand: row.brand,
         category: row.category,
         price: row.price,
-        originalPrice: row.price * 1.2, // Mock original price
+        originalPrice: row.mrp || (row.price * 1.2), // Mock original price if mrp is missing
         image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http') || row.image.startsWith('data:'))) 
           ? row.image 
           : (row.image ? `/uploads/${row.image}` : '/products/dell_laptop_premium.png'),

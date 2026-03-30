@@ -25,7 +25,14 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart({ productId: product.id, name: product.name, price: product.price, image: product.image, quantity: 1 });
+    addToCart({ 
+      productId: product.id, 
+      name: product.name, 
+      price: product.price, 
+      image: product.image, 
+      quantity: 1,
+      originalPrice: product.mrp || (product.price + 2000)
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -77,7 +84,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Top Identity Bar */}
         <div className="flex items-center justify-between px-4 py-2.5 bg-[#FAFAFA] border-b border-black/5">
-          <span className="font-heading text-[9px] tracking-[0.3em] text-black/35 uppercase">SYS: {product.brand.slice(0, 4)}.{product.id.slice(-4)}</span>
+          <span className="font-heading text-[9px] tracking-[0.3em] text-black/35 uppercase">ID: {product.id.toString().toUpperCase()}</span>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5">
               <motion.div
@@ -179,6 +186,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             <p className="font-body text-[11px] text-black/45 line-clamp-2 leading-relaxed mb-4">
               {product.description}
             </p>
+
+            <div className="flex items-center gap-6 mb-8 py-4 border-y border-black/5">
+               <div>
+                  <p className="font-heading text-[10px] tracking-[0.3em] text-black/30 mb-1 font-bold uppercase">PRODUCT_ID</p>
+                  <p className="font-body text-sm font-black text-black tracking-widest">{product.id.toString().toUpperCase()}</p>
+               </div>
+               <div className="w-px h-10 bg-black/5" />
+               <div>
+                  <p className="font-heading text-[10px] tracking-[0.3em] text-black/30 mb-1 font-bold uppercase">CATEGORY</p>
+                  <p className="font-body text-sm font-black text-black tracking-widest">{(product.category || 'GENERAL').toUpperCase()}</p>
+               </div>
+            </div>
 
             {/* Tech Specs Grid */}
             <div className="grid grid-cols-2 gap-2 border-t border-black/5 pt-4">

@@ -9,7 +9,7 @@ import GrainOverlay from '@/components/ui/GrainOverlay';
 import { Trash2 } from 'lucide-react';
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const { items, removeFromCart, updateQuantity, cartTotal, cartOriginalTotal, cartDiscount } = useCart();
 
   return (
     <main className="min-h-screen bg-brand-bg relative pb-24">
@@ -89,16 +89,16 @@ export default function CartPage() {
             
             <div className="space-y-4 font-body text-brand-text/80 mb-8 border-b border-black/10 pb-8">
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>₹{cartTotal.toLocaleString('en-IN')}</span>
+                <span>Subtotal (MRP)</span>
+                <span className="line-through opacity-70">₹{cartOriginalTotal.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between text-[#F97316] font-bold">
+                <span>Discount</span>
+                <span>-₹{cartDiscount.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>Calculated at next step</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Discount</span>
-                <span>₹0</span>
               </div>
             </div>
             

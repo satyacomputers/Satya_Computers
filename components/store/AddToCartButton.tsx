@@ -15,7 +15,8 @@ export default function AddToCartButton({ product }: { product: Product }) {
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: 1
+      quantity: 1,
+      originalPrice: product.mrp || (product.price + 2000)
     });
   };
 

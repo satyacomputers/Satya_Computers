@@ -1,16 +1,15 @@
 import SplitHero from '@/components/sections/SplitHero';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import FlashSaleBanner from '@/components/sections/FlashSaleBanner';
-import TrustedMarquee from '@/components/sections/TrustedMarquee';
 import TestingProcess from '@/components/sections/TestingProcess';
 import MissionLogs from '@/components/sections/MissionLogs';
 import B2BTier from '@/components/sections/B2BTier';
-import CategoryGrid from '@/components/sections/CategoryGrid';
 import InteractiveFAQ from '@/components/sections/InteractiveFAQ';
 import EliteSelection from '@/components/sections/EliteSelection';
 import HotOffers from '@/components/sections/HotOffers';
 import SystemQuiz from '@/components/sections/SystemQuiz';
 import EcoImpact from '@/components/sections/EcoImpact';
+import HomeProductsSection from '@/components/sections/HomeProductsSection';
 import { 
   getFeaturedProducts, 
   getLiveAnnouncement, 
@@ -45,10 +44,9 @@ export default async function Home() {
       
       <FlashSaleBanner announcement={liveAnnouncement} />
       <SplitHero />
-      <TrustedMarquee partners={partners} />
       
-      <CategoryGrid counts={categoryStats} />
       <EliteSelection products={featuredProducts} />
+      <HomeProductsSection />
       <HotOffers offers={activeOffers} />
 
       <SystemQuiz />

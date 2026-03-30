@@ -92,20 +92,23 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
     const { 
-      name, brand, price, description, processor, ram, storage, 
+      name, brand, basePrice, price, mrp, description, processor, ram, storage, 
       display, bulkPrice5_10, bulkPrice11_25, bulkPrice26Plus, 
       stockStatus, isFeatured, minOrderQty, image, gallery, stock
     } = body;
 
     await client.execute({
       sql: `UPDATE "Product" SET 
-        name = ?, brand = ?, processor = ?, ram = ?, storage = ?, display = ?, price = ?, 
+        name = ?, brand = ?, processor = ?, ram = ?, storage = ?, display = ?, 
+        basePrice = ?, price = ?, mrp = ?, 
         bulkPrice5_10 = ?, bulkPrice11_25 = ?, bulkPrice26Plus = ?, minOrderQty = ?, 
         stockStatus = ?, description = ?, isFeatured = ?, image = ?, gallery = ?, stock = ?, updatedAt = CURRENT_TIMESTAMP
         WHERE id = ?`,
       args: [
         name, brand, processor || '', ram || '', storage || '', display || '', 
+        basePrice ? parseFloat(basePrice) : null,
         parseFloat(price), 
+        mrp ? parseFloat(mrp) : null,
         bulkPrice5_10 ? parseFloat(bulkPrice5_10) : null,
         bulkPrice11_25 ? parseFloat(bulkPrice11_25) : null,
         bulkPrice26Plus ? parseFloat(bulkPrice26Plus) : null,

@@ -20,12 +20,17 @@ import {
 const sections = [
   {
     icon: RotateCcw,
-    title: "14-Day Return Policy",
-    content: "You may request a return or replacement within 14 days of receiving your order, provided the item is damaged, defective, significantly different from description, or has missing parts/accessories."
+    title: "7-Day Return Policy",
+    content: "Return any product within 7 days of purchase if you are not satisfied. Units must be in their original refurbished state without any software modifications or physical damage."
+  },
+  {
+    icon: RefreshCcw,
+    title: "1-Month Replacement",
+    content: "1 month piece to piece replacement. You may request a unit replacement within 30 days of receiving your order if the item is technically defective or significantly different from description."
   },
   {
     icon: ShieldCheck,
-    title: "Warranty Policy (Beyond 14 Days)",
+    title: "Warranty Policy (Beyond 1-Month)",
     content: "Warranty terms vary by purchase. Covers 1-year for manufacturing defects and 6-months for battery/adapter. Not covered: Physical or accidental damage caused by the user. Resolution may take up to 30 days."
   },
   {
@@ -44,9 +49,9 @@ const sections = [
     content: "Undelivered (RTO): Refund initiated within 24–48 hours of warehouse receipt. Delivered (Customer Return): Inspection within 24–48 hours, refund credited in 14 business days to original payment method or bank transfer."
   },
   {
-    icon: RefreshCcw,
-    title: "Buyback Program",
-    content: "Return the product anytime during the warranty period with a minimum 10% or 3% per month depreciation (whichever is greater), minus charges for any customer-induced damage."
+    icon: HelpCircle,
+    title: "Lifetime Service Warranty",
+    content: "We offer a Lifetime Service Warranty on all our systems. While hardware replacement has a defined period, our labor and technical support for your machine are guaranteed for its entire operational life. Get priority assistance anytime."
   }
 ];
 
@@ -105,7 +110,7 @@ export default function RefundPolicyPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-6 bg-black text-white">
                     <h4 className="font-heading text-lg mb-2 uppercase text-[var(--color-brand-primary)]">Defective Products</h4>
-                    <p className="font-body text-xs text-white/50 tracking-widest leading-relaxed">No additional deductions, apart from usage-based depreciation if applicable after the 14-day window.</p>
+                    <p className="font-body text-xs text-white/50 tracking-widest leading-relaxed">No additional deductions, apart from usage-based depreciation if applicable after the 1-month replacement window.</p>
                   </div>
                   <div className="p-6 bg-[#FAFAFA] border border-black/5">
                     <h4 className="font-heading text-lg mb-2 uppercase">Non-Defective / Changed Mind</h4>

@@ -17,6 +17,8 @@ model Product {
   storage         String
   display         String?
   os              String?
+  basePrice       Float?
+  mrp             Float?
   price           Float
   bulkPrice5_10   Float?
   bulkPrice11_25  Float?

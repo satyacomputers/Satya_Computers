@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Laptop, Cpu, MonitorPlay, Check, Loader2, ArrowRight, BrainCircuit, BarChart, Server } from 'lucide-react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { getProductBySlug } from '@/data/products';
+import { useCart } from '@/lib/CartContext';
 
 type QuizStep = 'workload' | 'budget' | 'analyzing' | 'result';
 
@@ -14,9 +14,24 @@ export default function SystemQuiz() {
   const [workload, setWorkload] = useState('');
   const [budget, setBudget] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [recommendedProduct, setRecommendedProduct] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
+    // Fetch live products for recommendation engine
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setDbProducts(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch products for finder:', err);
+      }
+    }
+    fetchProducts();
   }, []);
   
   if (!mounted) return (
@@ -25,35 +40,56 @@ export default function SystemQuiz() {
     </div>
   );
   
-  const getRecommendation = () => {
-    // Better logic based on actual data
-    let id = "1"; // Default
-    
-    if (workload === 'vfx') {
-       // Creative: Needs good GPU/Apple
-       if (budget === 'high') id = "31"; // MacBook Pro M1 2021
-       else if (budget === 'mid') id = "28"; // MacBook Pro A1990
-       else id = "10"; // Dell Latitude 5401 (2GB Graphics)
-    } else if (workload === 'code') {
-       // DevOps: Needs RAM/CPU
-       if (budget === 'high') id = "23"; // ThinkPad P15
-       else if (budget === 'mid') id = "12"; // Dell Latitude 5420
-       else id = "11"; // Dell Latitude 3410
-    } else if (workload === 'ai') {
-       // AI: Needs ultimate RAM/VRAM
-       if (budget === 'high') id = "23"; // ThinkPad P15
-       else id = "22"; // ThinkPad P53
-    } else if (workload === 'office') {
-       // Corporate: Stability
-       if (budget === 'high') id = "13"; // Dell Latitude 5430
-       else if (budget === 'mid') id = "6"; // Dell Latitude 7490
-       else id = "4"; // Dell Latitude 3400
+  const updateRecommendation = (selectedWorkload: string, selectedBudget: string) => {
+    if (dbProducts.length === 0) return;
+
+    let filtered = [...dbProducts];
+
+    // Filter by Workload/Category affinity
+    if (selectedWorkload === 'vfx') {
+       // Creative: Prefer Apple or Workstations
+       const preferred = filtered.filter(p => 
+          p.brand.toLowerCase() === 'apple' || 
+          p.name.toLowerCase().includes('macbook') ||
+          p.name.toLowerCase().includes('graphics') ||
+          p.name.toLowerCase().includes('zbook')
+       );
+       if (preferred.length > 0) filtered = preferred;
+    } else if (selectedWorkload === 'office') {
+       // Business: Prefer Dell Latitude/Lenovo ThinkPad
+       const preferred = filtered.filter(p => 
+          p.name.toLowerCase().includes('latitude') || 
+          p.name.toLowerCase().includes('thinkpad') ||
+          p.brand.toLowerCase() === 'hp'
+       );
+       if (preferred.length > 0) filtered = preferred;
+    } else if (selectedWorkload === 'ai' || selectedWorkload === 'code') {
+       // Power: Prefer High RAM/Processor
+       const preferred = filtered.filter(p => 
+          (p.specs?.ram && parseInt(p.specs.ram) >= 16) || 
+          p.specs?.processor?.toLowerCase().includes('i7') ||
+          p.specs?.processor?.toLowerCase().includes('xeon') ||
+          p.specs?.processor?.toLowerCase().includes('m1')
+       );
+       if (preferred.length > 0) filtered = preferred;
     }
+
+    // Sort by Budget
+    const sorted = filtered.sort((a, b) => a.price - b.price);
     
-    return getProductBySlug(id) || getProductBySlug('1'); 
+    let result = sorted[0]; // Default to cheapest in filtered list
+    
+    if (selectedBudget === 'high') {
+       result = sorted[sorted.length - 1]; // Most expensive
+    } else if (selectedBudget === 'mid') {
+       result = sorted[Math.floor(sorted.length / 2)]; // Middle price
+    } else {
+       result = sorted[0]; // Entry level
+    }
+
+    setRecommendedProduct(result || dbProducts[0]);
   };
-  
-  const recommendedProduct = getRecommendation();
+
 
   const handleWorkloadSelect = (type: string) => {
     setWorkload(type);
@@ -63,6 +99,8 @@ export default function SystemQuiz() {
   const handleBudgetSelect = (b: string) => {
     setBudget(b);
     setStep('analyzing');
+    // Calculate recommendation based on choices
+    updateRecommendation(workload, b);
     // Simulate deep stack analysis
     setTimeout(() => setStep('result'), 3000);
   };
@@ -398,9 +436,9 @@ export default function SystemQuiz() {
                          <div className="pt-2 flex flex-col gap-1">
                            <div className="flex items-baseline gap-4">
                              <span className="font-body font-black text-5xl text-black tracking-tighter">
-                               ₹{recommendedProduct.price.toLocaleString('en-IN')}
+                               ₹{Number(recommendedProduct.price).toLocaleString('en-IN')}
                              </span>
-                             <span className="text-sm font-bold text-black/20 line-through">₹{(recommendedProduct.price * 1.25).toLocaleString('en-IN')}</span>
+                             <span className="text-sm font-bold text-black/20 line-through">₹{Number(recommendedProduct.mrp || recommendedProduct.price + 2000).toLocaleString('en-IN')}</span>
                            </div>
                            <div className="flex items-center gap-2">
                              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
@@ -418,7 +456,7 @@ export default function SystemQuiz() {
 
                   {/* Actions Area */}
                   <div className="flex flex-col sm:flex-row gap-5">
-                    <Link href={`/products/${recommendedProduct.slug}`} className="flex-[2]">
+                    <Link href={`/products/${recommendedProduct.id}`} className="flex-[2]">
                       <button 
                         type="button"
                         suppressHydrationWarning

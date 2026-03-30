@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import BrutalButton from '@/components/ui/BrutalButton';
 import { Search, Activity, Wifi, ShieldCheck, Box } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SpinningBadge = () => (
   <div className="absolute -bottom-14 -right-16 z-50 w-36 h-36 md:w-52 md:h-52 rounded-full border-2 border-black/10 bg-white/95 backdrop-blur-2xl flex items-center justify-center p-2 shadow-[0_30px_60px_rgba(0,0,0,0.25)] group/badge hover:scale-105 transition-transform duration-700">
@@ -136,12 +137,46 @@ export default function SplitHero() {
           </div>
         </div>
         
-        {/* Floating Trust Badge */}
-        <div className="mt-16 flex items-center gap-4 bg-gray-50 border border-black/5 px-4 py-3">
-           <ShieldCheck className="text-emerald-600" size={20} />
-           <p className="font-body text-[10px] font-bold text-black/40 tracking-widest uppercase">
-             Identity Verified & Enterprise Hardware Certified
-           </p>
+        {/* High-Fidelity Highlight Section */}
+        <div className="mt-16 w-full max-w-lg">
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="group relative p-6 bg-white border border-black/5 hover:border-[var(--color-brand-primary)] transition-all shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-2 opacity-5">
+                   <ShieldCheck size={48} className="text-black" />
+                </div>
+                <div className="relative z-10">
+                   <div className="w-8 h-8 rounded-full bg-[var(--color-brand-primary)]/10 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                      <ShieldCheck size={16} className="text-[var(--color-brand-primary)]" />
+                   </div>
+                   <h4 className="font-heading text-lg text-black uppercase tracking-tight mb-2 leading-none font-black">Lifetime Service<br/><span className="text-[var(--color-brand-primary)]">Warranty</span></h4>
+                   <p className="font-body text-[9px] text-black/40 tracking-[0.2em] font-bold uppercase leading-relaxed">Guaranteed labor & support for the existence of your hardware.</p>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, x: 10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="group relative p-6 bg-[#030303] text-white border border-white/5 hover:border-[var(--color-brand-primary)] transition-all shadow-2xl overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-2 opacity-10">
+                   <Box size={48} className="text-white" />
+                </div>
+                <div className="relative z-10">
+                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                      <Box size={16} className="text-[var(--color-brand-primary)]" />
+                   </div>
+                   <h4 className="font-heading text-lg text-white uppercase tracking-tight mb-2 leading-none font-black text-shadow-glow">1-Month <br/><span className="text-[var(--color-brand-primary)]">Replacement</span></h4>
+                   <p className="font-body text-[9px] text-white/40 tracking-[0.2em] font-bold uppercase leading-relaxed">Full unit piece-to-piece exchange for technical defects.</p>
+                </div>
+              </motion.div>
+           </div>
         </div>
       </div>
 

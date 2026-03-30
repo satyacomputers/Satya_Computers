@@ -37,7 +37,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         slug: row.id,
         brand: row.brand,
         price: row.price,
-        originalPrice: staticRaw && staticRaw.originalPrice ? staticRaw.originalPrice : row.price * 1.2,
+        originalPrice: staticRaw && staticRaw.originalPrice ? staticRaw.originalPrice : (row.mrp || row.price * 1.2),
         image: dbImage || (staticRaw ? staticRaw.image : '/products/dell_laptop_premium.png'),
         description: row.description || (staticRaw ? staticRaw.description : 'Professional workstation optimized for enterprise performance.'),
         badge: row.isFeatured ? 'HOT' : (staticRaw ? staticRaw.badge : undefined),
@@ -95,7 +95,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   try {
     const recResult = await client.execute({
       sql: 'SELECT * FROM "Product" WHERE id != ? AND (brand = ? OR category = ?) AND stock > 0 LIMIT 4',
-      args: [raw.id, raw.brand, raw.category]
+      args: [raw.id || '', raw.brand || '', raw.category || 'Laptop']
     });
     recommended = recResult.rows.map((row: any) => ({
       id: row.id,
@@ -104,7 +104,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       brand: row.brand,
       category: row.category,
       price: row.price,
-      originalPrice: row.price * 1.2,
+      originalPrice: row.mrp || (row.price * 1.2),
       image: (row.image && (row.image.startsWith('/') || row.image.startsWith('http') || row.image.startsWith('data:'))) 
         ? row.image 
         : (row.image ? `/uploads/${row.image}` : '/products/dell_laptop_premium.png'),

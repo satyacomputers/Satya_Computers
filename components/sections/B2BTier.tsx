@@ -1,50 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Globe, Truck, Calculator, ChevronRight, Check, Plus, X, ShoppingCart } from 'lucide-react';
 
-// ── Real products from the database, grouped logically ──────────────────────
+// ── Local Type Definition ──────────────────────
 type ProductItem = { id: string; name: string; brand: string; price: number };
-
-const ALL_PRODUCTS: ProductItem[] = [
-  // Apple
-  { id: 'p_36bc178a91ba', name: 'MacBook Pro A1990 (4GB Graphics)', brand: 'Apple', price: 36000 },
-  { id: 'p_27bb7b203372', name: 'MacBook Pro A2551', brand: 'Apple', price: 38000 },
-  { id: 'p_7c37a1104705', name: 'MacBook Air A2337 (2020)', brand: 'Apple', price: 40000 },
-  { id: 'p_19d57d84cf45', name: 'MacBook Pro A2141 (4GB Graphics)', brand: 'Apple', price: 42000 },
-  { id: 'p_37b162a8284d', name: 'MacBook Pro A2338', brand: 'Apple', price: 60000 },
-  { id: 'p_28aaf90bdf89', name: 'MacBook Pro A2485 (2021)', brand: 'Apple', price: 80000 },
-  // Dell
-  { id: 'p_d87265618a76', name: 'Basic Model (Dell/Lenovo)', brand: 'Dell', price: 6999 },
-  { id: 'p_113857d44916', name: 'Dell Latitude 3400', brand: 'Dell', price: 17000 },
-  { id: 'p_23abb605b45e', name: 'Dell Latitude 7480', brand: 'Dell', price: 17000 },
-  { id: 'p_c9556744b691', name: 'Dell Latitude 7490', brand: 'Dell', price: 18000 },
-  { id: 'p_24591f857721', name: 'Dell Latitude 7400', brand: 'Dell', price: 18000 },
-  { id: 'p_8f647f3b09df', name: 'Dell Latitude 7400 (i7)', brand: 'Dell', price: 21000 },
-  { id: 'p_c3c89cb3b28d', name: 'Dell Latitude 3410', brand: 'Dell', price: 22000 },
-  { id: 'p_3cd7b1830681', name: 'Dell Latitude 7490 (i7)', brand: 'Dell', price: 23000 },
-  { id: 'p_9bffc3a122e3', name: 'Dell Latitude 5401 (2GB Graphics)', brand: 'Dell', price: 26000 },
-  { id: 'p_a8b541641c11', name: 'Dell Latitude 5420', brand: 'Dell', price: 27000 },
-  { id: 'p_3b129dceea49', name: 'Dell Latitude 5430', brand: 'Dell', price: 32000 },
-  // HP
-  { id: 'p_d017ad238995', name: 'HP ProBook 430 G3', brand: 'HP', price: 19000 },
-  { id: 'p_f4d55c73c549', name: 'HP EliteBook 640 G5', brand: 'HP', price: 19000 },
-  { id: 'p_b68c3cad33ba', name: 'HP EliteBook 640 G9', brand: 'HP', price: 35000 },
-  { id: 'p_ac5cd533f89e', name: 'HP ZBook G5', brand: 'HP', price: 40000 },
-  // Lenovo
-  { id: 'p_312850dfd92e', name: 'Lenovo ThinkPad', brand: 'Lenovo', price: 10499 },
-  { id: 'p_c8761ac6a12a', name: 'Lenovo ThinkPad T570', brand: 'Lenovo', price: 15000 },
-  { id: 'p_62f518bcaa6e', name: 'Lenovo ThinkPad L380 Yoga', brand: 'Lenovo', price: 20000 },
-  { id: 'p_a1fb6cd64ab6', name: 'Lenovo ThinkPad T480', brand: 'Lenovo', price: 22000 },
-  { id: 'p_7d9a6b0860d8', name: 'Lenovo ThinkPad X280', brand: 'Lenovo', price: 22000 },
-  { id: 'p_f2e1fd77bb1c', name: 'Lenovo ThinkPad L13', brand: 'Lenovo', price: 23000 },
-  { id: 'p_9e1e07202f9b', name: 'Lenovo ThinkPad P51 (4GB Graphics)', brand: 'Lenovo', price: 23000 },
-  { id: 'p_e7a2491c175a', name: 'Lenovo ThinkPad L13 (i7)', brand: 'Lenovo', price: 28000 },
-  { id: 'p_485da5112d56', name: 'Lenovo ThinkPad P52 (4GB Graphics)', brand: 'Lenovo', price: 28000 },
-  { id: 'p_775a437a651d', name: 'Lenovo ThinkPad P53 (4GB Graphics)', brand: 'Lenovo', price: 35000 },
-  { id: 'p_7f7d6691fd4f', name: 'Lenovo ThinkPad P15 (4GB Graphics)', brand: 'Lenovo', price: 40000 },
-];
 
 const BRANDS = ['All', 'Dell', 'Lenovo', 'HP', 'Apple'];
 
@@ -58,14 +19,39 @@ const BRAND_COLORS: Record<string, string> = {
 type CartEntry = { product: ProductItem; qty: number };
 
 export default function B2BTier() {
+  const [allProducts, setAllProducts] = useState<ProductItem[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string>('All');
   const [cart, setCart] = useState<CartEntry[]>([]);
   const [showQuote, setShowQuote] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setAllProducts(data.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            brand: p.brand,
+            price: p.price
+          })));
+        }
+      } catch (err) {
+        console.error('B2B Fetch Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const filteredProducts =
     selectedBrand === 'All'
-      ? ALL_PRODUCTS
-      : ALL_PRODUCTS.filter((p) => p.brand === selectedBrand);
+      ? allProducts
+      : allProducts.filter((p) => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+
 
   const addToCart = (product: ProductItem) => {
     setCart((prev) => {

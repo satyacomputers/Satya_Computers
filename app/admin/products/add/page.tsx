@@ -28,7 +28,9 @@ export default function AddProduct() {
   const [formData, setFormData] = useState({
     name: '',
     brand: 'Dell',
+    basePrice: '',
     price: '',
+    mrp: '',
     description: '',
     processor: '',
     ram: '8GB',
@@ -58,7 +60,22 @@ export default function AddProduct() {
     if (type === 'checkbox') {
       setFormData(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      let updates: any = { [name]: value };
+      
+      if (name === 'basePrice' && value) {
+        const base = Number(value);
+        if (!isNaN(base)) {
+          const selling = Math.round(base * 1.18 + 900);
+          const mrpVal = selling + 2000;
+          updates.price = selling.toString();
+          updates.mrp = mrpVal.toString();
+        }
+      } else if (name === 'basePrice' && !value) {
+        updates.price = '';
+        updates.mrp = '';
+      }
+      
+      setFormData(prev => ({ ...prev, ...updates }));
     }
   };
 
@@ -151,10 +168,17 @@ export default function AddProduct() {
     setError('');
 
     try {
+      const payload = {
+        ...formData,
+        basePrice: Number(formData.basePrice) || 0,
+        price: Number(formData.price) || 0,
+        mrp: Number(formData.mrp) || 0
+      };
+
       const res = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -267,17 +291,23 @@ export default function AddProduct() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="price" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Market Valuation (₹) *</label>
+                  <label htmlFor="basePrice" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Base Price (Cost) (₹) *</label>
                   <input 
-                    id="price"
-                    name="price"
+                    id="basePrice"
+                    name="basePrice"
                     type="number" 
                     required
-                    value={formData.price}
+                    value={formData.basePrice}
                     onChange={handleChange}
-                    placeholder="25000"
+                    placeholder="10000"
                     className="w-full px-6 py-4 rounded-[1.5rem] border border-transparent bg-gray-50 focus:bg-white focus:border-[#F97316] outline-none transition-all font-black text-sm text-[#0A1628] shadow-inner"
                   />
+                  {formData.basePrice && (
+                    <div className="mt-3 px-2 flex gap-4 text-[10px] font-black uppercase tracking-widest text-[#F97316]">
+                       <p>Selling: ₹{(Number(formData.basePrice) * 1.18 + 900).toLocaleString('en-IN')}</p>
+                       <p className="text-gray-400">MRP: ₹{((Number(formData.basePrice) * 1.18 + 900) + 2000).toLocaleString('en-IN')}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -335,18 +365,15 @@ export default function AddProduct() {
               </div>
               <div className="space-y-2">
                 <label htmlFor="storage" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 ml-1">Persistent Storage (SSD) *</label>
-                <select 
+                <input 
                   id="storage"
                   name="storage"
-                  title="Storage Capacity Selection"
+                  type="text" 
                   value={formData.storage}
                   onChange={handleChange}
-                  className="w-full px-6 py-4 rounded-[1.5rem] border border-transparent bg-gray-50 focus:bg-white focus:border-[#F97316] outline-none transition-all font-black text-sm text-[#0A1628] shadow-inner"
-                >
-                  <option value="256GB SSD">256GB NVMe G4</option>
-                  <option value="512GB SSD">512GB NVMe G4</option>
-                  <option value="1TB SSD">1TB NVMe G4</option>
-                </select>
+                  placeholder="e.g. 128GB NVMe G4" 
+                  className="w-full px-6 py-4 rounded-[1.5rem] border border-transparent bg-gray-50 focus:bg-white focus:border-[#F97316] outline-none transition-all font-bold text-[#0A1628] shadow-inner" 
+                />
               </div>
               <div className="space-y-2">
                 <label htmlFor="display" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1 ml-1">Visual Matrix (Panel)</label>
