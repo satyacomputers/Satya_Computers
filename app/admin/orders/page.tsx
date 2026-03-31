@@ -27,6 +27,8 @@ export default function OrderManagement() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showOptionsId, setShowOptionsId] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -74,6 +76,53 @@ export default function OrderManagement() {
     }
   };
 
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editData) return;
+    setProcessingId(editData.id);
+    try {
+      const res = await fetch('/api/admin/orders/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editData)
+      });
+      if (res.ok) {
+        setOrders(prev => prev.map(o => o.id === editData.id ? editData : o));
+        setIsEditing(false);
+        setEditData(null);
+      } else {
+        const errorData = await res.json();
+        alert(`Modification Rejected: ${errorData.error}`);
+      }
+    } catch (err) {
+      alert('Internal link failure during modification.');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm('PROTOCOL TERMINATION: Are you certain you want to purge this record from history?')) return;
+    setProcessingId(id);
+    try {
+      const res = await fetch('/api/admin/orders', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        setOrders(prev => prev.map(o => o.id === id ? { ...o, status: 'DELETED_HIDDEN' } : o).filter(o => o.status !== 'DELETED_HIDDEN' && o.id !== id));
+        fetchOrders(); // Refresh to be safe
+      } else {
+        alert('Termination sequence failed at API level.');
+      }
+    } catch (err) {
+      alert('Link failure: Terminal purge aborted.');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const exportToCSV = () => {
     const headers = ['Identity', 'Corporate_Entity', 'Focal_Point', 'Unit_Count', 'Valuation_INR', 'Lifecycle_Status', 'Timestamp'];
     const rows = filteredOrders.map(o => [
@@ -104,17 +153,20 @@ export default function OrderManagement() {
 
   const filteredOrders = orders.filter(order => {
     // Robust case-insensitive and fuzzy matching
-    const orderStatus = order.status || 'Pending';
+    const orderStatus = (order.status || 'Pending').trim();
     const matchesFilter = filter === 'All' || orderStatus.toLowerCase() === filter.toLowerCase();
     
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = 
+    if (!matchesFilter) return false;
+
+    const searchLower = searchTerm.toLowerCase().trim();
+    if (!searchLower) return true;
+
+    return (
       order.companyName?.toLowerCase().includes(searchLower) ||
       order.contactPerson?.toLowerCase().includes(searchLower) ||
-      order.id?.toLowerCase().includes(searchLower) ||
-      order.orderId?.toLowerCase().includes(searchLower);
-      
-    return matchesFilter && matchesSearch;
+      (order.id && order.id.toLowerCase().includes(searchLower)) ||
+      (order.orderId && order.orderId.toLowerCase().includes(searchLower))
+    );
   });
 
   if (!mounted) return null;
@@ -309,21 +361,43 @@ export default function OrderManagement() {
                           <p className="px-6 py-2 text-[8px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-2">Internal Override</p>
                           {['Pending', 'Quote Sent', 'Confirmed', 'Delivered', 'Cancelled'].map((s) => (
                             <button
-                              key={s}
-                              disabled={processingId === order.id}
-                              title={`Set Status to ${s}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleUpdateStatus(order.id, s);
-                              }}
-                              className={`w-full text-left px-6 py-3 text-xs font-bold transition-all flex items-center justify-between ${
-                                order.status === s ? 'text-[#F97316] bg-orange-50/50' : 'text-gray-600 hover:bg-gray-50 hover:text-[#0A1628]'
-                              }`}
-                            >
-                              {s}
-                              {order.status === s && <CheckCircle2 size={12} />}
-                            </button>
-                          ))}
+                               key={s}
+                               disabled={processingId === order.id}
+                               title={`Set Status to ${s}`}
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 handleUpdateStatus(order.id, s);
+                               }}
+                               className={`w-full text-left px-6 py-3 text-xs font-bold transition-all flex items-center justify-between ${
+                                 order.status === s ? 'text-[#F97316] bg-orange-50/50' : 'text-gray-600 hover:bg-gray-50 hover:text-[#0A1628]'
+                               }`}
+                             >
+                               {s}
+                               {order.status === s && <CheckCircle2 size={12} />}
+                             </button>
+                           ))}
+                           <div className="h-px bg-gray-50 my-2" />
+                           <button
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               setEditData(order);
+                               setIsEditing(true);
+                               setShowOptionsId(null);
+                             }}
+                             className="w-full text-left px-6 py-3 text-xs font-black text-blue-600 hover:bg-blue-50 transition-all uppercase tracking-widest"
+                           >
+                             Modify Detail
+                           </button>
+                           <button
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handleDeleteOrder(order.id);
+                               setShowOptionsId(null);
+                             }}
+                             className="w-full text-left px-6 py-3 text-xs font-black text-red-500 hover:bg-red-50 transition-all uppercase tracking-widest"
+                           >
+                             Purge Record
+                           </button>
                         </div>
                       )}
                     </div>
@@ -334,6 +408,110 @@ export default function OrderManagement() {
           </AnimatePresence>
         )}
       </div>
+
+      {/* MODIFICATION MODAL */}
+      <AnimatePresence>
+        {isEditing && editData && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-white/80 backdrop-blur-md" 
+              onClick={() => setIsEditing(false)} 
+            />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-2xl bg-white rounded-[3rem] border border-gray-100 shadow-[0_40px_100px_rgba(0,0,0,0.1)] p-12"
+            >
+              <div className="flex items-center justify-between mb-10">
+                <h3 className="text-2xl font-heading font-black text-[#0A1628] uppercase tracking-tight">MODIFY PROTOCOL</h3>
+                <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-red-500"><XCircle size={24} /></button>
+              </div>
+              
+              <form onSubmit={handleEditSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Corporate Identity</label>
+                    <input 
+                      title="Company Name"
+                      placeholder="Enter company name"
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-sm shadow-inner"
+                      value={editData.companyName}
+                      onChange={e => setEditData({...editData, companyName: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Focal Point</label>
+                    <input 
+                      title="Contact Person"
+                      placeholder="Enter contact name"
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-sm shadow-inner"
+                      value={editData.contactPerson}
+                      onChange={e => setEditData({...editData, contactPerson: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Mail Access</label>
+                    <input 
+                      title="Email Address"
+                      placeholder="email@example.com"
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-sm shadow-inner"
+                      value={editData.email}
+                      onChange={e => setEditData({...editData, email: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Voice Comms</label>
+                    <input 
+                      title="Phone Number"
+                      placeholder="Enter phone number"
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-sm shadow-inner"
+                      value={editData.phone}
+                      onChange={e => setEditData({...editData, phone: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                   <div>
+                    <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Provisioned Units</label>
+                    <input 
+                      title="Total Units"
+                      placeholder="0"
+                      type="number"
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-sm shadow-inner"
+                      value={editData.totalUnits}
+                      onChange={e => setEditData({...editData, totalUnits: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2">Valuation (INR)</label>
+                    <input 
+                      title="Estimated Value"
+                      placeholder="0"
+                      type="number"
+                      className="w-full p-4 rounded-xl bg-gray-50 border border-transparent focus:border-[#F97316] outline-none transition-all font-bold text-sm shadow-inner"
+                      value={editData.estimatedValue}
+                      onChange={e => setEditData({...editData, estimatedValue: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-6">
+                  <button type="button" onClick={() => setIsEditing(false)} className="flex-1 py-4 rounded-2xl border border-gray-100 font-black text-[10px] uppercase tracking-widest text-gray-400 hover:bg-gray-50">Abort</button>
+                  <button type="submit" className="flex-[2] py-4 rounded-2xl bg-[#0A1628] text-white font-black text-[10px] uppercase tracking-widest hover:bg-[#F97316] shadow-xl">Apply Synchronization</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Audit Overlay Component */}
       <AnimatePresence>
