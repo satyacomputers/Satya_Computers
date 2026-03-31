@@ -2,6 +2,8 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { libsql as client } from '@/lib/prisma';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -15,6 +17,11 @@ export async function GET() {
 
 export async function DELETE(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Identity Verification Required' }, { status: 401 });
+    }
+
     const { id } = await req.json();
     if (!id) {
        return NextResponse.json({ error: 'Identity ID Required' }, { status: 400 });

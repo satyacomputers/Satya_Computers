@@ -26,23 +26,23 @@ export async function PATCH(req: Request) {
 
     await client.execute({
       sql: `UPDATE "Order" SET 
-        status = COALESCE(?, status),
-        companyName = COALESCE(?, companyName),
-        contactPerson = COALESCE(?, contactPerson),
-        email = COALESCE(?, email),
-        phone = COALESCE(?, phone),
-        totalUnits = COALESCE(?, totalUnits),
-        estimatedValue = COALESCE(?, estimatedValue),
+        status = CASE WHEN ? IS NULL THEN status ELSE ? END,
+        companyName = CASE WHEN ? IS NULL THEN companyName ELSE ? END,
+        contactPerson = CASE WHEN ? IS NULL THEN contactPerson ELSE ? END,
+        email = CASE WHEN ? IS NULL THEN email ELSE ? END,
+        phone = CASE WHEN ? IS NULL THEN phone ELSE ? END,
+        totalUnits = CASE WHEN ? IS NULL THEN totalUnits ELSE ? END,
+        estimatedValue = CASE WHEN ? IS NULL THEN estimatedValue ELSE ? END,
         updatedAt = CURRENT_TIMESTAMP 
         WHERE id = ?`,
       args: [
-        status || null, 
-        companyName || null, 
-        contactPerson || null, 
-        email || null, 
-        phone || null, 
-        totalUnits ? parseInt(totalUnits.toString()) : null,
-        estimatedValue ? parseFloat(estimatedValue.toString()) : null,
+        status || null, status || null,
+        companyName || null, companyName || null,
+        contactPerson || null, contactPerson || null,
+        email || null, email || null,
+        phone || null, phone || null,
+        totalUnits !== undefined ? parseInt(totalUnits.toString()) : null, totalUnits !== undefined ? parseInt(totalUnits.toString()) : null,
+        estimatedValue !== undefined ? parseFloat(estimatedValue.toString()) : null, estimatedValue !== undefined ? parseFloat(estimatedValue.toString()) : null,
         id
       ]
     });
