@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -18,34 +16,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file detected in transmission' }, { status: 400 });
     }
 
+    // Convert image to Base64 for direct Database Storage (Turso)
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    const name = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    
-    // Ensure upload directory exists
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // Ignore if directory exists
-    }
-
-    try {
-        const filePath = join(uploadDir, name);
-        await writeFile(filePath, buffer);
-        
-        return NextResponse.json({ 
-          success: true, 
-          url: `/uploads/${name}`,
-          name: name,
-          isEmbedded: false,
-          notice: "Asset persisted to local storage directory successfully."
-        });
-    } catch (fsError: any) {
-        console.error('File write failed:', fsError);
-        return NextResponse.json({ error: 'Failed to write asset to disk' }, { status: 500 });
-    }
+    return NextResponse.json({ 
+      success: true, 
+      url: base64Image,
+      name: file.name,
+      isEmbedded: true,
+      notice: "Asset converted to Base64 for Database Injection."
+    });
   } catch (error: any) {
     console.error('Core Upload Error:', error);
     return NextResponse.json({ error: error.message || 'Internal server error during transport' }, { status: 500 });
