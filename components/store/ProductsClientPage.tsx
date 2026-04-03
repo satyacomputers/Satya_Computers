@@ -3,9 +3,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/store/ProductCard';
 import type { Product } from '@/data/products';
-import { Filter } from 'lucide-react';
+import { Filter, X, ArrowRight, Table } from 'lucide-react';
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
@@ -42,6 +43,15 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Advanced Specs Filters
+  const [selectedProcessor, setSelectedProcessor] = useState<string | null>(null);
+  const [selectedRam, setSelectedRam] = useState<string | null>(null);
+  const [selectedStorage, setSelectedStorage] = useState<string | null>(null);
+
+  // Comparison State
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareList, setCompareList] = useState<Product[]>([]);
 
   // Initialize from search params
   useEffect(() => {
@@ -107,6 +117,26 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
     return Object.entries(badgeCounts).sort((a, b) => b[1] - a[1]);
   }, [badgeCounts]);
 
+  // Compute Spec Counts
+  const processorCounts = useMemo(() => {
+    return products.reduce((acc, p) => {
+      const proc = p.specs.processor.split(' ')[0]; // Group by i5, i7, etc.
+      acc[proc] = (acc[proc] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [products]);
+
+  const processors = useMemo(() => Object.entries(processorCounts).sort((a, b) => b[1] - a[1]), [processorCounts]);
+
+  const ramCounts = useMemo(() => {
+    return products.reduce((acc, p) => {
+      acc[p.specs.ram] = (acc[p.specs.ram] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [products]);
+
+  const rams = useMemo(() => Object.entries(ramCounts).sort((a, b) => parseInt(a[0]) - parseInt(b[0])), [ramCounts]);
+
   // Filter + sort products
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -143,6 +173,17 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
     // Price range filter
     if (priceRange[0] > priceBounds.min || priceRange[1] < priceBounds.max) {
       result = result.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    }
+
+    // Specs Filters
+    if (selectedProcessor) {
+      result = result.filter(p => p.specs.processor.startsWith(selectedProcessor));
+    }
+    if (selectedRam) {
+      result = result.filter(p => p.specs.ram === selectedRam);
+    }
+    if (selectedStorage) {
+      result = result.filter(p => p.specs.storage.includes(selectedStorage));
     }
 
     // Sorting
@@ -188,6 +229,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
   };
 
   const hasActiveFilters = searchQuery || selectedBrand || selectedBadge || 
+    selectedProcessor || selectedRam || selectedStorage ||
     priceRange[0] > priceBounds.min || priceRange[1] < priceBounds.max;
 
   const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`;
@@ -333,6 +375,16 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
                  STATUS: {selectedBadge} <span>×</span>
                </button>
              )}
+             {selectedProcessor && (
+               <button onClick={() => setSelectedProcessor(null)} className="border border-black px-2 py-1 font-heading text-[10px] flex items-center gap-2 hover:bg-[var(--color-brand-primary)] hover:text-white hover:border-transparent rounded">
+                  CPU: {selectedProcessor} <span>×</span>
+               </button>
+             )}
+             {selectedRam && (
+               <button onClick={() => setSelectedRam(null)} className="border border-black px-2 py-1 font-heading text-[10px] flex items-center gap-2 hover:bg-[var(--color-brand-primary)] hover:text-white hover:border-transparent rounded">
+                  RAM: {selectedRam} <span>×</span>
+               </button>
+             )}
              {selectedCategory && (
                <button onClick={() => setSelectedCategory(null)} className="border border-black px-2 py-1 font-heading text-[10px] flex items-center gap-2 hover:bg-[var(--color-brand-primary)] hover:text-white hover:border-transparent rounded">
                  CLASS: {selectedCategory} <span>×</span>
@@ -432,6 +484,46 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
               </div>
             </div>
 
+            {/* Processor Filter */}
+            <div className="space-y-4 pt-4 border-t border-black/5">
+              <h4 className="font-heading text-sm tracking-[0.2em] text-black uppercase">ARCHITECTURE</h4>
+              <div className="flex flex-wrap gap-2">
+                {processors.map(([proc, count]) => (
+                  <button
+                    key={proc}
+                    onClick={() => setSelectedProcessor(selectedProcessor === proc ? null : proc)}
+                    className={`px-3 py-1.5 font-heading text-[10px] tracking-widest transition-all border uppercase ${
+                      selectedProcessor === proc 
+                      ? 'bg-black text-white border-black' 
+                      : 'bg-white text-brand-text border-black/10 hover:border-black shadow-sm'
+                    }`}
+                  >
+                    {proc} <span className="opacity-40 ml-1">{count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* RAM Filter */}
+            <div className="space-y-4 pt-4 border-t border-black/5">
+              <h4 className="font-heading text-sm tracking-[0.2em] text-black uppercase">MEMORY</h4>
+              <div className="flex flex-wrap gap-2">
+                {rams.map(([ram, count]) => (
+                  <button
+                    key={ram}
+                    onClick={() => setSelectedRam(selectedRam === ram ? null : ram)}
+                    className={`px-3 py-1.5 font-heading text-[10px] tracking-widest transition-all border uppercase ${
+                      selectedRam === ram 
+                      ? 'bg-black text-white border-black' 
+                      : 'bg-white text-brand-text border-black/10 hover:border-black shadow-sm'
+                    }`}
+                  >
+                    {ram} <span className="opacity-40 ml-1">{count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Price Range - More robust UI */}
             <div className="space-y-6 pt-4 border-t border-black/5">
               <div className="flex items-center justify-between">
@@ -513,7 +605,20 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  isComparing={compareList.some(p => p.id === product.id)}
+                  onCompareToggle={() => {
+                    if (compareList.some(p => p.id === product.id)) {
+                      setCompareList(compareList.filter(p => p.id !== product.id));
+                    } else if (compareList.length < 4) {
+                      setCompareList([...compareList, product]);
+                    } else {
+                      alert("Maximum 4 products can be compared at once.");
+                    }
+                  }}
+                />
               ))}
             </div>
           ) : (
@@ -537,6 +642,154 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
           )}
         </div>
       </section>
+
+      {/* Comparison Tray */}
+      <AnimatePresence>
+        {compareList.length > 0 && (
+          <motion.div 
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="fixed bottom-0 left-0 right-0 z-[100] bg-black text-white p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]"
+          >
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+              <div className="flex items-center gap-6 overflow-x-auto pb-2 scrollbar-hide">
+                <div className="flex-shrink-0">
+                   <p className="font-heading text-xs tracking-widest text-[#F97316]">COMPARISON MODULE</p>
+                   <p className="font-body text-[10px] text-white/50">{compareList.length}/4 Selected</p>
+                </div>
+                <div className="flex gap-3">
+                   {compareList.map(p => (
+                     <div key={p.id} className="relative group/tray bg-white/10 p-1 flex items-center gap-2 border border-white/5 min-w-[120px]">
+                       <img src={p.image} className="w-8 h-8 object-contain bg-white/10" alt="" />
+                       <span className="font-heading text-[9px] tracking-wider truncate max-w-[80px]">{p.name}</span>
+                       <button 
+                         onClick={() => setCompareList(compareList.filter(x => x.id !== p.id))}
+                         title={`Remove ${p.name} from comparison`}
+                         aria-label={`Remove ${p.name} from comparison`}
+                         className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover/tray:opacity-100 transition-opacity"
+                       >
+                         <X size={8} />
+                       </button>
+                     </div>
+                   ))}
+                   {compareList.length < 4 && (
+                     <div className="border border-dashed border-white/20 p-1 flex items-center justify-center min-w-[120px] text-white/20 font-heading text-[8px] uppercase tracking-widest">
+                       Add to Compare
+                     </div>
+                   )}
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setCompareList([])}
+                  className="font-heading text-[10px] tracking-widest text-white/40 hover:text-white uppercase transition-colors"
+                >
+                  Clear
+                </button>
+                <button 
+                  onClick={() => setCompareMode(true)}
+                  disabled={compareList.length < 2}
+                  className={`flex items-center gap-2 px-6 py-2 font-heading text-xs tracking-widest uppercase transition-all ${compareList.length < 2 ? 'bg-white/10 text-white/20 cursor-not-allowed' : 'bg-[#F97316] text-white hover:bg-[#EA580C] hover:scale-105 active:scale-95'}`}
+                >
+                  Launch Comparison <ArrowRight size={14} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Comparison Modal Overlay */}
+      <AnimatePresence>
+        {compareMode && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl p-4 md:p-8 flex items-center justify-center"
+          >
+             <div className="bg-white w-full max-w-6xl h-full max-h-[85vh] overflow-hidden flex flex-col relative border-4 border-black">
+               {/* Header */}
+               <div className="bg-black text-white p-6 flex items-center justify-between">
+                 <div className="flex items-center gap-4">
+                   <Table className="text-[#F97316]" size={24} />
+                   <h2 className="font-heading text-3xl tracking-tighter uppercase">TECHNICAL COMPARISON MATRIX</h2>
+                 </div>
+                 <button 
+                   onClick={() => setCompareMode(false)}
+                   title="Close comparison matrix"
+                   aria-label="Close comparison matrix"
+                   className="hover:rotate-90 transition-transform p-1"
+                 >
+                   <X size={32} />
+                 </button>
+               </div>
+
+               {/* Content */}
+               <div className="flex-1 overflow-auto p-6">
+                 <div className="grid grid-cols-5 gap-0 border-t border-l border-black/10">
+                   {/* Labels Column */}
+                   <div className="col-span-1 bg-gray-50 border-r border-b border-black/10 p-4 pt-[180px] space-y-12">
+                     <div className="font-heading text-xs tracking-[0.2em] text-black/40 uppercase">ARCHITECTURE</div>
+                     <div className="font-heading text-xs tracking-[0.2em] text-black/40 uppercase">MEMORY_POOL</div>
+                     <div className="font-heading text-xs tracking-[0.2em] text-black/40 uppercase">DATA_STORAGE</div>
+                     <div className="font-heading text-xs tracking-[0.2em] text-black/40 uppercase">VISUAL_UNIT</div>
+                     <div className="font-heading text-xs tracking-[0.2em] text-black/40 uppercase">MARKET_COST</div>
+                   </div>
+
+                   {/* Products Columns */}
+                   {compareList.map(p => (
+                     <div key={p.id} className="col-span-1 border-r border-b border-black/10 flex flex-col">
+                       {/* Image & Name */}
+                       <div className="p-4 text-center border-b border-black/5 h-[180px] flex flex-col items-center justify-center bg-white">
+                         <img src={p.image} className="h-24 object-contain mb-4" alt="" />
+                         <h4 className="font-heading text-sm text-black uppercase tracking-wider line-clamp-1">{p.name}</h4>
+                       </div>
+                       
+                       {/* Specs */}
+                       <div className="p-4 h-[65px] flex items-center justify-center text-center border-b border-black/5">
+                         <span className="font-body text-xs font-bold text-black uppercase">{p.specs.processor}</span>
+                       </div>
+                       <div className="p-4 h-[65px] flex items-center justify-center text-center border-b border-black/5">
+                         <span className="font-body text-xs font-bold text-black uppercase">{p.specs.ram}</span>
+                       </div>
+                       <div className="p-4 h-[65px] flex items-center justify-center text-center border-b border-black/5">
+                         <span className="font-body text-xs font-bold text-black uppercase">{p.specs.storage}</span>
+                       </div>
+                       <div className="p-4 h-[65px] flex items-center justify-center text-center border-b border-black/5">
+                         <span className="font-body text-xs font-bold text-black uppercase">{p.specs.screen}</span>
+                       </div>
+                       <div className="p-4 h-[65px] flex flex-col items-center justify-center text-center bg-gray-50 border-b border-black/5">
+                         <span className="font-body text-lg font-black text-[#F97316]">₹{p.price.toLocaleString('en-IN')}</span>
+                       </div>
+                       
+                       <div className="p-4 h-[65px] flex items-center justify-center">
+                         <Link 
+                           href={`/products/${p.slug}`}
+                           className="bg-black text-white px-4 py-2 font-heading text-[10px] tracking-widest uppercase hover:bg-[#F97316] transition-colors w-full text-center"
+                         >
+                           View Specs
+                         </Link>
+                       </div>
+                     </div>
+                   ))}
+                   
+                   {/* Fill empty slots */}
+                   {[...Array(4 - compareList.length)].map((_, i) => (
+                     <div key={i} className="col-span-1 border-r border-b border-black/10 bg-gray-200/20 flex flex-col" />
+                   ))}
+                 </div>
+               </div>
+
+               <div className="p-6 bg-gray-50 border-t border-black text-right">
+                 <p className="font-body text-[11px] text-black/40 italic">Technical parameters verified by Satya Computers Q&A Lab.</p>
+               </div>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

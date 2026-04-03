@@ -9,9 +9,11 @@ import { useCart } from '@/lib/CartContext';
 
 interface ProductCardProps {
   product: Product;
+  isComparing?: boolean;
+  onCompareToggle?: () => void;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, isComparing, onCompareToggle }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
   const router = useRouter();
   const { addToCart, items, updateQuantity, removeFromCart } = useCart();
@@ -142,6 +144,34 @@ export default function ProductCard({ product }: ProductCardProps) {
               >
                 {product.badge}
               </motion.span>
+            </div>
+          )}
+
+          {/* Comparison Toggle Button */}
+          {onCompareToggle && (
+            <div className="absolute top-3 right-3 z-20">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onCompareToggle();
+                }}
+                title={isComparing ? "Remove from comparison" : "Add to comparison matrix"}
+                className={`flex items-center justify-center p-2 border transition-all ${
+                  isComparing 
+                  ? 'bg-[var(--color-gold)] text-white border-[var(--color-gold)] shadow-lg scale-110' 
+                  : 'bg-white/80 text-black/40 border-black/5 hover:text-black hover:bg-white'
+                }`}
+              >
+                <motion.div
+                  animate={{ rotate: isComparing ? 180 : 0 }}
+                  transition={{ type: 'spring', stiffness: 200 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />
+                  </svg>
+                </motion.div>
+              </button>
             </div>
           )}
 
