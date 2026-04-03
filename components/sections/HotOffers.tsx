@@ -122,7 +122,7 @@ export default function HotOffers({ offers }: HotOffersProps) {
                   </div>
                   
                   <Link 
-                    href={`https://wa.me/918309178589?text=I am interested in the offer: ${offer.title}`}
+                    href={`https://wa.me/919640272323?text=I am interested in the offer: ${offer.title}`}
                     target="_blank"
                     className="flex items-center gap-2 text-[11px] font-bold text-white uppercase tracking-widest group/btn"
                   >

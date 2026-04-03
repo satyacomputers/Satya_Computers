@@ -52,7 +52,10 @@ export default function ProductCard({ product }: ProductCardProps) {
     if (newIdx !== activeImgIdx) setActiveImgIdx(newIdx);
   };
 
-  const currentDisplayImage = product.images && product.images.length > 0 ? product.images[activeImgIdx] : product.image;
+  const FALLBACK_IMAGE = '/products/dell_laptop_premium.png';
+  const currentDisplayImage = (product.images && product.images.length > 0 && product.images[activeImgIdx]) 
+    ? product.images[activeImgIdx] 
+    : (product.image || FALLBACK_IMAGE);
 
   return (
     <motion.div
@@ -100,9 +103,17 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {(product.stockStatus || 'IN STOCK').toUpperCase()}
               </span>
             </div>
-            {product.stock !== undefined && product.stock > 0 && (
-              <span className="font-heading text-[9px] text-black/25">({product.stock})</span>
-            )}
+            {product.stock !== undefined && product.stock > 0 && product.stock <= 5 ? (
+              <motion.span 
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="font-heading text-[9px] text-red-600 font-bold uppercase tracking-widest bg-red-50 border border-red-100 px-1.5 py-0.5 ml-1"
+              >
+                {product.stock} Left - High Demand
+              </motion.span>
+            ) : product.stock !== undefined && product.stock > 5 ? (
+              <span className="font-heading text-[9px] text-black/40">({product.stock})</span>
+            ) : null}
           </div>
         </div>
 

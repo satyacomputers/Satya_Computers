@@ -18,11 +18,13 @@ import {
   Shield,
   User,
   Globe,
-  ShoppingCart
+  ShoppingCart,
+  CreditCard
 } from 'lucide-react';
 
 const navItems = [
   { id: 1, label: 'Overview', icon: LayoutDashboard, route: '/admin' },
+  { id: 12, label: 'UPI Tracking', icon: CreditCard, route: '/admin/payments/upi' },
   { id: 2, label: 'Inventory', icon: Laptop, route: '/admin/products' },
   { id: 4, label: 'Promotions', icon: Tag, route: '/admin/offers' },
   { id: 5, label: 'B2B Quotes', icon: Package, route: '/admin/orders' },

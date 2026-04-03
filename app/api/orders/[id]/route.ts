@@ -33,6 +33,8 @@ export async function GET(
         contactPerson: String(order.contactPerson),
         createdAt: String(order.createdAt),
         updatedAt: String(order.updatedAt),
+        paymentMethod: 'B2B',
+        paymentStatus: 'Net-30/Terms'
       });
     }
 
@@ -56,9 +58,12 @@ export async function GET(
         status: String(order.orderStatus),
         displayStatus: statusMap[String(order.orderStatus)] || 'placed',
         companyName: String(order.customerName),
-        contactPerson: String(order.customerName), // Use customer name as contact person
+        contactPerson: String(order.customerName),
         createdAt: String(order.createdAt),
         updatedAt: String(order.updatedAt),
+        paymentMethod: String(order.paymentMethod || 'COD'),
+        paymentStatus: String(order.paymentStatus || 'Pending'),
+        transactionId: order.transactionId ? String(order.transactionId) : null
       });
     }
 

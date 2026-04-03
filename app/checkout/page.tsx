@@ -1,29 +1,116 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import BrutalButton from '@/components/ui/BrutalButton';
 import GrainOverlay from '@/components/ui/GrainOverlay';
-import { Check, ClipboardList, MapPin, Phone, Mail } from 'lucide-react';
+import { Check, MapPin, X, ShieldCheck, Loader2, Smartphone, Download, Share2, Info, Terminal } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
+
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+].sort();
 
 export default function CheckoutPage() {
+  const [mounted, setMounted] = useState(false);
   const { cartTotal, clearCart, items } = useCart();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReviewing, setIsReviewing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'COD' | 'UPI'>('COD');
+  const [showUpiModal, setShowUpiModal] = useState(false);
+  const [transactionId, setTransactionId] = useState('');
+  const [orderSuccess, setOrderSuccess] = useState<{ id: string } | null>(null);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     fullName: '',
     whatsapp: '',
     email: '',
-    street: '',
+    houseNo: '',
+    village: '',
+    mandal: '',
+    post: '',
+    area: '',
+    landmark: '',
     city: '',
+    stateRaw: 'Telangana',
     pincode: ''
   });
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isPincodeLoading, setIsPincodeLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.id]: e.target.value }));
+  useEffect(() => {
+    const savedUser = localStorage.getItem('satya_user');
+    setIsLoggedIn(!!savedUser);
+    setAuthLoading(false);
+  }, []);
+
+  const adminUpi = "9133772323-2@ybl";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const rawUpiLink = useMemo(() => {
+    const amount = cartTotal.toFixed(2);
+    const orderId = 'SATYA' + Date.now();
+    return `upi://pay?pa=${adminUpi}&pn=Satya%20Computers&am=${amount}&cu=INR&tn=SatyaOrder&tr=${orderId}`;
+  }, [cartTotal]);
+
+  useEffect(() => {
+    if (orderSuccess) {
+      const steps = [
+        "[sys] Securing hardware allocation... OK",
+        "[sys] Establishing encrypted payment handshake... OK",
+        "[net] Transmitting UTR to Ameerpet dispatch terminal... ACK",
+        `[net] Notification transmitted to +91${formData.whatsapp}.`,
+        `[ok] DEPLOYMENT ID: ${orderSuccess.id} AUTHORIZED. Redirecting...`
+      ];
+      let currentStep = 0;
+      const interval = setInterval(() => {
+        if (currentStep < steps.length) {
+          setTerminalLogs(prev => [...prev, steps[currentStep]]);
+          currentStep++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => { router.push(`/order-status?id=${orderSuccess.id}`); }, 1500);
+        }
+      }, 700);
+      return () => clearInterval(interval);
+    }
+  }, [orderSuccess]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+
+    if (id === 'pincode' && value.length === 6 && /^[0-9]+$/.test(value)) {
+      lookupPincode(value);
+    }
+  };
+
+  const lookupPincode = async (pincode: string) => {
+    setIsPincodeLoading(true);
+    try {
+      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await response.json();
+      if (data[0].Status === "Success") {
+        const postOffice = data[0].PostOffice[0];
+        setFormData(prev => ({ 
+          ...prev, 
+          city: postOffice.District || prev.city, 
+          stateRaw: postOffice.State || prev.stateRaw,
+          mandal: postOffice.Block && postOffice.Block !== 'NA' ? postOffice.Block : prev.mandal,
+          post: postOffice.Name || prev.post
+        }));
+      }
+    } catch (err) { console.error("Pincode lookup failure"); }
+    finally { setIsPincodeLoading(false); }
   };
 
   const toggleReview = (e: React.FormEvent) => {
@@ -33,10 +120,35 @@ export default function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSubmit = async () => {
+  const downloadQr = () => {
+    try {
+      const canvas = document.querySelector('canvas');
+      if (!canvas) return;
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Satya-Pay-QR.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) { alert("Encryption Error."); }
+  };
+
+  const sharePayment = () => {
+    if (navigator.share) {
+      navigator.share({ title: 'Pay Satya Computers', text: `Authorize deployment of ₹${cartTotal.toLocaleString()} to Satya Computers.`, url: rawUpiLink }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(rawUpiLink);
+      alert('Protocol Copied');
+    }
+  };
+
+  const handleSubmitOrder = async () => {
     if (items.length === 0) return;
+    if (paymentMethod === 'UPI' && !showUpiModal) { setShowUpiModal(true); return; }
     
     setIsSubmitting(true);
+    const professionalAddress = `${formData.houseNo}, ${formData.village}, ${formData.mandal}, ${formData.post}, ${formData.area}, Landmark: ${formData.landmark || 'N/A'}, ${formData.city}, ${formData.stateRaw} - ${formData.pincode}. Email: ${formData.email}${paymentMethod === 'COD' ? ' [COD ORDER]' : ''}`;
     
     try {
       const res = await fetch('/api/orders', {
@@ -44,314 +156,256 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: formData.fullName,
-          email: formData.email,
+          email: formData.email || '',
           whatsapp: formData.whatsapp,
-          address: `${formData.street}, ${formData.city} - ${formData.pincode}`,
+          address: professionalAddress,
+          city: formData.city,
+          state: formData.stateRaw,
+          pincode: formData.pincode,
           cartItems: items.map(i => ({ id: i.id, name: i.name, quantity: i.quantity, price: i.price, image: i.image })),
           totalPrice: cartTotal,
-          paymentMethod: paymentMethod
+          paymentMethod: paymentMethod,
+          transactionId: transactionId || null,
+          paymentStatus: paymentMethod === 'UPI' ? 'Paid (Pending Verification)' : 'Unpaid'
         })
       });
 
-      if (!res.ok) {
-        throw new Error('Failed to place order');
-      }
-
-      const data = await res.json();
+      if (!res.ok) throw new Error('Registry rejection');
       clearCart();
-      router.push(`/order-status?id=${data.orderId}`);
-    } catch (err: any) {
-      alert('Error placing order: ' + err.message);
-      setIsSubmitting(false);
-    }
+      const data = await res.json();
+      setOrderSuccess({ id: data.orderId });
+    } catch (err: any) { alert('Sync Failure: ' + err.message); setIsSubmitting(false); }
   };
 
+  if (!mounted || authLoading) return null;
+
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-brand-bg flex items-center justify-center p-4">
+        <GrainOverlay opacity={30} />
+        <div className="bg-white border-4 border-black p-12 shadow-[12px_12px_0_rgba(241,90,36,1)] max-w-lg w-full text-center relative z-10">
+          <div className="w-20 h-20 bg-[var(--color-brand-primary)] border-4 border-black flex items-center justify-center mx-auto mb-8 text-white shadow-xl">
+             <ShieldCheck size={40} />
+          </div>
+          <h1 className="font-heading text-4xl text-brand-text mb-4 uppercase tracking-tighter">AUTHENTICATION <span className="text-[var(--color-brand-primary)]">REQUIRED</span></h1>
+          <p className="font-body text-brand-text/60 mb-10 uppercase text-[10px] tracking-[0.25em] font-bold text-black/50">To proceed with hardware deployment, you must first access your Satya Computers account.</p>
+          <Link href="/account" className="w-full"><BrutalButton className="w-full !h-16 text-lg uppercase">SIGN IN / CREATE ACCOUNT</BrutalButton></Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-brand-bg relative pb-24">
+    <main className="min-h-screen bg-brand-bg relative pb-24 font-body overflow-x-hidden">
       <GrainOverlay opacity={30} />
       
-      <section className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative border-b border-white/10">
-        <h1 className="font-heading text-6xl md:text-8xl text-brand-text tracking-tight mb-4 uppercase">
-          {isReviewing ? 'REVIEW' : 'SECURE'} <span className="text-[var(--color-gold)]">{isReviewing ? 'DETAILS' : 'CHECKOUT'}</span>
+      <section className="pt-20 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative border-b border-white/10">
+        <h1 className="font-heading text-5xl md:text-8xl text-brand-text tracking-tight mb-4 uppercase">
+          {isReviewing ? 'VERIFY' : 'SECURE'} <span className="text-[var(--color-gold)]">{isReviewing ? 'DEPOSIT' : 'CHECKOUT'}</span>
         </h1>
-        <p className="font-body text-xl text-brand-text/50 uppercase tracking-[0.2em]">
-          {isReviewing ? 'Verify Deployment Coordinates' : 'Finalize Your Deployment'}
-        </p>
+        <p className="text-sm md:text-lg text-brand-text/50 uppercase tracking-[0.3em] font-black underline decoration-[var(--color-gold)] decoration-4 underline-offset-8">AUTHORIZED DEPLOYMENT PROTOCOL</p>
       </section>
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-12">
-        
-        {/* Checkout Form or Review */}
-        <div className="w-full lg:w-2/3">
+      <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-16">
+        <div className="w-full lg:w-2/3 order-2 lg:order-1">
           {!isReviewing ? (
-            <form onSubmit={toggleReview} className="bg-white border border-black/10 p-8 md:p-12 shadow-2xl flex flex-col gap-10">
-              <div>
-                <div className="flex items-center gap-4 mb-8">
-                  <ClipboardList className="text-[var(--color-gold)]" size={24} />
-                  <h3 className="font-heading text-3xl text-brand-text uppercase tracking-tighter">CONTACT INFO</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-body text-brand-text">
-                  <div className="relative group">
-                    <label htmlFor="fullName" className="block text-[10px] font-heading tracking-widest text-brand-text/40 mb-2 uppercase">Full Name</label>
-                    <input 
-                      id="fullName" 
-                      required 
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      className="w-full bg-gray-50/50 border border-black/10 p-4 focus:outline-none focus:border-[var(--color-gold)] transition-colors text-brand-text uppercase placeholder:normal-case" 
-                      type="text" 
-                      placeholder="ENTER LEGAL NAME"
-                    />
+            <div className="bg-white border-4 border-black p-6 md:p-12 shadow-[20px_20px_0_0_rgba(0,0,0,0.05)]">
+              <form onSubmit={toggleReview} className="space-y-12">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 border-b-2 border-black pb-4">
+                    <Smartphone className="text-[var(--color-gold)]" />
+                    <h3 className="font-heading text-2xl uppercase tracking-tighter">CLIENT IDENTIFIER</h3>
                   </div>
-                  <div>
-                    <label htmlFor="whatsapp" className="block text-[10px] font-heading tracking-widest text-brand-text/40 mb-2 uppercase">WhatsApp Number</label>
-                    <div className="flex">
-                      <span className="bg-gray-100 border border-r-0 border-black/10 p-4 font-body text-sm">+91</span>
-                      <input 
-                        id="whatsapp" 
-                        required 
-                        value={formData.whatsapp}
-                        onChange={handleChange}
-                        className="w-full bg-gray-50/50 border border-black/10 p-4 focus:outline-none focus:border-[var(--color-gold)] transition-colors text-brand-text" 
-                        type="tel" 
-                        pattern="[0-9]{10}"
-                        placeholder="83091XXXXX"
-                      />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input id="fullName" required value={formData.fullName} onChange={handleChange} title="Legal Name" className="w-full bg-gray-50 p-6 border-2 border-black focus:bg-white outline-none font-bold uppercase transition-all" placeholder="Legal Name" />
+                    <input id="email" type="email" required value={formData.email} onChange={handleChange} title="Email Address" className="w-full bg-gray-50 p-6 border-2 border-black focus:bg-white outline-none font-bold transition-all" placeholder="Email Address" />
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 border-b-2 border-black pb-4">
+                    <MapPin className="text-[var(--color-brand-primary)]" />
+                    <h3 className="font-heading text-2xl uppercase tracking-tighter">SURFACE DOMAIN (ADDRESS)</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Phone Number</label>
+                      <input id="whatsapp" required pattern="[0-9]{10}" value={formData.whatsapp} onChange={handleChange} title="Phone" className="w-full bg-gray-50 p-6 border-2 border-black font-bold" placeholder="WhatsApp Number" />
                     </div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label htmlFor="email" className="block text-[10px] font-heading tracking-widest text-brand-text/40 mb-2 uppercase">Email Address (FOR INVOICE)</label>
-                    <input 
-                      id="email" 
-                      required 
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full bg-gray-50/50 border border-black/10 p-4 focus:outline-none focus:border-[var(--color-gold)] transition-colors text-brand-text" 
-                      type="email" 
-                      placeholder="arch@satyacomputers.topiko.com"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-black/5 pt-10">
-                <div className="flex items-center gap-4 mb-8">
-                  <MapPin className="text-[var(--color-brand-primary)]" size={24} />
-                  <h3 className="font-heading text-3xl text-brand-text uppercase tracking-tighter">SHIPPING DOMAIN</h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-body text-brand-text">
-                  <div className="md:col-span-2">
-                    <label htmlFor="street" className="block text-[10px] font-heading tracking-widest text-brand-text/40 mb-2 uppercase">Street Address</label>
-                    <input 
-                      id="street" 
-                      required 
-                      value={formData.street}
-                      onChange={handleChange}
-                      className="w-full bg-gray-50/50 border border-black/10 p-4 focus:outline-none focus:border-[var(--color-gold)] transition-colors text-brand-text uppercase placeholder:normal-case" 
-                      type="text" 
-                      placeholder="HOUSE / OFFICE NO, STREET"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="city" className="block text-[10px] font-heading tracking-widest text-brand-text/40 mb-2 uppercase">City</label>
-                    <input 
-                      id="city" 
-                      required 
-                      value={formData.city}
-                      onChange={handleChange}
-                      className="w-full bg-gray-50/50 border border-black/10 p-4 focus:outline-none focus:border-[var(--color-gold)] transition-colors text-brand-text uppercase placeholder:normal-case" 
-                      type="text" 
-                      placeholder="HYDERABAD"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="pincode" className="block text-[10px] font-heading tracking-widest text-brand-text/40 mb-2 uppercase">Pincode</label>
-                    <input 
-                      id="pincode" 
-                      required 
-                      value={formData.pincode}
-                      onChange={handleChange}
-                      className="w-full bg-gray-50/50 border border-black/10 p-4 focus:outline-none focus:border-[var(--color-gold)] transition-colors text-brand-text" 
-                      type="text" 
-                      placeholder="5000XX"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-black/5 pt-10">
-                <h3 className="font-heading text-3xl text-brand-text mb-8 uppercase tracking-tighter">PAYMENT METHOD</h3>
-                <div className="space-y-4">
-                  <label className={`flex items-center gap-4 p-6 border-2 cursor-pointer group transition-all relative overflow-hidden ${paymentMethod === 'COD' ? 'border-[var(--color-brand-primary)] bg-orange-50/30 shadow-[0_4px_20px_rgba(241,90,36,0.1)]' : 'border-black/5 hover:border-black/20'}`}>
-                    {paymentMethod === 'COD' && (
-                      <div className="absolute top-0 right-0 bg-[var(--color-brand-primary)] text-white text-[8px] font-heading tracking-[0.2em] px-3 py-1 uppercase z-10">
-                        RECOMMENDED
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Pincode</label>
+                      <div className="relative">
+                        <input id="pincode" required maxLength={6} pattern="[0-9]{6}" value={formData.pincode} onChange={handleChange} title="Pincode" className="w-full bg-gray-50 p-6 border-2 border-black font-bold" placeholder="6-Digit Pincode" />
+                        {isPincodeLoading && <div className="absolute right-4 top-1/2 -translate-y-1/2"><Loader2 className="animate-spin text-[var(--color-brand-primary)]" size={20} /></div>}
                       </div>
-                    )}
-                    <input 
-                      type="radio" 
-                      name="payment" 
-                      checked={paymentMethod === 'COD'} 
-                      onChange={() => setPaymentMethod('COD')}
-                      className="accent-[var(--color-brand-primary)] w-5 h-5 shrink-0" 
-                    />
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="font-heading text-xl text-brand-text">CASH ON DELIVERY (COD)</span>
-                        <div className="hidden sm:block px-2 py-0.5 border border-[var(--color-brand-primary)]/30 text-[var(--color-brand-primary)] text-[8px] font-heading tracking-widest uppercase rounded">
-                           Zero Risk
-                        </div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">City / District</label>
+                    <input id="city" required value={formData.city} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold uppercase" placeholder="City / District" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">House/Building/Floor</label>
+                    <input id="houseNo" required value={formData.houseNo} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold capitalize" placeholder="House No., Building Name" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Village / Town</label>
+                      <input id="village" required value={formData.village} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold capitalize" placeholder="Village / Town" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Mandal / Tehsil</label>
+                      <input id="mandal" required value={formData.mandal} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold capitalize" placeholder="Mandal / Tehsil" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Post Office</label>
+                      <input id="post" required value={formData.post} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold capitalize" placeholder="Post Office" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Road/Area/Colony</label>
+                      <input id="area" required value={formData.area} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold capitalize" placeholder="Road, Area, Colony" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">Landmark (Optional)</label>
+                      <input id="landmark" value={formData.landmark} onChange={handleChange} className="w-full bg-gray-50 p-6 border-2 border-black font-bold capitalize" placeholder="Landmark" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-black/40 uppercase tracking-widest pl-2 font-bold">State</label>
+                      <div className="relative">
+                        <select id="stateRaw" required value={formData.stateRaw} onChange={handleChange} title="Select Deployment State" className="w-full bg-gray-50 p-6 border-2 border-black font-bold uppercase cursor-pointer appearance-none">
+                          <option value="">Select State</option>
+                          {INDIAN_STATES.map(state => <option key={state} value={state}>{state}</option>)}
+                        </select>
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none"><ChevronDown size={24} /></div>
                       </div>
-                      <span className="font-body text-[10px] text-brand-text/40 font-bold uppercase tracking-widest">Pay Only After Verification • Best for Trust</span>
                     </div>
-                  </label>
-                  
-                  <label className={`flex items-center gap-4 p-6 border-2 cursor-pointer group transition-all ${paymentMethod === 'UPI' ? 'border-[var(--color-gold)] bg-orange-50/30' : 'border-black/5 hover:border-black/20'}`}>
-                    <input 
-                      type="radio" 
-                      name="payment" 
-                      checked={paymentMethod === 'UPI'} 
-                      onChange={() => setPaymentMethod('UPI')}
-                      className="accent-[var(--color-gold)] w-5 h-5" 
-                    />
-                    <div className="flex flex-col">
-                      <span className="font-heading text-xl text-brand-text">UPI / DIGITAL WALLET</span>
-                      <span className="font-body text-[10px] text-brand-text/40 font-bold uppercase tracking-widest">Pay via WhatsApp after placing order</span>
-                    </div>
-                  </label>
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-8 pt-8 border-t border-black/5">
-                <BrutalButton type="submit" disabled={items.length === 0} className="w-full !h-20 text-3xl">
-                  CONTINUE TO REVIEW
-                </BrutalButton>
-                <p className="text-center mt-6 font-heading text-[10px] tracking-widest text-brand-text/30 uppercase">Please verify your details in the next step.</p>
-              </div>
-            </form>
+                <div className="space-y-6">
+                  <h3 className="font-heading text-2xl uppercase border-b-2 border-black pb-4">FINANCIAL PROTOCOL</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button type="button" onClick={() => setPaymentMethod('COD')} title="Select Cash on Delivery" className={`p-5 border-4 transition-all text-center ${paymentMethod === 'COD' ? 'border-orange-500 bg-orange-50 font-black' : 'border-black/5 bg-gray-50 hover:border-black'}`}><span className="font-heading text-xl uppercase">COD</span></button>
+                    <button type="button" onClick={() => setPaymentMethod('UPI')} title="Select UPI Payment" className={`p-5 border-4 transition-all text-center ${paymentMethod === 'UPI' ? 'border-[var(--color-gold)] bg-orange-50 font-black' : 'border-black/5 bg-gray-50 hover:border-black'}`}><span className="font-heading text-xl uppercase">UPI Pay</span></button>
+                  </div>
+                </div>
+                <BrutalButton type="submit" disabled={items.length === 0} className="w-full !h-24 text-2xl font-heading shadow-none uppercase">PROCEED TO AUTHORIZE</BrutalButton>
+              </form>
+            </div>
           ) : (
-            <div className="bg-white border border-black/10 p-8 md:p-12 shadow-2xl flex flex-col gap-10 animation-fade-in">
-               <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-heading text-3xl text-brand-text uppercase tracking-tighter flex items-center gap-3">
-                    <ClipboardList className="text-[var(--color-gold)]" size={28} />
-                    CONFIRM INFORMATION
-                  </h3>
-                  <button onClick={() => setIsReviewing(false)} className="text-[var(--color-gold)] font-heading text-xs hover:underline uppercase tracking-widest">
-                    [ EDIT DETAILS ]
-                  </button>
+            <div className="bg-white border-4 border-black p-8 md:p-16 shadow-[20px_20px_0_0_rgba(0,0,0,0.05)] space-y-12">
+               <div className="flex justify-between items-end border-b-4 border-black pb-8">
+                  <h3 className="font-heading text-4xl uppercase leading-none tracking-tighter">CONFIRM MANIFEST</h3>
+                  <button onClick={() => setIsReviewing(false)} title="Return to Coordinates Input" className="text-black font-black text-xs uppercase underline decoration-4 decoration-[var(--color-gold)] hover:text-[var(--color-gold)] underline-offset-8">EDIT</button>
                </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 font-body">
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-heading text-[10px] tracking-widest text-brand-text/40 uppercase mb-2">Recipient</h4>
-                      <p className="text-xl text-brand-text font-bold uppercase">{formData.fullName}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-heading text-[10px] tracking-widest text-brand-text/40 uppercase mb-2">WhatsApp Contact</h4>
-                      <p className="text-xl text-brand-text font-bold">+91 {formData.whatsapp}</p>
-                    </div>
-                    <div>
-                      <h4 className="font-heading text-[10px] tracking-widest text-brand-text/40 uppercase mb-2">Email for Invoice</h4>
-                      <p className="text-lg text-brand-text font-medium">{formData.email}</p>
-                    </div>
+               <div className="space-y-10">
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-black/30 uppercase tracking-[0.2em]">Authorized Consignee</span>
+                    <p className="text-3xl font-heading uppercase">{formData.fullName}</p>
+                    <p className="text-sm font-bold text-gray-500 uppercase">+91 {formData.whatsapp} | {formData.email}</p>
                   </div>
-
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-heading text-[10px] tracking-widest text-brand-text/40 uppercase mb-2">Deployment Address</h4>
-                      <p className="text-lg text-brand-text font-bold leading-relaxed uppercase">
-                        {formData.street}<br />
-                        {formData.city} - {formData.pincode}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-heading text-[10px] tracking-widest text-brand-text/40 uppercase mb-2">Protocol</h4>
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 text-[var(--color-gold)] rounded-md">
-                          <Check size={20} />
-                        </div>
-                        <p className="text-lg text-brand-text font-bold uppercase">{paymentMethod === 'COD' ? 'Cash on Delivery' : 'UPI / Digital Payment'}</p>
-                      </div>
-                    </div>
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-black text-black/30 uppercase tracking-[0.2em]">Deployment Domain</span>
+                    <p className="text-xl font-bold uppercase leading-relaxed max-w-lg">
+                      {formData.houseNo}, {formData.village}, {formData.mandal}, {formData.post}, {formData.area}, {formData.landmark && `Landmark: ${formData.landmark}, `} {formData.city}, {formData.stateRaw} - {formData.pincode}
+                    </p>
                   </div>
                </div>
-
-               <div className="bg-gray-50 p-8 border border-black/5 space-y-4">
-                  <p className="font-heading text-xs tracking-widest text-brand-text/60 uppercase">Final Authorization Notice:</p>
-                  <p className="font-body text-sm text-brand-text/80 leading-relaxed">
-                    By clicking &quot;AUTHORIZE DEPLOYMENT&quot;, you are placing a firm professional order. 
-                    {paymentMethod === 'COD' 
-                      ? " Our representative will contact you on WhatsApp to confirm the delivery window." 
-                      : " You will receive a UPI QR code/Payment link on your WhatsApp for the digital transfer."
-                    }
-                  </p>
-               </div>
-
-               <div className="flex flex-col gap-6">
-                  <BrutalButton onClick={handleSubmit} disabled={isSubmitting} className="w-full !h-24 text-3xl flex flex-col items-center justify-center gap-1">
-                    {isSubmitting ? (
-                      <span className="animate-pulse">SYNCHRONIZING...</span>
-                    ) : (
-                      <>
-                        <span>AUTHORIZE DEPLOYMENT</span>
-                        <span className="text-[10px] tracking-[0.4em] opacity-40">STRIKE TO FINALIZE</span>
-                      </>
-                    )}
-                  </BrutalButton>
-                  <button onClick={() => setIsReviewing(false)} className="text-center font-heading text-xs text-brand-text/40 hover:text-black tracking-widest uppercase transition-colors">
-                    Back to Coordinates
-                  </button>
-               </div>
+               <BrutalButton onClick={handleSubmitOrder} disabled={isSubmitting} title="Commit to Registry" className="w-full !h-28 text-3xl font-heading uppercase">{isSubmitting ? 'SYNCHRONIZING...' : 'AUTHORIZE DEPLOY'}</BrutalButton>
             </div>
           )}
         </div>
 
-        {/* Order Summary */}
-        <div className="w-full lg:w-1/3">
-          <div className="bg-white border border-black/10 p-10 sticky top-28 shadow-xl">
-            <h3 className="font-heading text-2xl mb-8 tracking-widest text-brand-text border-b border-black/10 pb-6 uppercase">ORDER INVENTORY</h3>
-            
-            <div className="space-y-6 mb-10">
-               {items.map(item => (
-                 <div key={item.id} className="flex justify-between items-center group">
-                    <div className="flex flex-col">
-                      <span className="font-heading text-lg text-brand-text group-hover:text-[var(--color-gold)] transition-colors uppercase">{item.name}</span>
-                      <span className="font-body text-[10px] text-brand-text/40 font-bold">QTY: {item.quantity}</span>
-                    </div>
-                    <span className="font-body text-sm font-black">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
-                 </div>
-               ))}
-            </div>
-
-            <div className="space-y-4 font-body text-brand-text/60 mb-8 border-t border-black/10 pt-8 text-sm uppercase tracking-widest">
-              <div className="flex justify-between">
-                <span>SUB-TOTAL</span>
-                <span className="text-brand-text">₹{cartTotal.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>LOGISTICS / SHIPPING</span>
-                <span className="text-green-600 font-black">FREE_DEPLOY</span>
-              </div>
-            </div>
-            
-            <div className="flex flex-col gap-2 pt-6 border-t-[3px] border-black">
-              <span className="font-heading text-xs text-[var(--color-brand-primary)] tracking-[0.3em] font-black uppercase">TOTAL DEPLOYMENT VALUE</span>
-              <span className="font-body text-5xl text-brand-text font-black">₹{cartTotal.toLocaleString('en-IN')}</span>
-            </div>
-
-            <div className="mt-10 p-6 bg-gray-50 border border-black/5 flex items-center gap-4">
-               <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
-                 <Check size={20} />
-               </div>
-               <p className="font-heading text-[10px] tracking-widest text-black/50 uppercase leading-relaxed">System Architecture verified and ready for immediate dispatch.</p>
-            </div>
+        <div className="w-full lg:w-1/3 order-1 lg:order-2">
+          <div className="bg-[#0A1628] text-white p-8 md:p-10 sticky top-28 border-4 border-black shadow-[15px_15px_0_0_#F15A24]">
+             <h3 className="font-heading text-2xl mb-8 tracking-widest border-b border-white/10 pb-6 uppercase">MANIFEST SUMMARY</h3>
+             <div className="space-y-6 mb-12 max-h-60 overflow-y-auto no-scrollbar">
+                {items.map(item => (
+                  <div key={item.id} className="flex justify-between items-start gap-4">
+                     <span className="text-lg font-bold uppercase">{item.name}</span>
+                     <span className="font-black text-sm text-[var(--color-gold)]">₹{(item.price * item.quantity).toLocaleString()}</span>
+                  </div>
+                ))}
+             </div>
+             <div className="pt-8 border-t-2 border-dashed border-white/20">
+                <span className="font-heading text-5xl md:text-6xl text-white tracking-tighter">₹{cartTotal.toLocaleString()}</span>
+             </div>
           </div>
         </div>
-
       </section>
+
+      <AnimatePresence>
+        {showUpiModal && (
+          <div className="fixed inset-0 z-[5000] flex flex-col items-center justify-start p-4 md:p-6 overflow-y-auto bg-black/90 backdrop-blur-md">
+             <div className="hidden md:block absolute inset-0" onClick={() => setShowUpiModal(false)} />
+             <motion.div initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} exit={{y: "100%", opacity: 0}} className="relative w-full max-w-sm bg-[#121212] rounded-[2.5rem] shadow-2xl p-6 md:p-10 space-y-6 text-center mt-10 mb-20">
+                <div className="flex justify-between items-center"><h3 className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em]">Hardware Deposit</h3><button onClick={() => setShowUpiModal(false)} title="Dismiss Payment Portal" className="text-white/20 hover:text-white"><X size={20} /></button></div>
+                <div className="bg-white p-6 rounded-[2rem] mx-auto w-[220px] border-t-4 border-emerald-500 shadow-2xl relative">
+                   <div className="mb-4"><p className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em]">Payload</p><p className="font-heading text-2xl text-black">₹{cartTotal.toLocaleString()}</p></div>
+                   <div className="bg-white p-2 border border-gray-100 rounded-xl mb-4 flex justify-center">
+                     <QRCodeCanvas 
+                        value={rawUpiLink} 
+                        size={170} 
+                        level="H" 
+                        includeMargin={true}
+                        imageSettings={{
+                          src: "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#1b1b1b" stroke="white" stroke-width="4"/><text x="50" y="65" font-family="sans-serif" font-size="45" font-weight="bold" fill="white" text-anchor="middle">पे</text></svg>'),
+                          x: undefined,
+                          y: undefined,
+                          height: 40,
+                          width: 40,
+                          excavate: true,
+                        }}
+                     />
+                   </div>
+                   <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 text-[8px] font-bold text-black break-all">{adminUpi}</div>
+                   {isSubmitting && <div className="absolute inset-0 bg-white/95 flex flex-col items-center justify-center z-10"><Loader2 className="animate-spin text-emerald-500 mb-2" size={32} /></div>}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                   <button onClick={downloadQr} title="Download Secure QR Payload" className="py-3 bg-white/5 border border-white/10 rounded-xl text-white font-black text-[8px] uppercase tracking-widest"><Download size={14} className="mx-auto mb-1" /> DOWNLOAD</button>
+                   <button onClick={sharePayment} title="Share Encrypted Payment Link" className="py-3 bg-white/5 border border-white/10 rounded-xl text-white font-black text-[8px] uppercase tracking-widest"><Share2 size={14} className="mx-auto mb-1" /> SHARE</button>
+                </div>
+                <div className="space-y-3 pt-4 border-t border-white/5">
+                   <p className="text-[10px] font-black text-emerald-500 uppercase text-left pl-1">Input 12-Digit Transaction ID (UTR)</p>
+                   <input type="text" maxLength={12} value={transactionId} onChange={(e) => setTransactionId(e.target.value.replace(/[^0-9]/g, ''))} className="w-full bg-white/5 border border-white/20 p-5 rounded-2xl text-white font-bold tracking-[0.2em] outline-none text-center" placeholder="12-DIGIT UTR" />
+                </div>
+                <button onClick={() => { if (transactionId.length < 12) { alert('Protocol Error: 12-digit UTR Required'); return; } handleSubmitOrder(); }} disabled={isSubmitting} title="Authorize Final Handshake" className="w-full !h-20 text-xl font-heading bg-emerald-500 text-white uppercase rounded-2xl transition-all">{isSubmitting ? 'VERIFYING...' : 'FINALIZE DEPLOY'}</button>
+                <a href={rawUpiLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-4 bg-black text-white rounded-xl font-black text-[8px] uppercase border border-white/5 transition-all"><Smartphone size={14} className="text-emerald-400" /> OPEN IN APP</a>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {orderSuccess && (
+          <div className="fixed inset-0 z-[6000] flex items-center justify-center p-6 bg-black font-mono">
+            <div className="w-full max-w-3xl bg-black border border-[var(--color-brand-primary)]/30 p-8 shadow-[0_0_40px_rgba(241,90,36,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-brand-primary)]/50" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle,_#F15A24_1px,_transparent_1px)] bg-[size:10px_10px] opacity-10 pointer-events-none" />
+              <h2 className="text-[var(--color-brand-primary)] text-sm md:text-xl mb-8 flex items-center gap-3 uppercase tracking-[0.3em] font-black">
+                <Terminal size={24} />
+                DEPLOYMENT INITIALIZATION
+              </h2>
+              <div className="space-y-4 text-[var(--color-brand-primary)] text-xs md:text-sm tracking-widest min-h-[200px]">
+                {terminalLogs.map((log, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                    {log}
+                  </motion.div>
+                ))}
+                {terminalLogs.length < 5 && (
+                  <motion.div animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.8 }}>
+                    _
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

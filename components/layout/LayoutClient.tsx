@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppWidget from "@/components/whatsapp/WhatsAppWidget";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import CustomCursor from "@/components/ui/CustomCursor";
+import LivePurchaseTicker from "@/components/ui/LivePurchaseTicker";
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -42,6 +43,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       <div className="hidden lg:block">
         <CustomCursor />
       </div>
+      <LivePurchaseTicker />
     </>
   );
 }

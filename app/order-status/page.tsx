@@ -15,6 +15,9 @@ interface OrderData {
   contactPerson: string;
   createdAt: string;
   updatedAt: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  transactionId?: string | null;
 }
 
 function OrderStatusContent() {
@@ -25,9 +28,11 @@ function OrderStatusContent() {
   const [error, setError] = useState<string | null>(null);
   const [order, setOrder] = useState<OrderData | null>(null);
   const [searchInput, setSearchInput] = useState('');
+  const [mounted, setMounted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
+    setMounted(true);
     const savedUser = localStorage.getItem('satya_user');
     setIsLoggedIn(!!savedUser);
   }, []);
@@ -39,30 +44,31 @@ function OrderStatusContent() {
     }
   };
 
-  useEffect(() => {
-    if (!orderId) {
-      setLoading(false);
-      return;
-    }
-
-    async function fetchOrder() {
-      try {
-        const res = await fetch(`/api/orders/${orderId}`);
-        if (!res.ok) {
-          if (res.status === 404) throw new Error('Order not found');
-          throw new Error('Failed to fetch order status');
-        }
-        const data = await res.json();
-        setOrder(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const fetchOrder = async () => {
+    if (!orderId) return;
+    try {
+      const res = await fetch(`/api/orders/${orderId}`);
+      if (!res.ok) {
+        if (res.status === 404) throw new Error('Order not found');
+        throw new Error('Failed to fetch order status');
       }
+      const data = await res.json();
+      setOrder(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchOrder();
+    // Real-time synchronization pulse: Every 10 seconds
+    const interval = setInterval(fetchOrder, 10000);
+    return () => clearInterval(interval);
   }, [orderId]);
+
+  if (!mounted) return null;
 
   if (loading) {
     return (
@@ -176,32 +182,72 @@ function OrderStatusContent() {
               <p className="font-body text-brand-text/60">DEPLOYMENT ID: {order.orderId}</p>
               <p className="font-heading text-[10px] tracking-widest text-[#1A1A1A]/40 uppercase mt-2">ACCOUNT: {order.companyName}</p>
             </div>
-            <div className="bg-[#1A1A1A] text-white px-8 py-3 font-heading tracking-[0.2em] text-xs flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              STATUS: {order.status.toUpperCase()}
+            <div className="flex flex-col items-end gap-2">
+              <div className="bg-[#1A1A1A] text-white px-8 py-3 font-heading tracking-[0.2em] text-xs flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                STATUS: {order.status.toUpperCase()}
+              </div>
+              {order.paymentMethod === 'UPI' && order.paymentStatus !== 'Paid' && (
+                <div className="flex flex-col items-end gap-1">
+                  <div className="bg-orange-500/10 text-orange-500 border border-orange-500/20 px-4 py-2 font-heading tracking-widest text-[9px] uppercase animate-pulse shadow-[4px_4px_0_rgba(249,115,22,0.1)]">
+                     VERIFICATION IN PROGRESS
+                  </div>
+                  {order.transactionId && (
+                    <span className="text-[8px] font-black text-black/30 uppercase tracking-[0.2em] pr-1">UTR: {order.transactionId}</span>
+                  )}
+                </div>
+              )}
+              {order.paymentMethod === 'UPI' && order.paymentStatus === 'Paid' && (
+                <div className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-4 py-2 font-heading tracking-widest text-[9px] uppercase shadow-[4px_4px_0_rgba(16,185,129,0.1)]">
+                   SECURE HANDSHAKE VERIFIED
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16 relative">
-            <div className="hidden md:block absolute top-[22px] left-[5%] right-[5%] h-[2px] bg-black/[0.04] z-0" />
+          <div className="mb-16 relative">
+            <div className="hidden md:block absolute top-[28px] left-[5%] right-[5%] h-2 bg-gray-100 z-0 overflow-hidden rounded-full">
+               <div 
+                 className={`h-full bg-[var(--color-brand-primary)] transition-all duration-1000 ease-out ${
+                   order.displayStatus === 'placed' ? 'w-0' :
+                   order.displayStatus === 'processing' ? 'w-1/3' :
+                   order.displayStatus === 'transit' ? 'w-2/3' : 'w-full'
+                 }`}
+               />
+            </div>
             
-            {steps.map((step, i) => (
-              <div key={i} className="relative z-10 flex flex-col items-center text-center group">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-all duration-700 ${
-                  step.status === 'completed' ? 'bg-black text-white shadow-xl rotate-[360deg]' : 
-                  step.status === 'current' ? 'bg-[var(--color-gold)] text-white shadow-[0_0_20px_rgba(241,90,36,0.3)]' : 
-                  'bg-white border border-black/10 text-black/15 group-hover:border-black/30'
-                }`}>
-                  <step.icon size={18} strokeWidth={step.status === 'upcoming' ? 1.5 : 2} />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+              {steps.map((step, i) => (
+                <div key={i} className="flex flex-col items-center text-center group">
+                  <div className="relative mb-4">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-700 bg-white ${
+                      step.status === 'completed' ? 'border-[3px] border-[var(--color-brand-primary)] text-[var(--color-brand-primary)] scale-110 shadow-[0_0_20px_rgba(241,90,36,0.2)]' : 
+                      step.status === 'current' ? 'border-[3px] border-[var(--color-brand-primary)] text-[var(--color-brand-primary)] scale-125 shadow-[0_0_30px_rgba(241,90,36,0.4)] bg-orange-50' : 
+                      'border-2 border-black/10 text-black/20 group-hover:border-black/30 bg-gray-50'
+                    }`}>
+                      <step.icon size={step.status === 'current' ? 24 : 20} strokeWidth={step.status === 'upcoming' ? 1.5 : 2.5} />
+                    </div>
+                    {/* Pulse effect for current step */}
+                    {step.status === 'current' && (
+                      <div className="absolute inset-0 border-2 border-[var(--color-brand-primary)] rounded-full animate-ping opacity-20 pointer-events-none" />
+                    )}
+                    {/* Completion checkmark */}
+                    {step.status === 'completed' && (
+                       <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white text-white flex items-center justify-center scale-100 animate-in zoom-in">
+                          <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                       </div>
+                    )}
+                  </div>
+                  <h3 className={`font-heading text-xs tracking-[0.2em] mb-1 transition-colors ${
+                    step.status === 'current' ? 'text-[var(--color-brand-primary)] font-black' : 
+                    step.status === 'completed' ? 'text-black font-bold' : 'text-black/30'
+                  }`}>
+                    {step.label.toUpperCase()}
+                  </h3>
+                  <p className="font-body text-[9px] text-brand-text/40 uppercase tracking-widest">{step.date}</p>
                 </div>
-                <h3 className={`font-heading text-xs tracking-[0.2em] mb-1 ${
-                  step.status === 'upcoming' ? 'text-black/30' : 'text-brand-text'
-                }`}>
-                  {step.label.toUpperCase()}
-                </h3>
-                <p className="font-body text-[9px] text-brand-text/40 uppercase tracking-widest">{step.date}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 border-t border-black/10 pt-12">
@@ -209,13 +255,24 @@ function OrderStatusContent() {
               <h4 className="font-heading text-xl mb-6 tracking-[0.1em] text-brand-text uppercase underline decoration-[var(--color-gold)] decoration-2 underline-offset-8">Lifecycle Details</h4>
               <div className="space-y-6 font-body text-sm text-brand-text/70">
                 <div className="border-l-4 border-black pl-6 py-2">
-                  <p className="text-black font-bold uppercase tracking-widest text-xs mb-1">Logistics Note:</p>
+                  <p className="text-black font-bold uppercase tracking-widest text-xs mb-1">Financial State:</p>
+                  <p className="leading-relaxed text-xs">
+                    METHOD: <span className="font-bold">{order.paymentMethod}</span> 
+                    <br />
+                    STATUS: <span className={order.paymentStatus === 'Paid' ? 'text-emerald-600 font-bold' : 'text-orange-600 font-bold'}>
+                      {order.paymentStatus.toUpperCase()}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="border-l-4 border-black/5 pl-6 py-2">
+                  <p className="text-black/40 font-bold uppercase tracking-widest text-xs mb-1">Logistics Note:</p>
                   <p className="leading-relaxed text-xs">Our deployment team in Hyderabad is currently {order.status.toLowerCase()} your hardware architecture. Professional-grade packaging and static-safe handling are in effect.</p>
                 </div>
                 
                 <div className="flex items-center gap-4 text-xs tracking-widest uppercase text-brand-text/40">
                   <Truck size={14} />
-                  <span>Avg Dispatch: 120-180 Minutes</span>
+                  <span>Avg Dispatch: 2 to 3 days</span>
                 </div>
 
                 <div className="bg-[#1A1A1A] p-6 text-white mt-8 relative overflow-hidden">
@@ -227,27 +284,13 @@ function OrderStatusContent() {
               </div>
             </div>
             
-            <div className="bg-[#FFFDF9] border border-[var(--color-gold)]/10 p-10 flex flex-col justify-between group">
-              <div>
-                <h4 className="font-heading text-xl mb-4 tracking-[0.1em] text-brand-text uppercase group-hover:text-[var(--color-gold)] transition-colors">Technical Query?</h4>
-                <p className="font-body text-xs text-brand-text/50 mb-8 uppercase tracking-widest leading-relaxed">Connect with our onsite engineers for real-time updates regarding your configuration or shipment details.</p>
-              </div>
-              <div className="flex flex-col gap-4">
-                <a 
-                  href={`https://wa.me/918309178589?text=Tracking Update Request for ID: ${order.orderId}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="bg-black text-white text-center py-5 font-heading text-xs tracking-[0.3em] hover:bg-[var(--color-brand-primary)] transition-all shadow-lg shadow-black/10"
-                >
-                  ENGINEER HOTLINE
-                </a>
+              <div className="mt-auto">
                 <Link 
                   href="/" 
-                  className="text-center py-3 font-heading text-[10px] tracking-widest text-brand-text/30 hover:text-black transition-all border border-transparent hover:border-black/5"
+                  className="text-center py-3 font-heading text-[10px] tracking-widest text-brand-text/30 hover:text-black transition-all border border-transparent hover:border-black/5 w-full"
                 >
                   RETURN TO CONTROL CENTER
                 </Link>
-              </div>
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useCart } from '@/lib/CartContext';
 import BrutalButton from '@/components/ui/BrutalButton';
 import GrainOverlay from '@/components/ui/GrainOverlay';
+import QuoteButton from '@/components/store/QuoteButton';
 
 import { Trash2 } from 'lucide-react';
 
@@ -107,13 +108,17 @@ export default function CartPage() {
               <span className="font-body text-4xl text-brand-text">₹{cartTotal.toLocaleString('en-IN')}</span>
             </div>
 
-            <Link href={items.length > 0 ? "/checkout" : "#"}>
-              <BrutalButton 
-                className={`w-full ${items.length === 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
-              >
-                PROCEED TO CHECKOUT
-              </BrutalButton>
-            </Link>
+            <div className="flex flex-col gap-3">
+              <Link href={items.length > 0 ? "/checkout" : "#"}>
+                <BrutalButton 
+                  className={`w-full ${items.length === 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                >
+                  PROCEED TO CHECKOUT
+                </BrutalButton>
+              </Link>
+              
+              <QuoteButton />
+            </div>
 
             <div className="mt-8 pt-8 border-t border-black/10 text-center font-body text-sm text-brand-text/50">
               <p>Secure Payments • Free Shipping over ₹999</p>

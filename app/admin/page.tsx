@@ -138,6 +138,8 @@ export default function DashboardHome() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  if (!mounted) return null;
+
   return (
     <div className="space-y-10 p-4 lg:p-0">
       {/* Dynamic Header Section */}

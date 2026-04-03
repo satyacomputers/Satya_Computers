@@ -34,7 +34,7 @@ export default function HomeProductsSection() {
     ? products 
     : products.filter(p => p.brand.toLowerCase() === activeTab.toLowerCase());
 
-  const displayProducts = filteredProducts.slice(0, 4);
+  const displayProducts = filteredProducts.slice(0, 6);
 
   if (loading) {
     return (
@@ -116,8 +116,8 @@ export default function HomeProductsSection() {
           </div>
         </div>
 
-        {/* Product Grid - limited to 4 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+        {/* Product Grid - limited to 120 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
           <AnimatePresence mode="popLayout">
             {displayProducts.map((product, idx) => (
               <motion.div

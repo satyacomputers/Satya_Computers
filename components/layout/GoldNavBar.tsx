@@ -12,6 +12,7 @@ import Portal from '@/components/ui/Portal';
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Products', href: '/products' },
+  { label: 'System Finder', href: '/system-finder' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
@@ -181,6 +182,7 @@ export default function GoldNavBar() {
                   {[
                     { label: 'Home', href: '/', icon: Home },
                     { label: 'Products', href: '/products', icon: Box },
+                    { label: 'System Finder', href: '/system-finder', icon: Box },
                     { label: 'Solutions', href: '/solutions', icon: Globe },
                     { label: 'About', href: '/about', icon: Info },
                     { label: 'Contact', href: '/contact', icon: Phone },

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { libsql as client } from '@/lib/prisma';
 import { hash } from 'bcryptjs';
 
+import { googleSheetsService } from '@/src/backend/services/googleSheetsService';
+
 export async function POST(req: Request) {
   try {
     const { username, password, role } = await req.json();
@@ -29,6 +31,9 @@ export async function POST(req: Request) {
       sql: 'INSERT INTO "Admin" (id, username, password, role, createdAt, updatedAt) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)',
       args: [id, username, hashedPassword, role]
     });
+
+    // GOOGLE SHEETS LIVE SYNC
+    await googleSheetsService.syncTeamMember({ username, role });
 
     return NextResponse.json({ message: 'Admin registered successfully' });
   } catch (error: any) {

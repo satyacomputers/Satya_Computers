@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { libsql as client } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { googleSheetsService } from '@/src/backend/services/googleSheetsService';
 
 export async function POST(req: Request) {
   try {
@@ -49,6 +50,9 @@ export async function POST(req: Request) {
         parseInt(stock || 0)
       ]
     });
+
+    // GOOGLE SHEETS LIVE SYNC (INVENTORY ASSET)
+    await googleSheetsService.syncProduct({ id, name, price, stock: stock || 0, category: brand || 'Hardware' });
 
     return NextResponse.json({ message: 'Product added successfully', id });
   } catch (error: any) {

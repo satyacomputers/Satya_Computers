@@ -11,7 +11,16 @@ interface ProductImageGalleryProps {
 }
 
 export default function ProductImageGallery({ images, name, badge }: ProductImageGalleryProps) {
-  const [activeImage, setActiveImage] = useState(images[0]);
+  const FALLBACK_IMAGE = '/products/dell_laptop_premium.png';
+  const validImages = images && images.length > 0 ? images : [FALLBACK_IMAGE];
+  const [activeImage, setActiveImage] = useState(validImages[0]);
+
+  // Sync state if images array changes
+  const [lastImages, setLastImages] = useState(images);
+  if (lastImages !== images) {
+    setLastImages(images);
+    setActiveImage(validImages[0]);
+  }
 
   return (
     <div className="w-full space-y-4">
@@ -44,9 +53,9 @@ export default function ProductImageGallery({ images, name, badge }: ProductImag
       </div>
 
       {/* Thumbnail strip */}
-      {images.length > 1 && (
+      {validImages.length > 1 && (
         <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
-          {images.map((img, i) => (
+          {validImages.map((img, i) => (
             <motion.div
               key={i}
               whileHover={{ scale: 1.05 }}
@@ -59,7 +68,7 @@ export default function ProductImageGallery({ images, name, badge }: ProductImag
               }`}
             >
               <Image 
-                src={img} 
+                src={img || FALLBACK_IMAGE} 
                 alt={`${name} view ${i + 1}`} 
                 fill 
                 className={`object-contain p-2 transition-opacity duration-300 ${activeImage === img ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`} 

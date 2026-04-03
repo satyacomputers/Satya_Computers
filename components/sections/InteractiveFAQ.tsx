@@ -59,7 +59,7 @@ export default function InteractiveFAQ() {
              </p>
              <button 
                suppressHydrationWarning
-               onClick={() => window.open('https://wa.me/918309178589', '_blank')}
+               onClick={() => window.open('https://wa.me/919640272323', '_blank')}
                className="btn-primary text-xs tracking-widest px-8 py-4"
              >
                ASK US DIRECTLY

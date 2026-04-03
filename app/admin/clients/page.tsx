@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ClientsPage() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,6 +49,7 @@ export default function ClientsPage() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchClients();
 
     const handleClickOutside = () => setShowOptionsId(null);
@@ -105,6 +107,8 @@ export default function ClientsPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  if (!mounted) return null;
 
   return (
     <div className="space-y-10 p-4 lg:p-0 pb-20">

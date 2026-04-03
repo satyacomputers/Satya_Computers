@@ -9,6 +9,7 @@ import { libsql as client } from '@/lib/prisma';
 import AddToCartButton from '@/components/store/AddToCartButton';
 import BuyNowButton from '@/components/store/BuyNowButton';
 import TrustBadges from '@/components/store/TrustBadges';
+import BulkPricingMatrix from '@/components/store/BulkPricingMatrix';
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -244,6 +245,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <AddToCartButton product={raw} />
               <BuyNowButton product={raw} />
             </div>
+
+            {/* Bulk Pricing Widget */}
+            <BulkPricingMatrix 
+              basePrice={product.price}
+              bulkPrice5_10={raw.bulkPrice5_10}
+              bulkPrice11_25={raw.bulkPrice11_25}
+              bulkPrice26Plus={raw.bulkPrice26Plus}
+              minOrderQty={raw.minOrderQty}
+              productName={product.name}
+            />
 
             {/* Trust badges */}
             <TrustBadges />

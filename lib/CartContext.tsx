@@ -22,6 +22,7 @@ interface CartContextType {
   itemCount: number;
   cartOriginalTotal: number;
   cartDiscount: number;
+  expiresAt: number | null;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,6 +30,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
 
   // Load from local storage
   useEffect(() => {
@@ -41,16 +43,51 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to parse cart");
       }
     }
+    const savedExpiry = localStorage.getItem('satya_cart_expiry');
+    if (savedExpiry) {
+      const exp = parseInt(savedExpiry, 10);
+      if (Date.now() > exp) {
+         setItems([]);
+         localStorage.removeItem('satya_cart');
+         localStorage.removeItem('satya_cart_expiry');
+      } else {
+         setExpiresAt(exp);
+      }
+    }
   }, []);
 
-  // Save to local storage
   useEffect(() => {
     if (isMounted) {
-      localStorage.setItem('satya_cart', JSON.stringify(items));
+      if (items.length > 0) {
+        localStorage.setItem('satya_cart', JSON.stringify(items));
+        if (!expiresAt) {
+           const newExp = Date.now() + 15 * 60 * 1000;
+           setExpiresAt(newExp);
+           localStorage.setItem('satya_cart_expiry', newExp.toString());
+        }
+      } else {
+        localStorage.removeItem('satya_cart');
+        localStorage.removeItem('satya_cart_expiry');
+        setExpiresAt(null);
+      }
     }
-  }, [items, isMounted]);
+  }, [items, isMounted, expiresAt]);
+
+  useEffect(() => {
+    if (!expiresAt) return;
+    const interval = setInterval(() => {
+      if (Date.now() > expiresAt) {
+         clearCart();
+         alert('PROTOCOL TIMEOUT: Your hardware reservation has expired to clear ledger space.');
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
 
   const addToCart = (newItem: Omit<CartItem, 'id'>) => {
+    const FALLBACK_IMAGE = '/products/dell_laptop_premium.png';
+    const image = (newItem.image && newItem.image.trim() !== '') ? newItem.image : FALLBACK_IMAGE;
+
     setItems((currentItems) => {
       const existingItem = currentItems.find(item => item.productId === newItem.productId);
       
@@ -62,7 +99,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         );
       }
       
-      return [...currentItems, { ...newItem, id: Math.random().toString(36).substring(7) }];
+      return [...currentItems, { ...newItem, image, id: Math.random().toString(36).substring(7) }];
     });
   };
 
@@ -100,7 +137,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       cartTotal,
       itemCount,
       cartOriginalTotal,
-      cartDiscount
+      cartDiscount,
+      expiresAt
     }}>
       {children}
     </CartContext.Provider>

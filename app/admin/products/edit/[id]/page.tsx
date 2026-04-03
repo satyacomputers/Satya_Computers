@@ -18,6 +18,7 @@ import {
   Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePricingSettings, computeSellingPrice } from '@/lib/usePricingSettings';
 
 export default function EditProduct() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function EditProduct() {
   const [error, setError] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const { settings: pricingSettings } = usePricingSettings();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -107,17 +109,19 @@ export default function EditProduct() {
     } else {
       let updates: any = { [name]: value };
       
-      if (name === 'basePrice' && value) {
-        const base = Number(value);
-        if (!isNaN(base)) {
-          const selling = Math.round(base * 1.18 + 900);
-          const mrpVal = selling + 2000;
-          updates.price = selling.toString();
-          updates.mrp = mrpVal.toString();
+      if (name === 'basePrice') {
+        if (value) {
+          const base = Number(value);
+          if (!isNaN(base) && base > 0) {
+            const selling = computeSellingPrice(base, pricingSettings);
+            const mrpVal  = selling + 2000;
+            updates.price = selling.toString();
+            updates.mrp   = mrpVal.toString();
+          }
+        } else {
+          updates.price = '';
+          updates.mrp   = '';
         }
-      } else if (name === 'basePrice' && !value) {
-        updates.price = '';
-        updates.mrp = '';
       }
       
       setFormData(prev => ({ ...prev, ...updates }));
@@ -364,9 +368,19 @@ export default function EditProduct() {
                     className="w-full px-8 py-5 rounded-[2rem] border border-transparent bg-gray-50 focus:bg-white focus:border-[#F97316] outline-none transition-all font-black text-sm text-[#0A1628] shadow-inner"
                   />
                   {formData.basePrice && (
-                    <div className="mt-3 px-2 flex gap-4 text-[10px] font-black uppercase tracking-widest text-[#F97316]">
-                       <p>Selling: ₹{(Number(formData.basePrice) * 1.18 + 900).toLocaleString('en-IN')}</p>
-                       <p className="text-gray-400">MRP: ₹{((Number(formData.basePrice) * 1.18 + 900) + 2000).toLocaleString('en-IN')}</p>
+                    <div className="mt-3 px-2 space-y-1">
+                      <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-[#F97316]">
+                         <p>Selling: ₹{computeSellingPrice(Number(formData.basePrice), pricingSettings).toLocaleString('en-IN')}</p>
+                         <p className="text-gray-400">MRP: ₹{(computeSellingPrice(Number(formData.basePrice), pricingSettings) + 2000).toLocaleString('en-IN')}</p>
+                      </div>
+                      <div className="flex gap-2 flex-wrap">
+                        {pricingSettings.gstEnabled && <span className="px-2 py-0.5 bg-orange-50 text-orange-500 rounded text-[8px] font-black uppercase">GST {pricingSettings.gstPercentage}% ✓</span>}
+                        {pricingSettings.shippingEnabled && <span className="px-2 py-0.5 bg-blue-50 text-blue-500 rounded text-[8px] font-black uppercase">Shipping ₹{pricingSettings.shippingCharges} ✓</span>}
+                        {pricingSettings.discountEnabled && <span className="px-2 py-0.5 bg-emerald-50 text-emerald-500 rounded text-[8px] font-black uppercase">Discount ₹{pricingSettings.discountPercentage} ✓</span>}
+                        {!pricingSettings.gstEnabled && !pricingSettings.shippingEnabled && !pricingSettings.discountEnabled && (
+                          <span className="px-2 py-0.5 bg-gray-100 text-gray-400 rounded text-[8px] font-black uppercase">No adjustments active — price = base</span>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

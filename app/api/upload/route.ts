@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import fs from 'node:fs';
+import path from 'node:path';
 
 export async function POST(req: Request) {
   try {
@@ -16,17 +18,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file detected in transmission' }, { status: 400 });
     }
 
-    // Convert image to Base64 for direct Database Storage (Turso)
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
+    
+    // Create professional filename
+    const timestamp = Date.now();
+    const cleanFileName = file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+    const filename = `manual_add_${timestamp}_${cleanFileName}`;
+    
+    // Save to Local Filesystem: public/products/
+    const uploadPath = path.join(process.cwd(), 'public', 'products', filename);
+    fs.writeFileSync(uploadPath, buffer);
+
+    const relativeUrl = `/products/${filename}`;
 
     return NextResponse.json({ 
       success: true, 
-      url: base64Image,
-      name: file.name,
-      isEmbedded: true,
-      notice: "Asset converted to Base64 for Database Injection."
+      url: relativeUrl,
+      fileName: filename,
+      isEmbedded: false,
+      notice: "Asset successfully deployed to server filesystem."
     });
   } catch (error: any) {
     console.error('Core Upload Error:', error);

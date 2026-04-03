@@ -40,10 +40,12 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize from search params
   useEffect(() => {
+    setMounted(true);
     const cat = searchParams.get('category');
     if (cat) setSelectedCategory(cat);
     
@@ -190,6 +192,8 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
 
   const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`;
 
+  if (!mounted) return <></>;
+
   return (
     <>
       {/* Search Bar / Top Controls - Bulletproof FIXED styling for "No Movement" experience */}
@@ -256,6 +260,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
                   aria-label="Sort products"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as SortOption)}
+                  suppressHydrationWarning
                   className="bg-white border-2 border-black text-brand-text py-2.5 px-3 focus:outline-none focus:bg-black focus:text-white transition-all font-heading text-[10px] sm:text-xs uppercase tracking-widest cursor-pointer flex-1 sm:flex-none min-w-[140px]"
                 >
                   <option value="featured">RANK: FEATURED</option>
@@ -459,6 +464,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
                           const val = Math.max(priceBounds.min, Math.min(Number(e.target.value), priceRange[1] - 5000));
                           setPriceRange([val, priceRange[1]]);
                         }}
+                        suppressHydrationWarning
                         className="w-full accent-black cursor-pointer"
                         aria-label="Min price"
                       />
@@ -475,6 +481,7 @@ export default function ProductsClientPage({ products }: ProductsClientPageProps
                           const val = Math.min(priceBounds.max, Math.max(Number(e.target.value), priceRange[0] + 5000));
                           setPriceRange([priceRange[0], val]);
                         }}
+                        suppressHydrationWarning
                         className="w-full accent-black cursor-pointer"
                         aria-label="Max price"
                       />

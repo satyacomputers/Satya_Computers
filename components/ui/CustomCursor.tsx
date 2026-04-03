@@ -63,7 +63,7 @@ const CustomCursor = () => {
 
       {/* Lagging Outer Ring */}
       <motion.div
-        className="absolute top-0 left-0 w-10 h-10 border border-[var(--color-brand-primary)] rounded-full opacity-30"
+        className="absolute top-0 left-0 w-10 h-10 border border-[var(--color-brand-primary)] rounded-full opacity-30 will-change-transform"
         style={{
           x: ringX,
           y: ringY,
@@ -75,7 +75,7 @@ const CustomCursor = () => {
 
       {/* Central Sharp Point */}
       <motion.div
-        className="absolute top-0 left-0 w-2.5 h-2.5 bg-[var(--color-brand-primary)] rounded-full"
+        className="absolute top-0 left-0 w-2.5 h-2.5 bg-[var(--color-brand-primary)] rounded-full will-change-transform"
         style={{
           x: mouseX,
           y: mouseY,
@@ -91,7 +91,7 @@ const CustomCursor = () => {
 
       {/* Decorative Crosshair when hovering Links */}
       <motion.div
-        className="absolute top-0 left-0 flex items-center justify-center opacity-0"
+        className="absolute top-0 left-0 flex items-center justify-center opacity-0 landed-optimization will-change-transform"
         animate={{ 
           opacity: isPointer ? 1 : 0,
           scale: isPointer ? 1 : 0.5,

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import GrainOverlay from '@/components/ui/GrainOverlay';
 import BrutalButton from '@/components/ui/BrutalButton';
 import Link from 'next/link';
-import { Package, User, LogOut, ChevronRight, Settings, ShoppingBag, Eye, EyeOff } from 'lucide-react';
+import { Package, User, LogOut, ChevronRight, Settings, ShoppingBag, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export default function AccountPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -118,18 +118,20 @@ export default function AccountPage() {
                 </div>
               </Link>
 
-              <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0_rgba(0,0,0,1)] flex items-center justify-between opacity-50 cursor-not-allowed">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-black flex items-center justify-center text-white border-2 border-black">
-                    <Settings size={32} />
+              <Link href="/warranty" className="group">
+                <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 bg-emerald-600 flex items-center justify-center text-white border-2 border-black">
+                      <ShieldCheck size={32} />
+                    </div>
+                    <div>
+                      <h3 className="font-heading text-2xl text-brand-text uppercase tracking-tight">WARRANTY HUB</h3>
+                      <p className="font-body text-xs text-brand-text/50 uppercase tracking-widest mt-1">Manage hardware warranties &amp; service</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-heading text-2xl text-brand-text uppercase tracking-tight">PROFILE SETTINGS</h3>
-                    <p className="font-body text-xs text-brand-text/50 uppercase tracking-widest mt-1">Modify registry credentials</p>
-                  </div>
+                  <ChevronRight size={24} className="text-black/20 group-hover:text-black transition-colors" />
                 </div>
-                <span className="font-heading text-[10px] tracking-[0.2em] bg-black text-white px-3 py-1">LOCKED</span>
-              </div>
+              </Link>
             </div>
 
             {/* Profile Info */}

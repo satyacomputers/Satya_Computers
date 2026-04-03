@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProductManager() {
+  const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,6 +29,7 @@ export default function ProductManager() {
   const itemsPerPage = 6;
 
   useEffect(() => {
+    setMounted(true);
     fetchProducts();
   }, []);
 
@@ -83,6 +85,8 @@ export default function ProductManager() {
       alert('Network Protocol Interrupted');
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="space-y-10 p-4 lg:p-0">

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { libsql as client } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
 
+import { googleSheetsService } from '@/src/backend/services/googleSheetsService';
+
 export async function GET() {
   try {
     const result = await client.execute('SELECT * FROM "Announcement" ORDER BY createdAt DESC');
@@ -26,6 +28,9 @@ export async function POST(req: Request) {
       sql: 'INSERT INTO "Announcement" (id, title, type, status, date, createdAt) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)',
       args: [id, title, type, status || 'Live', date]
     });
+
+    // GOOGLE SHEETS LIVE SYNC
+    await googleSheetsService.syncAnnouncement({ id, title, type, status: status || 'Live' });
 
     return NextResponse.json({ message: 'Broadcast initiated' });
   } catch (error: any) {

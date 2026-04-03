@@ -32,9 +32,15 @@ export default function CustomerOrderManagement() {
     setMounted(true);
     fetchOrders();
 
+    // Real-time synchronization pulse: Every 10 seconds
+    const interval = setInterval(() => fetchOrders(true), 10000);
+
     const handleClickOutside = () => setShowOptionsId(null);
     document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      clearInterval(interval);
+    };
   }, []);
 
   const fetchOrders = async (silent = false) => {
@@ -113,6 +119,24 @@ export default function CustomerOrderManagement() {
     }
   };
 
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm('PROTOCOL PURGE: Do you authorize the permanent deletion of this customer order?')) return;
+    setUpdatingId(id);
+    try {
+      const res = await fetch(`/api/admin/customer-orders?id=${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        setOrders(prev => prev.filter(o => o.id !== id));
+        setSelectedOrder(null);
+      }
+    } catch (err) {
+      console.error('Termination failure:', err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const exportToCSV = () => {
     const headers = ['Order ID', 'Customer', 'Phone', 'Total Amount', 'Payment Method', 'Payment Status', 'Order Status', 'Date'];
     const rows = filteredOrders.map(o => [
@@ -160,6 +184,7 @@ export default function CustomerOrderManagement() {
     const matchesSearch = !searchTerm || 
                           order.customerName?.toLowerCase().includes(searchLow) ||
                           order.orderId?.toLowerCase().includes(searchLow) ||
+                          order.transactionId?.toLowerCase().includes(searchLow) ||
                           order.phone?.includes(searchTerm);
     
     // Date Filter
@@ -331,15 +356,18 @@ export default function CustomerOrderManagement() {
 
                   <div className="hidden md:block">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">PAYMENT / TIMING</p>
-                    <div className="flex flex-col gap-1">
-                      <span className={`inline-flex items-center w-fit px-2 py-0.5 rounded text-[10px] font-black uppercase text-white ${order.paymentMethod === 'COD' ? 'bg-[#F97316]' : 'bg-blue-600'}`}>
-                        {order.paymentMethod}
-                      </span>
-                      <div className="flex items-center gap-2 text-xs text-[#0A1628] font-bold mt-1">
-                        <Calendar size={12} className="text-[#F97316]" />
-                        {new Date(order.createdAt).toLocaleDateString()}
+                      <div className="flex flex-col gap-1">
+                        <span className={`inline-flex items-center w-fit px-2 py-0.5 rounded text-[10px] font-black uppercase text-white ${order.paymentMethod === 'COD' ? 'bg-[#F97316]' : 'bg-blue-600'}`}>
+                          {order.paymentMethod}
+                        </span>
+                        {order.transactionId && (
+                          <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest mt-1">UTR: {order.transactionId}</span>
+                        )}
+                        <div className="flex items-center gap-2 text-xs text-[#0A1628] font-bold mt-1">
+                          <Calendar size={12} className="text-[#F97316]" />
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </div>
                       </div>
-                    </div>
                   </div>
                 </div>
 
@@ -454,7 +482,7 @@ export default function CustomerOrderManagement() {
                   <div key={i} className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl flex-shrink-0 border border-gray-100">
                     <div className="w-8 h-8 bg-white rounded flex items-center justify-center overflow-hidden border border-gray-200">
                        {p.image ? (
-                         <img src={p.image.startsWith('http') ? p.image : `/${p.image}`} alt={p.name} className="w-full h-full object-cover" />
+                         <img src={p.image.startsWith('http') ? p.image : (p.image.startsWith('/') ? p.image : `/${p.image}`)} alt={p.name} className="w-full h-full object-cover" />
                        ) : (
                          <div className="text-xs text-gray-300">Img</div>
                        )}
@@ -504,6 +532,12 @@ export default function CustomerOrderManagement() {
                        <p className={`text-sm font-black mt-1 uppercase tracking-widest ${selectedOrder.paymentStatus === 'Paid' ? 'text-emerald-500' : 'text-orange-500'}`}>
                          {selectedOrder.paymentStatus}
                        </p>
+                       {selectedOrder.transactionId && (
+                         <div className="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-1">
+                           <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest">Transaction UTR</span>
+                           <span className="text-xs font-black text-blue-600 tracking-widest">{selectedOrder.transactionId}</span>
+                         </div>
+                       )}
 
                        {showOptionsId === selectedOrder.id && (
                          <div className="absolute inset-0 bg-white z-10 p-4 border border-[#F97316] animate-in slide-in-from-bottom-2">
@@ -539,25 +573,32 @@ export default function CustomerOrderManagement() {
                     <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 lg:col-span-2">
                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2"><MapPin size={14} /> Shipping Destination</p>
                        <p className="text-sm font-bold text-[#0A1628] line-clamp-2">{selectedOrder.address}</p>
-                       <div className="flex gap-4 mt-3">
-                         <a href={`tel:${selectedOrder.phone}`} className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline">
-                           <Phone size={12} /> {selectedOrder.phone}
-                         </a>
-                         <button 
-                           onClick={() => {
-                             setIsEditingOrder(selectedOrder);
-                             setEditForm({ 
-                               phone: selectedOrder.phone || '', 
-                               address: selectedOrder.address || '',
-                               orderStatus: selectedOrder.orderStatus || 'Processing',
-                               paymentMethod: selectedOrder.paymentMethod || 'COD'
-                             });
-                           }}
-                           className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline"
-                         >
-                           <Search size={12} className="rotate-0" /> Edit Logistics
-                         </button>
-                       </div>
+                        <div className="flex gap-4 mt-3">
+                          <a href={`tel:${selectedOrder.phone}`} className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline">
+                            <Phone size={12} /> {selectedOrder.phone}
+                          </a>
+                          <button 
+                            onClick={() => {
+                              setIsEditingOrder(selectedOrder);
+                              setEditForm({ 
+                                phone: selectedOrder.phone || '', 
+                                address: selectedOrder.address || '',
+                                orderStatus: selectedOrder.orderStatus || 'Processing',
+                                paymentMethod: selectedOrder.paymentMethod || 'COD'
+                              });
+                            }}
+                            className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline"
+                          >
+                            <Search size={12} className="rotate-0" /> Edit Logistics
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteOrder(selectedOrder.id)}
+                            className="text-xs font-black text-red-500 uppercase tracking-widest flex items-center gap-1 hover:bg-red-50 px-3 py-1 rounded-full transition-all"
+                            title="Permanent Record Termination"
+                          >
+                            Purge Record
+                          </button>
+                        </div>
                     </div>
                  </div>
 
@@ -582,7 +623,7 @@ export default function CustomerOrderManagement() {
                                   <td className="p-4 flex items-center gap-4">
                                      <div className="w-12 h-12 bg-white rounded-lg border border-gray-100 p-1">
                                        {item.image ? (
-                                         <img src={item.image.startsWith('http') ? item.image : `/${item.image}`} className="w-full h-full object-contain" alt="" />
+                                         <img src={item.image.startsWith('http') ? item.image : (item.image.startsWith('/') ? item.image : `/${item.image}`)} className="w-full h-full object-contain" alt="" />
                                        ) : <div className="w-full h-full bg-gray-50 rounded" />}
                                      </div>
                                      <span className="font-bold text-[#0A1628]">{item.name || 'Unknown Product'}</span>

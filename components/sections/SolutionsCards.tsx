@@ -179,7 +179,7 @@ export default function SolutionsCards() {
               {/* CTA Button */}
               <motion.button
                 whileTap={{ scale: 0.97 }}
-                onClick={() => window.open(`https://wa.me/918309178589?text=I am interested in the ${sol.title} ${sol.accent} solution.`, '_blank')}
+                onClick={() => window.open(`https://wa.me/919640272323?text=I am interested in the ${sol.title} ${sol.accent} solution.`, '_blank')}
                 className="relative py-4 px-6 border-2 border-black font-heading text-[10px] tracking-[0.3em] font-black uppercase overflow-hidden flex items-center justify-between group/btn hover:border-[var(--color-brand-primary)] transition-colors duration-300"
               >
                 <span className="absolute inset-0 bg-[var(--color-brand-primary)] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-400 ease-out" />

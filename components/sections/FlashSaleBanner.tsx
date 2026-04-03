@@ -77,7 +77,7 @@ export default function FlashSaleBanner({ announcement }: FlashSaleBannerProps) 
         
         {/* CTA */}
         <button 
-          onClick={() => window.open(`https://wa.me/918309178589?text=I am interested in the System Upgrade Flash Sale!`, '_blank')}
+          onClick={() => window.open(`https://wa.me/919640272323?text=I am interested in the System Upgrade Flash Sale!`, '_blank')}
           className="bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-accent)] text-white px-6 py-2 font-heading text-[10px] tracking-[0.2em] font-bold uppercase transition-colors"
         >
           CLAIM UPGRADE →

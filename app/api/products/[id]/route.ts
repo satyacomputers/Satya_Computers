@@ -1,60 +1,30 @@
 import { NextResponse } from 'next/server';
 import { libsql as client } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
-import { unlink } from 'fs/promises';
-import { join } from 'path';
+import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized: Admin Status Required' }, { status: 401 });
     }
 
     const { id } = await params;
     
-    // First, let's get the product to find the images
-    const productResult = await client.execute({
-      sql: 'SELECT image, gallery FROM "Product" WHERE id = ?',
-      args: [id]
-    });
-
-    const deleteLocalFile = async (url: string) => {
-      if (url && typeof url === 'string' && url.startsWith('/uploads/')) {
-        try {
-          const fullPath = join(process.cwd(), 'public', url);
-          await unlink(fullPath);
-        } catch (e) {
-          console.error(`Failed to delete file: ${url}`);
-        }
-      }
-    };
-
-    if (productResult.rows.length > 0) {
-      const product: any = productResult.rows[0];
-      if (product.image) await deleteLocalFile(product.image);
-      if (product.gallery) {
-        try {
-          const gallery = JSON.parse(product.gallery);
-          if (Array.isArray(gallery)) {
-            await Promise.all(gallery.map(img => deleteLocalFile(img)));
-          }
-        } catch (e) {}
-      }
-    }
-
+    // Direct Database Purge: No local files to track or delete anymore
     await client.execute({
       sql: 'DELETE FROM "Product" WHERE id = ?',
       args: [id]
     });
 
-    return NextResponse.json({ message: 'Product deleted successfully' });
+    return NextResponse.json({ message: 'Product asset purged from secure ledger successfully' });
   } catch (error: any) {
     console.error('Delete product error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal failure during asset termination' }, { status: 500 });
   }
 }
 
@@ -70,12 +40,12 @@ export async function GET(
     });
 
     if (result.rows.length === 0) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Asset not identified in ledger' }, { status: 404 });
     }
 
     return NextResponse.json(result.rows[0]);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Protocol sync failure' }, { status: 500 });
   }
 }
 
@@ -84,9 +54,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized: Modification Privileges Required' }, { status: 401 });
     }
 
     const { id } = await params;
@@ -123,9 +93,9 @@ export async function PATCH(
       ]
     });
 
-    return NextResponse.json({ message: 'Product updated successfully' });
+    return NextResponse.json({ message: 'Product registry updated and synchronized' });
   } catch (error: any) {
     console.error('Update product error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Registry write disruption: Synchronization aborted' }, { status: 500 });
   }
 }
