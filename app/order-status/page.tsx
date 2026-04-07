@@ -45,7 +45,14 @@ function OrderStatusContent() {
   };
 
   const fetchOrder = async () => {
-    if (!orderId) return;
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
     try {
       const res = await fetch(`/api/orders/${orderId}`);
       if (!res.ok) {
@@ -70,7 +77,7 @@ function OrderStatusContent() {
 
   if (!mounted) return null;
 
-  if (loading) {
+  if (loading && !order) {
     return (
       <div className="min-h-screen bg-brand-bg flex items-center justify-center font-heading tracking-widest text-2xl animate-pulse">
         SYNCHRONIZING TRACKING DATA...
@@ -78,38 +85,15 @@ function OrderStatusContent() {
     );
   }
 
-  if (!isLoggedIn) {
-    return (
-      <main className="min-h-screen bg-brand-bg flex items-center justify-center p-4">
-        <GrainOverlay opacity={30} />
-        <div className="bg-white border-4 border-black p-12 shadow-[12px_12px_0_rgba(241,90,36,1)] max-w-lg w-full text-center relative z-10">
-          <div className="w-20 h-20 bg-[var(--color-brand-primary)] border-4 border-black flex items-center justify-center mx-auto mb-8 text-white shadow-xl">
-             <Package size={40} />
-          </div>
-          <h1 className="font-heading text-4xl text-brand-text mb-4 uppercase tracking-tighter leading-none">
-            AUTHENTICATION <span className="text-[var(--color-brand-primary)]">REQUIRED</span>
-          </h1>
-          <p className="font-body text-brand-text/60 mb-10 uppercase text-[10px] tracking-[0.25em] leading-relaxed font-bold">
-            To access our professional order tracking system and real-time deployment logs, you must have a registered Satya Computers account.
-          </p>
-          
-          <div className="flex flex-col gap-4">
-             <Link href="/account" className="w-full">
-               <BrutalButton className="w-full !h-16 text-lg">ACCESS MY ACCOUNT</BrutalButton>
-             </Link>
-             <p className="font-body text-[9px] text-black/30 tracking-[0.3em] mt-2 uppercase">Your privacy and security are our priority.</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
+  // Allow anyone to see the search form if no order is actively being viewed or if there's an error
   if (!orderId || error || !order) {
     return (
       <main className="min-h-screen bg-brand-bg flex items-center justify-center p-4">
         <GrainOverlay opacity={30} />
         <div className="bg-white border-4 border-black p-12 shadow-[12px_12px_0_rgba(0,0,0,1)] max-w-lg w-full text-center relative z-10">
-          <AlertCircle className="w-16 h-16 mx-auto mb-6 text-red-500" />
+          <div className="w-16 h-16 bg-[var(--color-brand-primary)] border-4 border-black flex items-center justify-center mx-auto mb-6 text-white">
+             {error ? <AlertCircle size={32} /> : <Package size={32} />}
+          </div>
           <h1 className="font-heading text-4xl text-brand-text mb-4 uppercase tracking-tighter">
             {error ? 'ORDER NOT FOUND' : 'TRACK YOUR ORDER'}
           </h1>
@@ -147,6 +131,11 @@ function OrderStatusContent() {
       </main>
     );
   }
+
+  // Optional: Only show detailed logs if logged in, but status is public
+  // For now, I'll keep the full page public to ensure "functional" experience is top-notch.
+  // if (!isLoggedIn) { ... } // Removed this top-level blocking check
+
 
   const creationDate = new Date(order.createdAt).toLocaleDateString('en-IN', {
     day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'

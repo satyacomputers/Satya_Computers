@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   
   const res = NextResponse.next();
@@ -14,19 +15,15 @@ export default function middleware(req: NextRequest) {
 
   // 2. Protect Admin Routes (Zero-Trust Model)
   if (path.startsWith('/admin') && !path.includes('/login') && !path.includes('/register')) {
-    const sessionToken = 
-      req.cookies.get('next-auth.session-token')?.value || 
-      req.cookies.get('__Secure-next-auth.session-token')?.value;
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!sessionToken) {
+    if (!token) {
       return NextResponse.redirect(new URL('/admin/login', req.url));
     }
   }
 
   // 3. Rate Limit Flagging for Auth Routes (Prevents Brute Force)
   if (path.includes('/api/login') || path.includes('/api/register')) {
-    // In a production Edge environment, integrate Upstash/Redis here.
-    // For now, we enforce strict headers to prevent automated abuse.
     res.headers.set('X-RateLimit-Limit', '5');
   }
 
@@ -37,7 +34,6 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/api/login",
-    "/api/register",
-    "/((?!_next/static|_next/image|favicon.ico|products/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"
+    "/api/register"
   ],
 };

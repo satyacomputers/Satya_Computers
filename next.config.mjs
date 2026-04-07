@@ -21,6 +21,14 @@ const nextConfig = {
       { protocol: 'https', hostname: 'in-media.apjonlinecdn.com' },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/order_status',
+        destination: '/order-status',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
