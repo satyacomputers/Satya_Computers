@@ -27,17 +27,27 @@ export default function AdminLogin() {
     setLoading(true);
     setError('');
 
-    const result = await signIn('credentials', {
-      username,
-      password,
-      redirect: false,
-    });
+    // Get callbackUrl from URL search params
+    const searchParams = new URLSearchParams(window.location.search);
+    const callbackUrl = searchParams.get('callbackUrl') || '/admin';
 
-    if (result?.error) {
-      setError('Invalid security credentials. Access denied.');
+    try {
+      const result = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('Invalid security credentials. Access denied.');
+        setLoading(false);
+      } else {
+        router.push(callbackUrl);
+        router.refresh();
+      }
+    } catch (err) {
+      setError('System authentication failure. Please contact support.');
       setLoading(false);
-    } else {
-      router.push('/admin');
     }
   };
 

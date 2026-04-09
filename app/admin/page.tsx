@@ -55,10 +55,23 @@ export default function DashboardHome() {
       setLoading(true);
       try {
         const res = await fetch(`/api/admin/dashboard?range=${timeRange}`);
+        if (!res.ok) {
+           if (res.status === 401) {
+             router.push('/admin/login');
+             return;
+           }
+           throw new Error(`Intelligence feed failure: ${res.status}`);
+        }
         const json = await res.json();
         setDashboardData(json);
       } catch (err) {
-        console.error(err);
+        console.error("Critical Telemetry Failure:", err);
+        // Set fallback empty data to keep UI functional
+        setDashboardData({
+          stats: { productCount: 0, orderCount: 0, b2bCount: 0, b2cCount: 0, offerCount: 0, totalRevenue: 0 },
+          recentOrders: [],
+          chartData: [{ name: 'System Offline', revenue: 0, orders: 0 }]
+        });
       } finally {
         setLoading(false);
       }

@@ -18,13 +18,19 @@ export default async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
-      return NextResponse.redirect(new URL('/admin/login', req.url));
+      const url = req.nextUrl.clone();
+      url.pathname = '/admin/login';
+      url.searchParams.set('callbackUrl', path);
+      return NextResponse.redirect(url);
     }
   }
 
-  // 3. Rate Limit Flagging for Auth Routes (Prevents Brute Force)
-  if (path.includes('/api/login') || path.includes('/api/register')) {
-    res.headers.set('X-RateLimit-Limit', '5');
+  // 3. API Protection (Secondary Layer)
+  if (path.startsWith('/api/admin') && !path.includes('/login') && !path.includes('/register')) {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized access detected." }, { status: 401 });
+    }
   }
 
   return res;
@@ -32,7 +38,9 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/admin",
     "/admin/:path*",
+    "/api/admin/:path*",
     "/api/login",
     "/api/register"
   ],
