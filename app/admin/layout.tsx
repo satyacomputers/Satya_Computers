@@ -7,11 +7,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Search, User, Activity, Lock, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+import { useSession } from 'next-auth/react';
+
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,6 +24,23 @@ export default function AdminLayout({
 
   if (isLoginPage) {
     return <div className="min-h-screen bg-[#0A1628]">{children}</div>;
+  }
+
+  // Client-side Guard
+  if (status === 'unauthenticated') {
+     router.push('/admin/login?callbackUrl=' + pathname);
+     return null;
+  }
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#F4F7FE] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Activity size={40} className="text-[#F97316] animate-spin" />
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hydrating Session Matrix...</p>
+        </div>
+      </div>
+    );
   }
 
   const pageTitle = pathname.split('/').pop() || 'Dashboard';
