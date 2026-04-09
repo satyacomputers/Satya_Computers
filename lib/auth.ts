@@ -17,29 +17,29 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        console.log(`[Auth] Attempting login for user: ${credentials.username}`);
+        const adminUser = process.env.ADMIN_USERNAME;
+        const adminHash = process.env.ADMIN_PASSWORD_HASH;
 
-        // 1. Fast Primary Check: Fallback to .env (Always works if env vars are present)
-        if (credentials.username === process.env.ADMIN_USERNAME && process.env.ADMIN_USERNAME) {
-           console.log("[Auth] Checking environment-based credentials...");
-           try {
-             const isValid = await compare(credentials.password, process.env.ADMIN_PASSWORD_HASH || "");
-             if (isValid) {
-               console.log("[Auth] Environment-based login successful.");
-               return { 
-                 id: "env-admin", 
-                 name: "Admin (Secure-Env)", 
-                 email: "admin@satyacomputers.com",
-                 role: "admin"
-               };
-             }
-             console.log("[Auth] Environment password mismatch.");
-           } catch (compareErr) {
-             console.error("[Auth] Compare error:", compareErr);
+        console.log(`[Auth Check] User: ${credentials.username} | Env Set: ${!!adminUser}`);
+
+        // 1. FAST PRIMARY CHECK: Environment Variables
+        // This is prioritized because it's instantaneous and bypasses DB connectivity issues.
+        if (adminUser && credentials.username === adminUser) {
+           console.log("[Auth] Matching against environment credentials...");
+           const isValid = await compare(credentials.password, adminHash || "");
+           if (isValid) {
+             console.log("[Auth] Environment login SUCCESS");
+             return { 
+               id: "env-admin", 
+               name: "Admin (Secure-Env)", 
+               email: "admin@satyacomputers.com",
+               role: "admin"
+             };
            }
+           console.log("[Auth] Environment password mismatch");
         }
 
-        // 2. Secondary Check: Database (Might be slow or hang in production)
+        // 2. SECONDARY CHECK: Database
         try {
           console.log("[Auth] Checking database-based credentials...");
           // Added a small timeout signal or just rely on the user seeing the fallback

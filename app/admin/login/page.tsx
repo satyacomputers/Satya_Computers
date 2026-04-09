@@ -32,20 +32,15 @@ export default function AdminLogin() {
     const callbackUrl = searchParams.get('callbackUrl') || '/admin';
 
     try {
-      const result = await signIn('credentials', {
+      // Using redirect: true is more robust for production environment cookie setting
+      await signIn('credentials', {
         username,
         password,
-        redirect: false,
+        callbackUrl: callbackUrl,
+        redirect: true,
       });
-
-      if (result?.error) {
-        setError('Invalid security credentials. Access denied.');
-        setLoading(false);
-      } else {
-        router.push(callbackUrl);
-        router.refresh();
-      }
     } catch (err) {
+      console.error("Login Error:", err);
       setError('System authentication failure. Please contact support.');
       setLoading(false);
     }
