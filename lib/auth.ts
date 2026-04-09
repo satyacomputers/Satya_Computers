@@ -17,8 +17,8 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const adminUser = process.env.ADMIN_USERNAME;
-        const adminHash = process.env.ADMIN_PASSWORD_HASH;
+        const adminUser = process.env.ADMIN_USERNAME?.trim();
+        const adminHash = process.env.ADMIN_PASSWORD_HASH?.trim();
 
         console.log(`[Auth Check] User: ${credentials.username} | Env Set: ${!!adminUser}`);
 
