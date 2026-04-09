@@ -17,7 +17,32 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        console.log(`[Auth] Attempting login for user: ${credentials.username}`);
+
+        // 1. Fast Primary Check: Fallback to .env (Always works if env vars are present)
+        if (credentials.username === process.env.ADMIN_USERNAME && process.env.ADMIN_USERNAME) {
+           console.log("[Auth] Checking environment-based credentials...");
+           try {
+             const isValid = await compare(credentials.password, process.env.ADMIN_PASSWORD_HASH || "");
+             if (isValid) {
+               console.log("[Auth] Environment-based login successful.");
+               return { 
+                 id: "env-admin", 
+                 name: "Admin (Secure-Env)", 
+                 email: "admin@satyacomputers.com",
+                 role: "admin"
+               };
+             }
+             console.log("[Auth] Environment password mismatch.");
+           } catch (compareErr) {
+             console.error("[Auth] Compare error:", compareErr);
+           }
+        }
+
+        // 2. Secondary Check: Database (Might be slow or hang in production)
         try {
+          console.log("[Auth] Checking database-based credentials...");
+          // Added a small timeout signal or just rely on the user seeing the fallback
           const result = await client.execute({
             sql: 'SELECT id, username, password, role FROM "Admin" WHERE username = ?',
             args: [credentials.username]
@@ -27,6 +52,7 @@ export const authOptions: NextAuthOptions = {
             const dbAdmin = result.rows[0];
             const isValid = await compare(credentials.password, dbAdmin.password as string);
             if (isValid) {
+              console.log("[Auth] Database login successful.");
               return { 
                 id: String(dbAdmin.id), 
                 name: "Admin", 
@@ -36,22 +62,10 @@ export const authOptions: NextAuthOptions = {
             }
           }
         } catch (dbError) {
-          console.error("Auth DB Error:", dbError);
+          console.error("[Auth] Database Auth Error:", dbError);
         }
 
-        // Fallback to .env
-        if (credentials.username === process.env.ADMIN_USERNAME) {
-          const isValid = await compare(credentials.password, process.env.ADMIN_PASSWORD_HASH || "");
-          if (isValid) {
-            return { 
-              id: "1", 
-              name: "Admin (Env)", 
-              email: "admin@satyacomputers.com",
-              role: "admin"
-            };
-          }
-        }
-
+        console.log("[Auth] All authentication methods failed.");
         return null;
       },
     }),
