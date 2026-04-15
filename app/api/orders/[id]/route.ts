@@ -31,10 +31,14 @@ export async function GET(
         displayStatus: statusMap[String(order.status)] || 'placed',
         companyName: String(order.companyName),
         contactPerson: String(order.contactPerson),
+        email: String(order.email || ''),
+        phone: String(order.phone || ''),
         createdAt: String(order.createdAt),
         updatedAt: String(order.updatedAt),
-        paymentMethod: 'B2B',
-        paymentStatus: 'Net-30/Terms'
+        paymentMethod: 'B2B/Invoiced',
+        paymentStatus: 'Net-30 Terms',
+        products: String(order.products || '[]'),
+        totalAmount: Number(order.estimatedValue || 0)
       });
     }
 
@@ -59,11 +63,15 @@ export async function GET(
         displayStatus: statusMap[String(order.orderStatus)] || 'placed',
         companyName: String(order.customerName),
         contactPerson: String(order.customerName),
+        email: String(order.email || ''),
+        phone: String(order.phone || ''),
         createdAt: String(order.createdAt),
         updatedAt: String(order.updatedAt),
         paymentMethod: String(order.paymentMethod || 'COD'),
         paymentStatus: String(order.paymentStatus || 'Pending'),
-        transactionId: order.transactionId ? String(order.transactionId) : null
+        transactionId: order.transactionId ? String(order.transactionId) : null,
+        products: String(order.products || '[]'),
+        totalAmount: Number(order.totalAmount || 0)
       });
     }
 

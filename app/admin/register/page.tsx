@@ -10,6 +10,7 @@ export default function AdminRegister() {
   const [mounted, setMounted] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [role, setRole] = useState('admin');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -31,7 +32,7 @@ export default function AdminRegister() {
       const res = await fetch('/api/admin/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
+        body: JSON.stringify({ username, password, role, inviteCode }),
       });
 
       const data = await res.json();
@@ -135,6 +136,21 @@ export default function AdminRegister() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Administrative Invite Code</label>
+              <div className="relative group">
+                <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-[#F97316] transition-colors" size={18} />
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter Provisioning Code"
+                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white/[0.04] border border-white/5 text-white outline-none focus:border-[#F97316]/50 focus:bg-white/[0.08] transition-all font-extrabold tracking-widest"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                />
               </div>
             </div>
 

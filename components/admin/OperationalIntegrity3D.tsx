@@ -16,18 +16,29 @@ function StatusGlobe() {
 
   return (
     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[1.5, 64, 64]} />
-        <MeshDistortMaterial 
-          color="#F97316" 
-          speed={3} 
-          distort={0.2} 
-          radius={1} 
-          wireframe
-          opacity={0.15}
-          transparent
-        />
-      </mesh>
+      <group>
+        <mesh ref={meshRef}>
+          <sphereGeometry args={[1.5, 64, 64]} />
+          <MeshDistortMaterial 
+            color="#F97316" 
+            speed={4} 
+            distort={0.4} 
+            radius={1} 
+            wireframe
+            opacity={0.2}
+            transparent
+          />
+        </mesh>
+        <mesh>
+          <sphereGeometry args={[0.8, 32, 32]} />
+          <meshStandardMaterial 
+            color="#F97316" 
+            emissive="#F97316"
+            emissiveIntensity={2}
+            toneMapped={false}
+          />
+        </mesh>
+      </group>
     </Float>
   );
 }

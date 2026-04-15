@@ -3,9 +3,10 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import GrainOverlay from '@/components/ui/GrainOverlay';
-import { Package, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, AlertCircle, FileText, Download, Sparkles } from 'lucide-react';
 import BrutalButton from '@/components/ui/BrutalButton';
 import { Suspense, useEffect, useState } from 'react';
+import { generateInvoice } from '@/lib/invoiceGenerator';
 
 interface OrderData {
   orderId: string;
@@ -18,6 +19,10 @@ interface OrderData {
   paymentMethod: string;
   paymentStatus: string;
   transactionId?: string | null;
+  products: string;
+  totalAmount: number;
+  email: string;
+  phone: string;
 }
 
 function OrderStatusContent() {
@@ -177,10 +182,20 @@ function OrderStatusContent() {
                 STATUS: {order.status.toUpperCase()}
               </div>
               {order.paymentMethod === 'UPI' && order.paymentStatus !== 'Paid' && (
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-3">
                   <div className="bg-orange-500/10 text-orange-500 border border-orange-500/20 px-4 py-2 font-heading tracking-widest text-[9px] uppercase animate-pulse shadow-[4px_4px_0_rgba(249,115,22,0.1)]">
                      VERIFICATION IN PROGRESS
                   </div>
+                  
+                  {/* UPI Deep Link Button for Mobile */}
+                  <a 
+                    href={`upi://pay?pa=satya.computers@okaxis&pn=Satya%20Computers&am=1.00&cu=INR&tn=Order%20${order.orderId}`}
+                    className="md:hidden flex items-center gap-2 bg-black text-white px-4 py-2.5 font-heading text-[10px] tracking-widest uppercase hover:bg-[var(--color-brand-primary)] transition-all"
+                  >
+                    <Sparkles size={14} className="text-[var(--color-brand-primary)]" />
+                    Open in UPI App
+                  </a>
+
                   {order.transactionId && (
                     <span className="text-[8px] font-black text-black/30 uppercase tracking-[0.2em] pr-1">UTR: {order.transactionId}</span>
                   )}
@@ -273,10 +288,37 @@ function OrderStatusContent() {
               </div>
             </div>
             
-              <div className="mt-auto">
+            <div className="mt-auto flex flex-col gap-4">
+                <button 
+                  onClick={() => {
+                    if (!order) return;
+                    try {
+                      const products = JSON.parse(order.products);
+                      generateInvoice({
+                        orderId: order.orderId,
+                        customerName: order.companyName,
+                        email: order.email,
+                        phone: order.phone,
+                        date: creationDate,
+                        products: Array.isArray(products) ? products : [],
+                        totalAmount: order.totalAmount,
+                        paymentMethod: order.paymentMethod,
+                        paymentStatus: order.paymentStatus
+                      });
+                    } catch (e) {
+                      console.error("Invoice generation failed:", e);
+                      alert("Could not generate invoice data. Contact support.");
+                    }
+                  }}
+                  className="flex items-center justify-center gap-3 bg-[var(--color-brand-primary)] text-white py-4 font-heading text-xs tracking-[0.3em] font-black uppercase hover:bg-black transition-all shadow-xl"
+                >
+                  <Download size={18} />
+                  Download Technical Invoice
+                </button>
+
                 <Link 
                   href="/" 
-                  className="text-center py-3 font-heading text-[10px] tracking-widest text-brand-text/30 hover:text-black transition-all border border-transparent hover:border-black/5 w-full"
+                  className="text-center py-3 font-heading text-[10px] tracking-widest text-brand-text/30 hover:text-black transition-all border border-transparent hover:border-black/5 w-full uppercase"
                 >
                   RETURN TO CONTROL CENTER
                 </Link>

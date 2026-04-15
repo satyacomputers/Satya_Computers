@@ -160,5 +160,16 @@ model GlobalSettings {
   gstPercentage      Float    @default(0)
   shippingCharges    Float    @default(0)
   discountPercentage Float    @default(0)
+  inviteCode         String?  @default("SATYA-ADMIN-2025")
   updatedAt          DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+  adminId   String
+  details   String?
+  createdAt DateTime @default(now())
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Package, 
   Clock, 
@@ -19,7 +19,8 @@ import {
   Copy,
   CheckCircle2,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  X
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import dynamic from 'next/dynamic';
@@ -109,6 +110,19 @@ export default function DashboardHome() {
   };
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+
+  const toggleOrderSelection = (id: string) => {
+    setSelectedOrders(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkUpdate = async (status: string) => {
+    if (selectedOrders.length === 0) return;
+    alert(`Initiating bulk status update (${status}) for ${selectedOrders.length} entities...`);
+    setSelectedOrders([]);
+  };
 
   const stats = [
     { 
@@ -128,12 +142,12 @@ export default function DashboardHome() {
       desc: 'Pipeline throughput'
     },
     { 
-      label: 'Market Reach', 
-      value: '1.2k', 
-      icon: Zap, 
+      label: 'Predictive Sales', 
+      value: '₹12.4L', 
+      icon: TrendingUp, 
       color: 'from-emerald-500 to-teal-500', 
-      trend: '+22% Growth',
-      desc: 'Client acquisition'
+      trend: 'Projected +15%',
+      desc: 'Next month forecast'
     },
     { 
       label: 'Gross Telemetry', 
@@ -155,15 +169,54 @@ export default function DashboardHome() {
 
   return (
     <div className="space-y-10 p-4 lg:p-0">
+      {/* Batch Actions Bar (Floating) */}
+      <AnimatePresence>
+        {selectedOrders.length > 0 && (
+          <motion.div 
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-[#0A1628] text-white px-8 py-4 rounded-[2rem] shadow-2xl flex items-center gap-8 border border-white/10"
+          >
+            <div className="flex items-center gap-4 border-r border-white/20 pr-8">
+               <div className="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center font-black text-xs">
+                 {selectedOrders.length}
+               </div>
+               <span className="font-heading text-[10px] tracking-widest uppercase text-gray-400">Entities Selected</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+               {['PROCESSED', 'SHIPPED', 'VERIFIED'].map(status => (
+                 <button 
+                   key={status}
+                   onClick={() => handleBulkUpdate(status)}
+                   className="font-heading text-[10px] tracking-widest uppercase hover:text-[#F97316] transition-colors"
+                 >
+                   {status}
+                 </button>
+               ))}
+               <button 
+                 onClick={() => setSelectedOrders([])}
+                 title="Cancel selection"
+                 aria-label="Cancel selection"
+                 className="ml-4 p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center"
+               >
+                 <X size={16} />
+               </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Dynamic Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-2 h-2 rounded-full bg-[#F97316] animate-pulse" />
-            <span className="text-[10px] font-bold text-[#F97316] uppercase tracking-[0.3em]">System Engine: Live</span>
+            <span className="text-[10px] font-bold text-[#F97316] uppercase tracking-[0.3em]">System Intelligence Hub: active</span>
           </div>
-          <h2 className="text-4xl font-heading font-black text-[#0A1628] leading-tight">CONTROL CENTER <span className="text-gray-300">/ DASHBOARD</span></h2>
-          <p className="text-gray-400 font-medium max-w-lg mt-2">Real-time performance metrics and inventory oversight for Satya Computers.</p>
+          <h2 className="text-4xl font-heading font-black text-[#0A1628] leading-tight">CONTROL CENTER <span className="text-gray-300">/ ANALYTICS</span></h2>
+          <p className="text-gray-400 font-medium max-w-lg mt-2">Managing the future of bulk computer procurement through predictive intelligence.</p>
         </div>
         
         <div className="flex items-center gap-4">
