@@ -1,0 +1,206 @@
+﻿
+> satya-computers-gold@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.5.12
+
+   Creating an optimized production build ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Failed to com   
+ pile.:String) [],     
+RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+app\layout.tsx
+An error occurred in 
+`next/font`.
+
+Error: Cannot find 
+module 'autoprefixer'
+Require stack:
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack\config\blocks
+\css\plugins.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack\config\blocks
+\css\index.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack\config\index.
+js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack-config.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack-build\impl.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\comp
+iled\jest-worker\proces
+sChild.js
+    at 
+Module.<anonymous> (nod
+e:internal/modules/cjs/
+loader:1421:15)
+    at D:\Satya_Compute
+rs\satya-computers-gold
+\node_modules\next\dist
+\server\require-hook.js
+:57:36
+    at require.resolve 
+(node:internal/modules/
+helpers:163:19)
+    at loadPlugin (D:\S
+atya_Computers\satya-co
+mputers-gold\node_modul
+es\next\dist\build\webp
+ack\config\blocks\css\p
+lugins.js:53:32)
+    at D:\Satya_Compute
+rs\satya-computers-gold
+\node_modules\next\dist
+\build\webpack\config\b
+locks\css\plugins.js:18
+5:56
+    at Array.map 
+(<anonymous>)
+    at 
+getPostCssPlugins (D:\S
+atya_Computers\satya-co
+mputers-gold\node_modul
+es\next\dist\build\webp
+ack\config\blocks\css\p
+lugins.js:185:47)
+    at async D:\Satya_C
+omputers\satya-computer
+s-gold\node_modules\nex
+t\dist\build\webpack\co
+nfig\blocks\css\index.j
+s:125:36
+    at async D:\Satya_C
+omputers\satya-computer
+s-gold\node_modules\nex
+t\dist\build\webpack\lo
+aders\next-font-loader\
+index.js:94:33
+    at async 
+Span.traceAsyncFn (D:\S
+atya_Computers\satya-co
+mputers-gold\node_modul
+es\next\dist\trace\trac
+e.js:157:20)
+
+app\layout.tsx
+An error occurred in 
+`next/font`.
+
+Error: Cannot find 
+module 'autoprefixer'
+Require stack:
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack\config\blocks
+\css\plugins.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack\config\blocks
+\css\index.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack\config\index.
+js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack-config.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\buil
+d\webpack-build\impl.js
+- D:\Satya_Computers\sa
+tya-computers-gold\node
+_modules\next\dist\comp
+iled\jest-worker\proces
+sChild.js
+    at 
+Module.<anonymous> (nod
+e:internal/modules/cjs/
+loader:1421:15)
+    at D:\Satya_Compute
+rs\satya-computers-gold
+\node_modules\next\dist
+\server\require-hook.js
+:57:36
+    at require.resolve 
+(node:internal/modules/
+helpers:163:19)
+    at loadPlugin (D:\S
+atya_Computers\satya-co
+mputers-gold\node_modul
+es\next\dist\build\webp
+ack\config\blocks\css\p
+lugins.js:53:32)
+    at D:\Satya_Compute
+rs\satya-computers-gold
+\node_modules\next\dist
+\build\webpack\config\b
+locks\css\plugins.js:18
+5:56
+    at Array.map 
+(<anonymous>)
+    at 
+getPostCssPlugins (D:\S
+atya_Computers\satya-co
+mputers-gold\node_modul
+es\next\dist\build\webp
+ack\config\blocks\css\p
+lugins.js:185:47)
+    at async D:\Satya_C
+omputers\satya-computer
+s-gold\node_modules\nex
+t\dist\build\webpack\co
+nfig\blocks\css\index.j
+s:125:36
+    at async D:\Satya_C
+omputers\satya-computer
+s-gold\node_modules\nex
+t\dist\build\webpack\lo
+aders\next-font-loader\
+index.js:94:33
+    at async 
+Span.traceAsyncFn (D:\S
+atya_Computers\satya-co
+mputers-gold\node_modul
+es\next\dist\trace\trac
+e.js:157:20)
+
+
+> Build failed because 
+of webpack errors

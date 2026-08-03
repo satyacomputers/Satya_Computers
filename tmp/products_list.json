@@ -1,0 +1,201 @@
+﻿[dotenv@17.3.1] injecting env (7) from .env -- tip: ≡ƒ¢í∩╕Å auth for agents: https://vestauth.com
+[
+  {
+    "id": "p_36bc178a91ba",
+    "name": "MACBOOK PRO A1990 (4GB Graphics)",
+    "brand": "Apple",
+    "price": 36000
+  },
+  {
+    "id": "p_27bb7b203372",
+    "name": "MACBOOK PRO A2551",
+    "brand": "Apple",
+    "price": 38000
+  },
+  {
+    "id": "p_7c37a1104705",
+    "name": "MACBOOK AIR A2337 (2020)",
+    "brand": "Apple",
+    "price": 40000
+  },
+  {
+    "id": "p_19d57d84cf45",
+    "name": "MACBOOK PRO A2141 (4GB Graphics)",
+    "brand": "Apple",
+    "price": 42000
+  },
+  {
+    "id": "p_37b162a8284d",
+    "name": "MACBOOK PRO A2338",
+    "brand": "Apple",
+    "price": 60000
+  },
+  {
+    "id": "p_28aaf90bdf89",
+    "name": "MACBOOK PRO A2485 (2021)",
+    "brand": "Apple",
+    "price": 80000
+  },
+  {
+    "id": "p_d87265618a76",
+    "name": "BASIC MODEL (Dell/Lenovo)",
+    "brand": "Dell",
+    "price": 6999
+  },
+  {
+    "id": "p_1c132e4a36f8",
+    "name": "DELL & LENOVO & HP",
+    "brand": "Dell",
+    "price": 7999
+  },
+  {
+    "id": "p_113857d44916",
+    "name": "DELL LATITUDE 3400",
+    "brand": "Dell",
+    "price": 17000
+  },
+  {
+    "id": "p_23abb605b45e",
+    "name": "DELL LATITUDE 7480",
+    "brand": "Dell",
+    "price": 17000
+  },
+  {
+    "id": "p_c9556744b691",
+    "name": "DELL LATITUDE 7490",
+    "brand": "Dell",
+    "price": 18000
+  },
+  {
+    "id": "p_24591f857721",
+    "name": "DELL LATITUDE 7400",
+    "brand": "Dell",
+    "price": 18000
+  },
+  {
+    "id": "p_8f647f3b09df",
+    "name": "DELL LATITUDE 7400",
+    "brand": "Dell",
+    "price": 21000
+  },
+  {
+    "id": "p_c3c89cb3b28d",
+    "name": "DELL LATITUDE 3410",
+    "brand": "Dell",
+    "price": 22000
+  },
+  {
+    "id": "p_3cd7b1830681",
+    "name": "DELL LATITUDE 7490",
+    "brand": "Dell",
+    "price": 23000
+  },
+  {
+    "id": "p_9bffc3a122e3",
+    "name": "DELL LATITUDE 5401 (2GB Graphics)",
+    "brand": "Dell",
+    "price": 26000
+  },
+  {
+    "id": "p_a8b541641c11",
+    "name": "DELL LATITUDE 5420",
+    "brand": "Dell",
+    "price": 27000
+  },
+  {
+    "id": "p_3b129dceea49",
+    "name": "DELL LATITUDE 5430",
+    "brand": "Dell",
+    "price": 32000
+  },
+  {
+    "id": "p_d017ad238995",
+    "name": "HP PROBOOK 430 G3",
+    "brand": "HP",
+    "price": 19000
+  },
+  {
+    "id": "p_f4d55c73c549",
+    "name": "HP ELITEBOOK 640 G5",
+    "brand": "HP",
+    "price": 19000
+  },
+  {
+    "id": "p_b68c3cad33ba",
+    "name": "HP ELITEBOOK 640 G9",
+    "brand": "HP",
+    "price": 35000
+  },
+  {
+    "id": "p_ac5cd533f89e",
+    "name": "HP ZBOOK G5",
+    "brand": "HP",
+    "price": 40000
+  },
+  {
+    "id": "p_312850dfd92e",
+    "name": "LENOVO THINKPAD",
+    "brand": "Lenovo",
+    "price": 10499
+  },
+  {
+    "id": "p_c8761ac6a12a",
+    "name": "LENOVO THINKPAD T570",
+    "brand": "Lenovo",
+    "price": 15000
+  },
+  {
+    "id": "p_62f518bcaa6e",
+    "name": "LENOVO THINKPAD L380 YOGA",
+    "brand": "Lenovo",
+    "price": 20000
+  },
+  {
+    "id": "p_a1fb6cd64ab6",
+    "name": "LENOVO THINKPAD T480",
+    "brand": "Lenovo",
+    "price": 22000
+  },
+  {
+    "id": "p_7d9a6b0860d8",
+    "name": "LENOVO THINKPAD X280",
+    "brand": "Lenovo",
+    "price": 22000
+  },
+  {
+    "id": "p_f2e1fd77bb1c",
+    "name": "LENOVO THINKPAD L13",
+    "brand": "Lenovo",
+    "price": 23000
+  },
+  {
+    "id": "p_9e1e07202f9b",
+    "name": "LENOVO THINKPAD P51 (4GB Graphics)",
+    "brand": "Lenovo",
+    "price": 23000
+  },
+  {
+    "id": "p_e7a2491c175a",
+    "name": "LENOVO THINKPAD L13",
+    "brand": "Lenovo",
+    "price": 28000
+  },
+  {
+    "id": "p_485da5112d56",
+    "name": "LENOVO THINKPAD P52 (4GB Graphics)",
+    "brand": "Lenovo",
+    "price": 28000
+  },
+  {
+    "id": "p_775a437a651d",
+    "name": "LENOVO THINKPAD P53 (4GB Graphics)",
+    "brand": "Lenovo",
+    "price": 35000
+  },
+  {
+    "id": "p_7f7d6691fd4f",
+    "name": "LENOVO THINKPAD P15 (4GB Graphics)",
+    "brand": "Lenovo",
+    "price": 40000
+  }
+]

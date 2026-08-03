@@ -1,0 +1,35 @@
+Clean Visual Protocol Initiated at 2026-03-18T21:04:07.601Z
+Resetting catalog state...
+Importing 1/33: BASIC MODEL (Dell/Lenovo) -> /products/clean_1.png
+Importing 2/33: DELL & LENOVO & HP -> /products/clean_2.png
+Importing 3/33: LENOVO THINKPAD -> /products/clean_3.png
+Importing 4/33: DELL LATITUDE 3400 -> /products/clean_4.png
+Importing 5/33: DELL LATITUDE 7480 -> /products/clean_5.png
+Importing 6/33: DELL LATITUDE 7490 -> /products/clean_6.png
+Importing 7/33: DELL LATITUDE 7400 -> /products/clean_7.png
+Importing 8/33: DELL LATITUDE 7490 -> /products/clean_8.png
+Importing 9/33: DELL LATITUDE 7400 -> /products/clean_9.png
+Importing 10/33: DELL LATITUDE 5401 (2GB Graphics) -> /products/clean_10.png
+Importing 11/33: DELL LATITUDE 3410 -> /products/clean_11.png
+Importing 12/33: DELL LATITUDE 5420 -> /products/clean_12.png
+Importing 13/33: DELL LATITUDE 5430 -> /products/clean_13.png
+Importing 14/33: LENOVO THINKPAD T570 -> /products/clean_14.png
+Importing 15/33: LENOVO THINKPAD T480 -> /products/clean_15.png
+Importing 16/33: LENOVO THINKPAD L380 YOGA -> /products/clean_16.png
+Importing 17/33: LENOVO THINKPAD L13 -> /products/clean_17.png
+Importing 18/33: LENOVO THINKPAD X280 -> /products/clean_18.png
+Importing 19/33: LENOVO THINKPAD L13 -> /products/clean_19.png
+Importing 20/33: LENOVO THINKPAD P51 (4GB Graphics) -> /products/clean_20.png
+Importing 21/33: LENOVO THINKPAD P52 (4GB Graphics) -> /products/clean_21.png
+Importing 22/33: LENOVO THINKPAD P53 (4GB Graphics) -> /products/clean_22.png
+Importing 23/33: LENOVO THINKPAD P15 (4GB Graphics) -> /products/clean_23.png
+Importing 24/33: HP ELITEBOOK 640 G9 -> /products/clean_24.png
+Importing 25/33: HP ZBOOK G5 -> /products/clean_25.png
+Importing 26/33: HP PROBOOK 430 G3 -> /products/clean_26.png
+Importing 27/33: HP ELITEBOOK 640 G5 -> /products/clean_27.png
+Importing 28/33: MACBOOK PRO A1990 (4GB Graphics) -> /products/clean_28.png
+Importing 29/33: MACBOOK PRO A2141 (4GB Graphics) -> /products/clean_29.png
+Importing 30/33: MACBOOK PRO A2551 -> /products/clean_30.png
+Importing 31/33: MACBOOK PRO A2485 (2021) -> /products/clean_31.png
+Importing 32/33: MACBOOK AIR A2337 (2020) -> /products/clean_32.png
+Importing 33/33: MACBOOK PRO A2338 -> /products/clean_33.png

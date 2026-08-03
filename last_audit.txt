@@ -1,0 +1,10 @@
+﻿DATA_AUDIT: Product => 33 rows
+DATA_AUDIT: Order => 9 rows
+DATA_AUDIT: Offer => 3 rows
+DATA_AUDIT: Admin => 1 rows
+DATA_AUDIT: Announcement => 0 rows
+DATA_AUDIT: User => 2 rows
+DATA_AUDIT: TeamMember => 0 rows
+DATA_AUDIT: Client => 0 rows
+DATA_AUDIT: Category => 2 rows
+DATA_AUDIT: ContactMessage => 0 rows

@@ -1,0 +1,304 @@
+﻿
+> satya-computers-gold@0.1.0 lint
+> next lint
+
+node.exe : `next lint` is 
+deprecated and will be 
+removed in Next.js 16.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (`next l  
+  int` is ... in Next.js 1   
+ 6.:String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+For new projects, use 
+create-next-app to choose 
+your preferred linter.
+For existing projects, 
+migrate to the ESLint CLI:
+npx @next/codemod@canary 
+next-lint-to-eslint-cli .
+
+
+./app/account/page.tsx
+12:9  Error: 'router' is 
+assigned a value but never 
+used.  @typescript-eslint/no-
+unused-vars
+
+./app/contact/page.tsx
+19:7  Error: 'contactCards' 
+is assigned a value but 
+never used.  @typescript-esli
+nt/no-unused-vars
+
+./app/order-status/page.tsx
+68:19  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+68:119  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./components/layout/Footer.ts
+x
+46:15  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+
+./components/layout/GoldNavBa
+r.tsx
+54:17  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+
+./components/sections/B2BTier
+.tsx
+6:8  Error: 'NextImage' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./components/sections/EcoImpa
+ct.tsx
+66:111  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+66:125  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./components/sections/Mission
+Logs.tsx
+83:17  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+83:28  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./components/sections/SplitHe
+ro.tsx
+18:7  Warning: Using `<img>` 
+could result in slower LCP 
+and higher bandwidth. 
+Consider using `<Image />` 
+from `next/image` or a 
+custom image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+48:10  Error: 'mousePos' is 
+assigned a value but never 
+used.  @typescript-eslint/no-
+unused-vars
+86:102  Error: Comments 
+inside children section of 
+tag should be placed inside 
+braces  react/jsx-no-comment-
+textnodes
+115:17  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+189:15  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+210:15  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+241:17  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+261:19  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+
+./components/sections/SystemQ
+uiz.tsx
+67:49  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+67:74  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+74:49  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+74:74  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./components/sections/Testing
+Process.tsx
+55:32  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+
+./components/store/AddToCartB
+utton.tsx
+13:10  Error: 'added' is 
+assigned a value but never 
+used.  @typescript-eslint/no-
+unused-vars
+
+./components/store/ProductsCl
+ientPage.tsx
+38:29  Error: 
+'setMobileFiltersOpen' is 
+assigned a value but never 
+used.  @typescript-eslint/no-
+unused-vars
+215:21  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+
+./components/ui/CustomCursor.
+tsx
+3:38  Error: 'useRef' is 
+defined but never used.  @typ
+escript-eslint/no-unused-vars
+
+./components/ui/Preloader.tsx
+42:15  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from 
+`next/image` or a custom 
+image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost 
+from your provider. See: http
+s://nextjs.org/docs/messages/
+no-img-element  
+@next/next/no-img-element
+
+info  - Need to disable some 
+ESLint rules? Learn more 
+here: https://nextjs.org/docs
+/app/api-reference/config/esl
+int#disabling-rules
