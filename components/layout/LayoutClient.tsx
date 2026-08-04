@@ -19,12 +19,24 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   }, []);
 
   const isAdmin = mounted && (pathname?.includes('/admin') || pathname?.startsWith('/admin'));
+  const isStandalone = mounted && (pathname?.startsWith('/dashboard') || pathname?.startsWith('/satya'));
 
   if (isAdmin) {
     return (
       <main className="bg-[#F4F7FE] min-h-screen relative z-0">
         {children}
       </main>
+    );
+  }
+
+  if (isStandalone) {
+    return (
+      <>
+        {children}
+        <div className="hidden lg:block">
+          <CustomCursor />
+        </div>
+      </>
     );
   }
 

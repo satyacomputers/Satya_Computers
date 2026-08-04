@@ -2,155 +2,198 @@ import { NextResponse } from 'next/server';
 import { parse } from 'csv-parse/sync';
 import { libsql as client } from '@/lib/prisma';
 
+const SHEET_ID = '1eVxxvP5u5DO1-OJCb3cpPadwXi-GHI27v0qxMAmwTo4';
+
+// Sheet GIDs (tab names confirmed from spreadsheet)
+const GID_LEADS = '0';         // Sheet1 — Leads / B2C data
+const GID_COD = '397977923';   // COD sheet — raw COD orders
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const leadDateParam = url.searchParams.get('leadDate') || url.searchParams.get('date');
-    const codDateParam = url.searchParams.get('codDate');
+    const fromLeadDateParam = url.searchParams.get('fromLeadDate');  // YYYY-MM-DD
+    const toLeadDateParam   = url.searchParams.get('toLeadDate');    // YYYY-MM-DD
+    const fromCodDateParam  = url.searchParams.get('fromCodDate');   // YYYY-MM-DD
+    const toCodDateParam    = url.searchParams.get('toCodDate');     // YYYY-MM-DD
 
-    // 1. Fetch Google Sheets metrics for top cards (Sheet1 / gid=0)
-    const response = await fetch('https://docs.google.com/spreadsheets/d/1eVxxvP5u5DO1-OJCb3cpPadwXi-GHI27v0qxMAmwTo4/export?format=csv&gid=0', { cache: 'no-store' });
-    
-    // 1b. Fetch Google Sheets metrics for COD cards (Sheet4 / gid=1176644556)
-    const responseSheet4 = await fetch('https://docs.google.com/spreadsheets/d/1eVxxvP5u5DO1-OJCb3cpPadwXi-GHI27v0qxMAmwTo4/export?format=csv&gid=1176644556', { cache: 'no-store' });
+    // Helper: normalise any date string to midnight timestamp
+    // Handles: YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY, MM/DD/YYYY
+    const toMidnight = (dStr: string): number | null => {
+      if (!dStr) return null;
+      const s = dStr.trim();
 
+      // YYYY-MM-DD (from input[type=date])
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        const [y, m, d] = s.split('-').map(Number);
+        return new Date(y, m - 1, d).getTime();
+      }
+
+      // MM/DD/YYYY (COD sheet format — confirmed from data)
+      // We distinguish MM/DD/YYYY vs DD/MM/YYYY by checking if first part > 12 → DD first
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
+        const parts = s.split('/').map(Number);
+        // If first part > 12 → must be DD/MM/YYYY
+        if (parts[0] > 12) {
+          return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+        }
+        // Otherwise treat as MM/DD/YYYY (COD sheet uses this)
+        return new Date(parts[2], parts[0] - 1, parts[1]).getTime();
+      }
+
+      // DD-MM-YYYY
+      if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(s)) {
+        const parts = s.split('-').map(Number);
+        return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+      }
+
+      const ts = Date.parse(s);
+      return isNaN(ts) ? null : ts;
+    };
+
+    // Fetch both sheets concurrently
+    const [responseLeads, responseCod] = await Promise.all([
+      fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID_LEADS}`, { cache: 'no-store' }),
+      fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID_COD}`,   { cache: 'no-store' }),
+    ]);
+
+    // ── LEADS (Sheet1) ────────────────────────────────────────────────────────
     let metrics = {
       total: 0,
       teamTotal: { Ramya: 0, Sandeep: 0, Kishore: 0 },
-      statuses: {} as any
+      statuses: {} as Record<string, { total: number; Ramya: number; Sandeep: number; Kishore: number }>,
     };
+    let rawLeads: any[] = [];
+    let availableDates: string[] = [];
 
+    if (responseLeads.ok) {
+      const csvText = await responseLeads.text();
+      const records = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
+
+      const leads = records.map((r: any) => ({
+        date:         r['Date'] || '',
+        customerName: r['Customer Name'] || '',
+        mobileNumber: r['Mobile Number '] || r['Mobile Number'] || '',
+        status:       r['Status'] || 'New Lead',
+        remarks:      r['Remarks '] || r['Remarks'] || '',
+        assignedTo:   r['Names'] || 'Unassigned',
+      })).filter((l: any) => l.customerName && (l.date || l.mobileNumber));
+
+      rawLeads = leads;
+      availableDates = Array.from(new Set(leads.map((l: any) => l.date).filter(Boolean))) as string[];
+
+      const fromTs = toMidnight(fromLeadDateParam || '');
+      const toTs   = toMidnight(toLeadDateParam   || '');
+
+      const filteredLeads = leads.filter((l: any) => {
+        if (fromTs || toTs) {
+          const ts = toMidnight(l.date);
+          if (!ts) return false;
+          if (fromTs && ts < fromTs) return false;
+          if (toTs   && ts > toTs)   return false;
+        }
+        return true;
+      });
+
+      const statusKeys = [
+        'Shared Details', 'Visit Store', 'Busy', 'Avaiable for COD', 'Store Visit Today',
+        'Store Visit Tomorrow', 'Store Visit Day after Tomorrow', 'Call back',
+        'Shared Location', 'Not answering', 'Not working', 'Not interested',
+      ];
+      const team = ['Ramya', 'Sandeep', 'Kishore'];
+
+      metrics.statuses = statusKeys.reduce((acc, k) => {
+        acc[k] = { total: 0, Ramya: 0, Sandeep: 0, Kishore: 0 };
+        return acc;
+      }, {} as typeof metrics.statuses);
+
+      filteredLeads.forEach((lead: any) => {
+        metrics.total++;
+        const assigned = lead.assignedTo;
+        if (team.includes(assigned)) metrics.teamTotal[assigned as keyof typeof metrics.teamTotal]++;
+
+        const mk = statusKeys.find(k => k.toLowerCase() === lead.status.toLowerCase());
+        if (mk) {
+          metrics.statuses[mk].total++;
+          if (team.includes(assigned)) metrics.statuses[mk][assigned as keyof typeof metrics.teamTotal]++;
+        }
+      });
+    }
+
+    // ── COD SHEET (raw orders) ────────────────────────────────────────────────
+    let codSheet3Rows: any[] = [];
+    let codAvailableDates: string[] = [];
     let codMetrics = {
       selectedDate: '',
       availableDates: [] as string[],
       cards: {
         'Order Placed': { count: 0, Ramya: 0, Sandeep: 0, Kishore: 0 },
-        'Delivered': { count: 0, Ramya: 0, Sandeep: 0, Kishore: 0 },
-        'Cancelled': { count: 0, Ramya: 0, Sandeep: 0, Kishore: 0 }
-      }
+        'Delivered':    { count: 0, Ramya: 0, Sandeep: 0, Kishore: 0 },
+        'Cancelled':    { count: 0, Ramya: 0, Sandeep: 0, Kishore: 0 },
+      },
     };
 
-    let rawLeads: any[] = [];
+    if (responseCod.ok) {
+      const csvText = await responseCod.text();
+      const records = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
 
-    if (response.ok) {
-      const csvText = await response.text();
-      const records = parse(csvText, {
-        columns: true,
-        skip_empty_lines: true,
-        trim: true
-      });
-
-      const leads = records.map((r: any) => ({
-        date: r['Date'] || '',
-        customerName: r['Customer Name'] || '',
-        mobileNumber: r['Mobile Number '] || r['Mobile Number'] || '',
-        status: r['Status'] || 'New Lead',
-        remarks: r['Remarks '] || r['Remarks'] || '',
-        assignedTo: r['Names'] || 'Unassigned'
-      })).filter((l: any) => l.customerName && (l.date || l.mobileNumber));
-
-      rawLeads = leads;
-
-      const filteredLeads = leadDateParam ? leads.filter((l: any) => l.date === leadDateParam) : leads;
-
-      const statusKeys = [
-        'Shared Details', 'Visit Store', 'Busy', 'Avaiable for COD', 'Store Visit Today',
-        'Store Visit Tomorrow', 'Store Visit Day after Tomorrow', 'Call back',
-        'Shared Location', 'Not answering', 'Not working', 'Not interested'
-      ];
-
-      const team = ['Ramya', 'Sandeep', 'Kishore'];
-
-      metrics.statuses = statusKeys.reduce((acc, curr) => {
-        acc[curr] = { total: 0, Ramya: 0, Sandeep: 0, Kishore: 0 };
-        return acc;
-      }, {} as Record<string, { total: number; Ramya: number; Sandeep: number; Kishore: number }>);
-
-      filteredLeads.forEach((lead: any) => {
-        metrics.total++;
-        const assigned = lead.assignedTo;
-        const status = lead.status;
-
-        if (team.includes(assigned)) {
-          metrics.teamTotal[assigned as keyof typeof metrics.teamTotal]++;
-        }
-
-        const matchedStatusKey = statusKeys.find(k => k.toLowerCase() === status.toLowerCase());
-        if (matchedStatusKey) {
-          metrics.statuses[matchedStatusKey].total++;
-          if (team.includes(assigned)) {
-            metrics.statuses[matchedStatusKey][assigned as keyof typeof metrics.teamTotal]++;
-          }
-        }
-      });
-    }
-
-    if (responseSheet4.ok) {
-      const sheet4CsvText = await responseSheet4.text();
-      const sheet4Lines = sheet4CsvText.split('\n').map(line => line.split(','));
-
-      // Check header and rows for Sheet4
-      // Row 0: Lead,Count,Ramya,Sandeep,Kishore,,,,Select Date,2026-08-03
-      if (sheet4Lines[0] && sheet4Lines[0].length >= 10) {
-        codMetrics.selectedDate = sheet4Lines[0][9]?.trim() || '';
-      }
-
-      sheet4Lines.forEach(row => {
-        const leadName = row[0]?.trim();
-        if (leadName && ['Order Placed', 'Delivered', 'Cancelled'].includes(leadName)) {
-          codMetrics.cards[leadName as 'Order Placed' | 'Delivered' | 'Cancelled'] = {
-            count: parseInt(row[1]?.trim() || '0', 10) || 0,
-            Ramya: parseInt(row[2]?.trim() || '0', 10) || 0,
-            Sandeep: parseInt(row[3]?.trim() || '0', 10) || 0,
-            Kishore: parseInt(row[4]?.trim() || '0', 10) || 0,
-          };
-        }
-      });
-    }
-
-    // 1c. Fetch Google Sheets metrics for COD Table (Sheet3 / gid=397977923)
-    const responseSheet3 = await fetch('https://docs.google.com/spreadsheets/d/1eVxxvP5u5DO1-OJCb3cpPadwXi-GHI27v0qxMAmwTo4/export?format=csv&gid=397977923', { cache: 'no-store' });
-
-    let codSheet3Rows: any[] = [];
-    let codAvailableDates: string[] = [];
-
-    if (responseSheet3.ok) {
-      const sheet3CsvText = await responseSheet3.text();
-      const records3 = parse(sheet3CsvText, {
-        columns: true,
-        skip_empty_lines: true,
-        trim: true
-      });
-
-      const parsedRows = records3.map((r: any) => ({
-        date: r['Date'] || '',
-        orderId: r['OrderID'] || '',
+      const parsedRows = records.map((r: any) => ({
+        date:         r['Date'] || '',
+        orderId:      r['OrderID'] || '',
         wayBillNumber: r['Way Bill Number'] || '',
         customerName: r['Customer Name'] || '',
         mobileNumber: r['Mobile Number '] || r['Mobile Number'] || '',
-        address: r['Address'] || '',
-        cost: r['Cost'] || '',
-        status: r['Status'] || '',
+        address:      r['Address'] || '',
+        weight:       r['Weight'] || '',
+        cost:         r['Cost'] || '',
+        status:       r['Status'] || '',
         deliveryDate: r['Delievery Date '] || r['Delievery Date'] || r['Delivery Date '] || r['Delivery Date'] || '',
-        names: r['Names'] || r['Assigned To'] || '—'
-      })).filter((r: any) => r.customerName || r.orderId || r.mobileNumber);
+        names:        r['Names'] || '—',
+      })).filter((r: any) => r.customerName || r.orderId);
 
       codAvailableDates = Array.from(new Set(parsedRows.map((r: any) => r.date).filter(Boolean))) as string[];
 
-      codSheet3Rows = codDateParam 
-        ? parsedRows.filter((r: any) => r.date === codDateParam)
-        : parsedRows;
+      const fromTs = toMidnight(fromCodDateParam || '');
+      const toTs   = toMidnight(toCodDateParam   || '');
+
+      const filteredCodRowsForMetrics = parsedRows.filter((r: any) => {
+        if (fromTs || toTs) {
+          const ts = toMidnight(r.date);
+          if (!ts) return false;
+          if (fromTs && ts < fromTs) return false;
+          if (toTs   && ts > toTs)   return false;
+        }
+        return true;
+      });
+
+      // Build COD summary cards from the SAME filtered rows
+      const team = ['Ramya', 'Sandeep', 'Kishore'];
+      filteredCodRowsForMetrics.forEach((r: any) => {
+        const s = r.status?.trim();
+        const name = r.names?.trim();
+
+        const cardKey = ['Order Placed', 'Delivered', 'Cancelled'].find(k => k.toLowerCase() === s?.toLowerCase());
+        if (cardKey) {
+          const card = codMetrics.cards[cardKey as keyof typeof codMetrics.cards];
+          card.count++;
+          const matched = team.find(t => name?.toLowerCase().includes(t.toLowerCase()));
+          if (matched) card[matched as 'Ramya' | 'Sandeep' | 'Kishore']++;
+        }
+      });
+
+      // Provide ALL rows to the frontend for the ledger
+      codSheet3Rows = parsedRows;
+
+      codMetrics.availableDates = codAvailableDates;
     }
 
-    // 2. Fetch actual B2C COD Orders from Website Admin Database (CustomerOrder table)
-    const codQueryResult = await client.execute('SELECT * FROM "CustomerOrder" WHERE paymentMethod = \'COD\' ORDER BY createdAt DESC');
-    const codOrders = codQueryResult.rows;
-
-    // Extract unique available dates dynamically from Google Sheets
-    const availableDates = Array.from(
-      new Set(rawLeads.map((l: any) => l.date).filter(Boolean))
-    );
-    codMetrics.availableDates = availableDates;
+    // Fetch COD orders from the website database (B2C orders table)
+    let codOrders: any[] = [];
+    try {
+      const codQueryResult = await client.execute('SELECT * FROM "CustomerOrder" WHERE paymentMethod = \'COD\' ORDER BY createdAt DESC');
+      codOrders = codQueryResult.rows;
+    } catch (_) {
+      codOrders = [];
+    }
 
     return NextResponse.json({
       metrics,
@@ -158,7 +201,7 @@ export async function GET(req: Request) {
       codSheet3Rows,
       codAvailableDates,
       codOrders,
-      availableDates
+      availableDates,
     });
   } catch (error: any) {
     console.error('Error in leads API:', error);
