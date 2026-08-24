@@ -8,6 +8,93 @@ const SHEET_ID = '1eVxxvP5u5DO1-OJCb3cpPadwXi-GHI27v0qxMAmwTo4';
 const GID_LEADS = '0';         // Sheet1 — Leads / B2C data
 const GID_COD = '397977923';   // COD sheet — raw COD orders
 
+// ── Status definitions: each entry maps a canonical key → aliases (case-insensitive substrings) ──
+const STATUS_DEFS: { key: string; aliases: string[] }[] = [
+  { key: 'Shared Details',                 aliases: ['shared details'] },
+  { key: 'Visit Store',                    aliases: ['visit store'] },
+  { key: 'Busy',                           aliases: ['busy'] },
+  { key: 'Avaiable for COD',               aliases: ['avaiable for cod', 'available for cod', 'available cod', 'avaiable cod'] },
+  { key: 'Store Visit Today',              aliases: ['store visit today'] },
+  { key: 'Store Visit Tomorrow',           aliases: ['store visit tomorrow'] },
+  { key: 'Store Visit Day after Tomorrow', aliases: ['store visit day after tomorrow'] },
+  { key: 'Call back',                      aliases: ['call back', 'callback'] },
+  { key: 'Shared Location',               aliases: ['shared location'] },
+  { key: 'Not answering',                  aliases: ['not answering'] },
+  { key: 'Not working',                    aliases: ['not working'] },
+  { key: 'Not interested',                 aliases: ['not interested'] },
+  { key: 'Asking for rent',               aliases: ['asking for rent'] },
+  { key: 'Purchased',                      aliases: ['purchased'] },
+  { key: 'Switch off',                     aliases: ['switchoff', 'switch off'] },
+];
+
+const TEAM = ['Ramya', 'Sandeep', 'Kishore'] as const;
+type TeamMember = typeof TEAM[number];
+
+// ── Normalise any date string → YYYY-MM-DD for consistent comparison ──────────────────────────
+// Handles: YYYY-MM-DD, M/D/YYYY, D/M/YYYY, DD-MM-YYYY and ambiguous slash formats.
+function normalizeDateToYMD(dStr: string): string | null {
+  if (!dStr) return null;
+  const s = dStr.trim();
+
+  // YYYY-MM-DD (from input[type=date])
+  if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)) {
+    const [y, m, d] = s.split('-').map(Number);
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+
+  // Slash-separated: M/D/YYYY or D/M/YYYY
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
+    const parts = s.split('/').map(Number);
+    const year = parts[2];
+    let month: number, day: number;
+    if (parts[0] > 12) {
+      // First part > 12 → must be DD/MM/YYYY
+      day = parts[0]; month = parts[1];
+    } else if (parts[1] > 12) {
+      // Second part > 12 → must be MM/DD/YYYY where DD > 12
+      month = parts[0]; day = parts[1];
+    } else {
+      // Ambiguous: sheet data uses M/D/YYYY (e.g. 8/1/2026 = Aug 1)
+      month = parts[0]; day = parts[1];
+    }
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
+
+  // DD-MM-YYYY
+  if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(s)) {
+    const parts = s.split('-').map(Number);
+    let day = parts[0], month = parts[1];
+    const year = parts[2];
+    if (parts[0] > 12) { day = parts[0]; month = parts[1]; }
+    else if (parts[1] > 12) { day = parts[1]; month = parts[0]; }
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
+
+  const ts = Date.parse(s);
+  if (!isNaN(ts)) {
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+  return null;
+}
+
+// ── Match all canonical statuses that apply to a raw status cell ──────────────────────────────
+// Supports multi-tag values like "Shared Details, Shared Location"
+function matchStatuses(rawStatus: string): string[] {
+  if (!rawStatus) return [];
+  const s = rawStatus.toLowerCase().trim();
+  const matched: string[] = [];
+  for (const def of STATUS_DEFS) {
+    if (def.aliases.some(alias => s.includes(alias))) {
+      matched.push(def.key);
+    }
+  }
+  return matched;
+}
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -16,40 +103,6 @@ export async function GET(req: Request) {
     const fromCodDateParam  = url.searchParams.get('fromCodDate');   // YYYY-MM-DD
     const toCodDateParam    = url.searchParams.get('toCodDate');     // YYYY-MM-DD
 
-    // Helper: normalise any date string to midnight timestamp
-    // Handles: YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY, MM/DD/YYYY
-    const toMidnight = (dStr: string): number | null => {
-      if (!dStr) return null;
-      const s = dStr.trim();
-
-      // YYYY-MM-DD (from input[type=date])
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-        const [y, m, d] = s.split('-').map(Number);
-        return new Date(y, m - 1, d).getTime();
-      }
-
-      // MM/DD/YYYY (COD sheet format — confirmed from data)
-      // We distinguish MM/DD/YYYY vs DD/MM/YYYY by checking if first part > 12 → DD first
-      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
-        const parts = s.split('/').map(Number);
-        // If first part > 12 → must be DD/MM/YYYY
-        if (parts[0] > 12) {
-          return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
-        }
-        // Otherwise treat as MM/DD/YYYY (COD sheet uses this)
-        return new Date(parts[2], parts[0] - 1, parts[1]).getTime();
-      }
-
-      // DD-MM-YYYY
-      if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(s)) {
-        const parts = s.split('-').map(Number);
-        return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
-      }
-
-      const ts = Date.parse(s);
-      return isNaN(ts) ? null : ts;
-    };
-
     // Fetch both sheets concurrently
     const [responseLeads, responseCod] = await Promise.all([
       fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID_LEADS}`, { cache: 'no-store' }),
@@ -57,65 +110,77 @@ export async function GET(req: Request) {
     ]);
 
     // ── LEADS (Sheet1) ────────────────────────────────────────────────────────
+    type StatusRecord = { total: number; Ramya: number; Sandeep: number; Kishore: number };
     let metrics = {
       total: 0,
-      teamTotal: { Ramya: 0, Sandeep: 0, Kishore: 0 },
-      statuses: {} as Record<string, { total: number; Ramya: number; Sandeep: number; Kishore: number }>,
+      teamTotal: { Ramya: 0, Sandeep: 0, Kishore: 0 } as Record<string, number>,
+      statuses: {} as Record<string, StatusRecord>,
     };
     let rawLeads: any[] = [];
     let availableDates: string[] = [];
 
     if (responseLeads.ok) {
       const csvText = await responseLeads.text();
-      const records = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
 
-      const leads = records.map((r: any) => ({
-        date:         r['Date'] || '',
-        customerName: r['Customer Name'] || '',
-        mobileNumber: r['Mobile Number '] || r['Mobile Number'] || '',
-        status:       r['Status'] || 'New Lead',
-        remarks:      r['Remarks '] || r['Remarks'] || '',
-        assignedTo:   r['Names'] || 'Unassigned',
-      })).filter((l: any) => l.customerName && (l.date || l.mobileNumber));
+      // Parse as raw rows (no column mapping) because the first column header is blank
+      const rawRows: string[][] = parse(csvText, {
+        columns: false,
+        skip_empty_lines: true,
+        trim: true,
+      }) as string[][];
+
+      // Row 0 is the header: ['', 'Customer Name', 'Mobile Number ', 'Status', 'Remarks ', 'Names', '']
+      // Data starts at row 1: [date, customerName, mobileNumber, status, remarks, agentName, '']
+      const dataRows = rawRows.slice(1);
+
+      const leads = dataRows.map((r: string[]) => ({
+        date:         r[0] || '',
+        customerName: r[1] || '',
+        mobileNumber: r[2] || '',
+        status:       r[3] || '',
+        remarks:      r[4] || '',
+        assignedTo:   r[5] || '',
+      })).filter((l: any) => l.date); // Keep all rows that have a date (matches Google Sheets counting)
 
       rawLeads = leads;
-      availableDates = Array.from(new Set(leads.map((l: any) => l.date).filter(Boolean))) as string[];
+      availableDates = Array.from(new Set(
+        leads.map((l: any) => normalizeDateToYMD(l.date)).filter(Boolean)
+      )) as string[];
 
-      const fromTs = toMidnight(fromLeadDateParam || '');
-      const toTs   = toMidnight(toLeadDateParam   || '');
+      const fromYMD = normalizeDateToYMD(fromLeadDateParam || '');
+      const toYMD   = normalizeDateToYMD(toLeadDateParam   || '');
 
       const filteredLeads = leads.filter((l: any) => {
-        if (fromTs || toTs) {
-          const ts = toMidnight(l.date);
-          if (!ts) return false;
-          if (fromTs && ts < fromTs) return false;
-          if (toTs   && ts > toTs)   return false;
+        if (fromYMD || toYMD) {
+          const ymd = normalizeDateToYMD(l.date);
+          if (!ymd) return false;
+          if (fromYMD && ymd < fromYMD) return false;
+          if (toYMD   && ymd > toYMD)   return false;
         }
         return true;
       });
 
-      const statusKeys = [
-        'Shared Details', 'Visit Store', 'Busy', 'Avaiable for COD', 'Store Visit Today',
-        'Store Visit Tomorrow', 'Store Visit Day after Tomorrow', 'Call back',
-        'Shared Location', 'Not answering', 'Not working', 'Not interested',
-      ];
-      const team = ['Ramya', 'Sandeep', 'Kishore'];
-
-      metrics.statuses = statusKeys.reduce((acc, k) => {
-        acc[k] = { total: 0, Ramya: 0, Sandeep: 0, Kishore: 0 };
+      // Initialise all status buckets
+      metrics.statuses = STATUS_DEFS.reduce((acc, def) => {
+        acc[def.key] = { total: 0, Ramya: 0, Sandeep: 0, Kishore: 0 };
         return acc;
       }, {} as typeof metrics.statuses);
 
       filteredLeads.forEach((lead: any) => {
         metrics.total++;
-        const assigned = lead.assignedTo;
-        if (team.includes(assigned)) metrics.teamTotal[assigned as keyof typeof metrics.teamTotal]++;
+        const assigned = (lead.assignedTo || '').trim();
+        const matchedAgent = TEAM.find(t => t.toLowerCase() === assigned.toLowerCase()) as TeamMember | undefined;
+        if (matchedAgent) metrics.teamTotal[matchedAgent]++;
 
-        const mk = statusKeys.find(k => k.toLowerCase() === lead.status.toLowerCase());
-        if (mk) {
-          metrics.statuses[mk].total++;
-          if (team.includes(assigned)) metrics.statuses[mk][assigned as keyof typeof metrics.teamTotal]++;
-        }
+        const matchedStatuses = matchStatuses(lead.status);
+        matchedStatuses.forEach(key => {
+          if (metrics.statuses[key]) {
+            metrics.statuses[key].total++;
+            if (matchedAgent) {
+              (metrics.statuses[key] as any)[matchedAgent]++;
+            }
+          }
+        });
       });
     }
 
@@ -134,7 +199,7 @@ export async function GET(req: Request) {
 
     if (responseCod.ok) {
       const csvText = await responseCod.text();
-      const records = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
+      const records: any[] = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
 
       const parsedRows = records.map((r: any) => ({
         date:         r['Date'] || '',
@@ -150,23 +215,23 @@ export async function GET(req: Request) {
         names:        r['Names'] || '—',
       })).filter((r: any) => r.customerName || r.orderId);
 
-      codAvailableDates = Array.from(new Set(parsedRows.map((r: any) => r.date).filter(Boolean))) as string[];
+      codAvailableDates = Array.from(new Set(
+        parsedRows.map((r: any) => normalizeDateToYMD(r.date)).filter(Boolean)
+      )) as string[];
 
-      const fromTs = toMidnight(fromCodDateParam || '');
-      const toTs   = toMidnight(toCodDateParam   || '');
+      const fromCodYMD = normalizeDateToYMD(fromCodDateParam || '');
+      const toCodYMD   = normalizeDateToYMD(toCodDateParam   || '');
 
       const filteredCodRowsForMetrics = parsedRows.filter((r: any) => {
-        if (fromTs || toTs) {
-          const ts = toMidnight(r.date);
-          if (!ts) return false;
-          if (fromTs && ts < fromTs) return false;
-          if (toTs   && ts > toTs)   return false;
+        if (fromCodYMD || toCodYMD) {
+          const ymd = normalizeDateToYMD(r.date);
+          if (!ymd) return false;
+          if (fromCodYMD && ymd < fromCodYMD) return false;
+          if (toCodYMD   && ymd > toCodYMD)   return false;
         }
         return true;
       });
 
-      // Build COD summary cards from the SAME filtered rows
-      const team = ['Ramya', 'Sandeep', 'Kishore'];
       filteredCodRowsForMetrics.forEach((r: any) => {
         const s = r.status?.trim();
         const name = r.names?.trim();
@@ -175,14 +240,12 @@ export async function GET(req: Request) {
         if (cardKey) {
           const card = codMetrics.cards[cardKey as keyof typeof codMetrics.cards];
           card.count++;
-          const matched = team.find(t => name?.toLowerCase().includes(t.toLowerCase()));
-          if (matched) card[matched as 'Ramya' | 'Sandeep' | 'Kishore']++;
+          const matched = TEAM.find(t => name?.toLowerCase().includes(t.toLowerCase()));
+          if (matched) card[matched as TeamMember]++;
         }
       });
 
-      // Provide ALL rows to the frontend for the ledger
       codSheet3Rows = parsedRows;
-
       codMetrics.availableDates = codAvailableDates;
     }
 
